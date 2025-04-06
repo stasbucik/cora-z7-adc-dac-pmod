@@ -144,6 +144,12 @@ architecture Behavioral of CoraZ707S is
 	attribute mark_debug of dacHighz        : signal is MARK_DEBUG_G;
 	attribute mark_debug of axisDacWriteSrc : signal is MARK_DEBUG_G;
 	attribute mark_debug of axisDacWriteDst : signal is MARK_DEBUG_G;
+	attribute mark_debug of adcSpiClk       : signal is MARK_DEBUG_G;
+	attribute mark_debug of adcDout         : signal is MARK_DEBUG_G;
+	attribute mark_debug of adcCs           : signal is MARK_DEBUG_G;
+	attribute mark_debug of adcSclk         : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisAdcReadSrc  : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisAdcReadDst  : signal is MARK_DEBUG_G;
 	----------------------------------------------------------------------------
 
 	component clk_wiz_mmc_100_64
