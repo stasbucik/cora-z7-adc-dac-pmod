@@ -34,6 +34,9 @@ use UNISIM.VComponents.all;
 use IEEE.math_real."ceil";
 use IEEE.math_real."log2";
 
+use work.Axi4Pkg.all;
+use work.SpiAdapterPkg.all;
+
 entity CoraZ707S is
 	generic (
 		MARK_DEBUG_G : string := "true"
@@ -96,7 +99,7 @@ entity CoraZ707S is
 		ja2_p                   : out   STD_LOGIC;
 		ja2_n                   : out   STD_LOGIC;
 		ja3_p                   : out   STD_LOGIC;
-		ja3_n                   : out   STD_LOGIC;
+		ja3_n                   : inout STD_LOGIC;
 		ja4_p                   : out   STD_LOGIC;
 		ja4_n                   : in    STD_LOGIC
 	);
@@ -104,30 +107,51 @@ end CoraZ707S;
 
 architecture Behavioral of CoraZ707S is
 
-	constant MAX_VAL_C    : natural := 1024;
-	constant MIN_VAL_C    : natural := 0;
-	constant DATA_WIDTH_C : natural := 10;
+	constant AXI_DATA_WIDTH_C : natural := 16;
 
 	signal clk        : STD_LOGIC;
 	signal rst        : STD_LOGIC;
 	signal rstAdapter : STD_LOGIC_VECTOR(0 downto 0);
 
-	signal data    : STD_LOGIC_VECTOR(DATA_WIDTH_C-1 downto 0);
-	signal spiData : STD_LOGIC_VECTOR(15 downto 0);
-	signal valid   : STD_LOGIC;
-	signal ready   : STD_LOGIC;
+	-- DAC signals
+	signal dacSdin   : STD_LOGIC;
+	signal dacSync   : STD_LOGIC;
+	signal dacHighz  : STD_LOGIC;
+	signal dacClk    : STD_LOGIC;
+	signal dacSpiClk : STD_LOGIC;
 
-	signal sdin : STD_LOGIC;
-	signal sync : STD_LOGIC;
+	signal axisDacWriteSrc : Axi4StreamSource(
+		tdata(AXI_DATA_WIDTH_C-1 downto 0),
+		tstrb(AXI_DATA_WIDTH_C/8-1 downto 0),
+		tkeep(AXI_DATA_WIDTH_C/8-1 downto 0),
+		tid(4-1 downto 0),
+		tdest(4-1 downto 0)
+	);
+	signal axisGenSrc      : axisDacWriteSrc'subtype;
+	signal axisDacWriteDst : Axi4StreamDestination;
 
+	signal axisDacReadSrc : axisDacWriteSrc'subtype;
+	signal axisDacReadDst : Axi4StreamDestination;
 	-----------------------------------------------------------------------------
-	attribute mark_debug          : string;
-	attribute mark_debug of sdin  : signal is MARK_DEBUG_G;
-	attribute mark_debug of sync  : signal is MARK_DEBUG_G;
-	attribute mark_debug of data  : signal is MARK_DEBUG_G;
-	attribute mark_debug of valid : signal is MARK_DEBUG_G;
-	attribute mark_debug of ready : signal is MARK_DEBUG_G;
+	attribute mark_debug                    : string;
+	attribute mark_debug of dacSdin         : signal is MARK_DEBUG_G;
+	attribute mark_debug of dacSync         : signal is MARK_DEBUG_G;
+	attribute mark_debug of dacHighz        : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisDacWriteSrc : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisDacWriteDst : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisDacReadSrc  : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisDacReadDst  : signal is MARK_DEBUG_G;
+	----------------------------------------------------------------------------
 
+	component clk_wiz_dac
+		port
+		(
+			clk_out1 : out std_logic;
+			reset    : in  std_logic;
+			locked   : out std_logic;
+			clk_in1  : in  std_logic
+		);
+	end component;
 begin
 
 	Infrastructure_wrapper : entity work.Infrastructure_wrapper
@@ -190,71 +214,93 @@ begin
 
 	rst <= rstAdapter(0);
 
-	OBUF_1 : OBUF
+	----------------------------------------------------------------------------
+	OBUF_DACSYNC : OBUF
 		generic map (
 			DRIVE      => 12,
 			IOSTANDARD => "DEFAULT",
 			SLEW       => "SLOW")
 		port map (
-			O => ja1_p, -- Buffer output (connect directly to top-level port)
-			I => sync   -- Buffer input
+			O => ja1_p,  -- Buffer output (connect directly to top-level port)
+			I => dacSync -- Buffer input
 		);
 
-	BUFG_inst : BUFG
+	BUFG_DACCLK : BUFG
 		port map (
 			O => ja1_n, -- 1-bit output: Clock output
-			I => clk    -- 1-bit input: Clock input
+			I => dacClk -- 1-bit input: Clock input
 		);
 
 	ja2_p <= '0';
 	ja2_n <= '0';
 	ja3_p <= '0';
 
-	OBUF_2 : OBUF
+	OBUFT_DACSDIN : OBUFT
 		generic map (
 			DRIVE      => 12,
 			IOSTANDARD => "DEFAULT",
 			SLEW       => "SLOW")
 		port map (
-			O => ja3_n, -- Buffer output (connect directly to top-level port)
-			I => sdin   -- Buffer input
+			O => ja3_n,   -- Buffer output (connect directly to top-level port)
+			I => dacSdin, -- Buffer input
+			T => dacHighz -- 3-state enable input
 		);
 
 	ja4_p <= '0';
+	----------------------------------------------------------------------------
 
-	SpiMasterAdapter_1 : entity work.SpiMasterAdapter
+	u_clk_wiz_dac : clk_wiz_dac
+		port map (
+			clk_out1 => dacSpiClk,
+			reset    => rst,
+			locked   => open,
+			clk_in1  => clk
+		);
+
+	u_SpiMasterDac : entity work.SpiMaster
 		generic map (
+			MARK_DEBUG_G    => MARK_DEBUG_G,
+			SPI_CPOL_G      => SPI_CPOL_0,
+			SPI_CPHA_G      => SPI_CPHA_1,
 			DATA_WIDTH_G    => 16,
 			N_CYCLES_IDLE_G => 1
 		)
 		port map (
-			clk_i        => clk,
-			rst_i        => rst,
-			miso_i       => '0',
-			mosi_o       => sdin,
-			cs_o         => sync,
-			writeData_i  => spiData,
-			writeValid_i => valid,
-			writeReady_o => ready,
-			readData_o   => open,
-			readValid_o  => open,
-			readReady_i  => '0'
+			clk_i          => clk,
+			spiClk_i       => dacSpiClk,
+			rst_i          => rst,
+			miso_i         => '0',
+			mosi_o         => dacSdin,
+			cs_o           => dacSync,
+			clk_o          => dacClk,
+			highz_o        => dacHighz,
+			axisWriteSrc_i => axisDacWriteSrc,
+			axisWriteDst_o => axisDacWriteDst,
+			axisReadSrc_o  => axisDacReadSrc,
+			axisReadDst_i  => axisDacReadDst
 		);
 
-	DataGenerator_1 : entity work.DataGenerator
+	axisDacReadDst.tready <= '1';
+
+	u_DataGenerator : entity work.DataGenerator
 		generic map (
-			MAX_VAL_G    => MAX_VAL_C,
-			MIN_VAL_G    => MIN_VAL_C,
-			DATA_WIDTH_G => DATA_WIDTH_C
+			MAX_VAL_G => 0,
+			MIN_VAL_G => 1024
 		)
 		port map (
-			clk_i   => clk,
-			rst_i   => rst,
-			data_o  => data,
-			valid_o => valid,
-			ready_i => ready
+			clk_i     => clk,
+			rst_i     => rst,
+			axisSrc_o => axisGenSrc,
+			axisDst_i => axisDacWriteDst
 		);
 
-	spiData <= b"00" & data & b"0000";
+	axisDacWriteSrc.TVALID  <= axisGenSrc.TVALID;
+	axisDacWriteSrc.TDATA   <= b"00" & axisGenSrc.TDATA(9 downto 0) & b"0000";
+	axisDacWriteSrc.TSTRB   <= axisGenSrc.TSTRB;
+	axisDacWriteSrc.TKEEP   <= axisGenSrc.TKEEP;
+	axisDacWriteSrc.TLAST   <= axisGenSrc.TLAST;
+	axisDacWriteSrc.TID     <= axisGenSrc.TID;
+	axisDacWriteSrc.TDEST   <= axisGenSrc.TDEST;
+	axisDacWriteSrc.TWAKEUP <= axisGenSrc.TWAKEUP;
 
 end Behavioral;

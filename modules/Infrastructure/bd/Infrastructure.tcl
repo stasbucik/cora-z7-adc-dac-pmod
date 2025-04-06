@@ -924,9 +924,9 @@ proc create_root_design { parentCell } {
   [get_bd_pins ps7_0_axi_periph/M01_ACLK] \
   [get_bd_pins ps7_0_axi_periph/M02_ACLK] \
   [get_bd_pins ps7_0_axi_periph/M03_ACLK] \
-  [get_bd_pins rst_ps7_0_100M/slowest_sync_clk] \
   [get_bd_pins xadc_wiz_0/s_axi_aclk] \
-  [get_bd_ports ps_clk]
+  [get_bd_ports ps_clk] \
+  [get_bd_pins rst_ps7_0_100M/slowest_sync_clk]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N  [get_bd_pins processing_system7_0/FCLK_RESET0_N] \
   [get_bd_pins rst_ps7_0_100M/ext_reset_in]
   connect_bd_net -net processing_system7_0_SPI0_SS1_O  [get_bd_pins processing_system7_0/SPI0_SS1_O] \
