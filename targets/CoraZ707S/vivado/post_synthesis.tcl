@@ -44,7 +44,7 @@ if { ${enable} == 1 } {
 	WriteDebugProbes ${ilaName} ${PROJ_DIR}/images/debug_probes.ltx
 }
 
-set enable 1
+set enable 0
 if { ${enable} == 1 } {
 	set ilaName "u_ila_ps_adc_clk_domain"
 	set ilaSize 2048
