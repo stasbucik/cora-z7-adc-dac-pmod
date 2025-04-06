@@ -4,7 +4,7 @@
 -- 
 -- Create Date: 03/31/2025 01:28:32 PM
 -- Design Name: 
--- Module Name: SpiAdapterPkg - 
+-- Module Name: SpiMaster2AxisPkg - 
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
@@ -22,9 +22,9 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
-package SpiAdapterPkg is
+package SpiMaster2AxisPkg is
 
 	type SpiClockPolarity is (
 			SPI_CPOL_0, -- Clock idles low
@@ -51,9 +51,9 @@ package SpiAdapterPkg is
 			cp : SpiClockPolarity
 		) return STD_LOGIC;
 
-end package SpiAdapterPkg;
+end package SpiMaster2AxisPkg;
 
-package body SpiAdapterPkg is
+package body SpiMaster2AxisPkg is
 
 	function getIdleLevel (
 			cp : SpiClockPolarity
@@ -77,4 +77,4 @@ package body SpiAdapterPkg is
 		end if;
 	end function getActiveLevel;
 
-end package body SpiAdapterPkg;
+end package body SpiMaster2AxisPkg;

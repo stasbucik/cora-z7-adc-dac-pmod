@@ -31,7 +31,7 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-use work.SpiAdapterPkg.all;
+use work.SpiMaster2AxisPkg.all;
 use work.Axi4Pkg.all;
 
 entity SpiMaster2AxisTb is
@@ -56,8 +56,9 @@ architecture Behavioral of SpiMaster2AxisTb is
 		tdata(AXI_DATA_WIDTH_C-1 downto 0),
 		tstrb(AXI_DATA_WIDTH_C/8-1 downto 0),
 		tkeep(AXI_DATA_WIDTH_C/8-1 downto 0),
-		tid(8-1 downto 0),
-		tdest(8-1 downto 0)
+		tid(1-1 downto 0),
+		tdest(1-1 downto 0),
+		tuser(1-1 downto 0)
 	);
 	signal axisWriteDst_o1 : Axi4StreamDestination;
 	signal axisReadSrc_o1  : axisWriteSrc_i1'subtype;
@@ -82,6 +83,7 @@ architecture Behavioral of SpiMaster2AxisTb is
 			TLAST   => '0',
 			TID     => (others => '0'),
 			TDEST   => (others => '0'),
+			TUSER   => (others => '0'),
 			TWAKEUP => '0'
 		);
 

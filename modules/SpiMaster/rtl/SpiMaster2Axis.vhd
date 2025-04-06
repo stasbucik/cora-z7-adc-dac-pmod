@@ -24,14 +24,14 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx leaf cells in this code.
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-use work.SpiAdapterPkg.all;
+use work.SpiMaster2AxisPkg.all;
 use work.Axi4Pkg.all;
 
 entity SpiMaster2Axis is
@@ -263,6 +263,7 @@ begin
         axisReadSrc_o.tlast   <= '1';
         axisReadSrc_o.tid     <= (others => '0');
         axisReadSrc_o.tdest   <= (others => '0');
+        axisReadSrc_o.tuser   <= (others => '0');
         axisReadSrc_o.twakeup <= '0';
     end process p_Comb;
 

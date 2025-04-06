@@ -31,7 +31,8 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-use work.SpiAdapterPkg.all;
+use work.SpiMaster2AxisPkg.all;
+use work.SpiMasterPkg.all;
 use work.Axi4Pkg.all;
 
 entity SpiMasterTb is
@@ -55,12 +56,10 @@ architecture Behavioral of SpiMasterTb is
 	signal clk_o   : STD_LOGIC;
 	signal highz_o : STD_LOGIC;
 
-	signal axisWriteSrc_i : Axi4StreamSource(
-		tdata(AXI_DATA_WIDTH_C-1 downto 0),
-		tstrb(AXI_DATA_WIDTH_C/8-1 downto 0),
-		tkeep(AXI_DATA_WIDTH_C/8-1 downto 0),
-		tid(4-1 downto 0),
-		tdest(4-1 downto 0)
+	signal axisWriteSrc_i : SpiMasterAxi4StreamSource(
+		tid(1-1 downto 0),
+		tdest(1-1 downto 0),
+		tuser(1-1 downto 0)
 	);
 
 	signal axisWriteDst_o : Axi4StreamDestination;
@@ -75,6 +74,7 @@ architecture Behavioral of SpiMasterTb is
 			TLAST   => '0',
 			TID     => (others => '0'),
 			TDEST   => (others => '0'),
+			TUSER   => (others => '0'),
 			TWAKEUP => '0'
 		);
 
@@ -125,23 +125,23 @@ begin
 
 	u_DataGenerator : entity work.DataGenerator
 		generic map (
-			MAX_VAL_G => 0,
-			MIN_VAL_G => 1024
+			MAX_VAL_G => 1024,
+			MIN_VAL_G => 0
 		)
 		port map (
 			clk_i     => clk_i,
 			rst_i     => rst_i,
 			axisSrc_o => axisWriteSrc_i,
 			axisDst_i => axisWriteDst_o
-		);		
+		);
 
 	stimulus : process
 	begin
 		rst_i <= '1';
 		-- initialize signals
 
-		miso_i         <= '0';
-		axisReadDst_i  <= AXI_4_STREAM_DST_INIT_C;
+		miso_i        <= '0';
+		axisReadDst_i <= AXI_4_STREAM_DST_INIT_C;
 
 		wait for CLK_PERIOD2_C*3;
 

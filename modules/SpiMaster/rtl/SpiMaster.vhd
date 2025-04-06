@@ -24,14 +24,15 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx leaf cells in this code.
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-use work.SpiAdapterPkg.all;
+use work.SpiMaster2AxisPkg.all;
+use work.SpiMasterPkg.all;
 use work.Axi4Pkg.all;
 
 entity SpiMaster is
@@ -55,38 +56,32 @@ entity SpiMaster is
         highz_o : out STD_LOGIC;
 
         -- Write interface
-        axisWriteSrc_i : in  Axi4StreamSource;
+        axisWriteSrc_i : in  SpiMasterAxi4StreamSource;
         axisWriteDst_o : out Axi4StreamDestination;
 
         -- Read interface
-        axisReadSrc_o : out Axi4StreamSource;
+        axisReadSrc_o : out SpiMasterAxi4StreamSource;
         axisReadDst_i : in  Axi4StreamDestination
     );
 end SpiMaster;
 
 architecture Behavioral of SpiMaster is
 
-    COMPONENT fifo_sync_data
-        PORT (
-            wr_rst_busy   : OUT STD_LOGIC;
-            rd_rst_busy   : OUT STD_LOGIC;
-            m_aclk        : IN  STD_LOGIC;
-            s_aclk        : IN  STD_LOGIC;
-            s_aresetn     : IN  STD_LOGIC;
-            s_axis_tvalid : IN  STD_LOGIC;
-            s_axis_tready : OUT STD_LOGIC;
-            s_axis_tdata  : IN  STD_LOGIC_VECTOR(15 DOWNTO 0);
-            s_axis_tid    : IN  STD_LOGIC_VECTOR(3 DOWNTO 0);
-            s_axis_tdest  : IN  STD_LOGIC_VECTOR(3 DOWNTO 0);
-            s_axis_tuser  : IN  STD_LOGIC_VECTOR(3 DOWNTO 0);
-            m_axis_tvalid : OUT STD_LOGIC;
-            m_axis_tready : IN  STD_LOGIC;
-            m_axis_tdata  : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
-            m_axis_tid    : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-            m_axis_tdest  : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-            m_axis_tuser  : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
-        );
-    END COMPONENT;
+COMPONENT fifo_sync_data
+  PORT (
+    wr_rst_busy : OUT STD_LOGIC;
+    rd_rst_busy : OUT STD_LOGIC;
+    m_aclk : IN STD_LOGIC;
+    s_aclk : IN STD_LOGIC;
+    s_aresetn : IN STD_LOGIC;
+    s_axis_tvalid : IN STD_LOGIC;
+    s_axis_tready : OUT STD_LOGIC;
+    s_axis_tdata : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
+    m_axis_tvalid : OUT STD_LOGIC;
+    m_axis_tready : IN STD_LOGIC;
+    m_axis_tdata : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) 
+  );
+END COMPONENT;
 
     signal syncRst : STD_LOGIC;
 
@@ -131,15 +126,9 @@ begin
             s_axis_tvalid => axisWriteSrc_i.tvalid,
             s_axis_tready => axisWriteDst_o.tready,
             s_axis_tdata  => axisWriteSrc_i.tdata,
-            s_axis_tid    => axisWriteSrc_i.tid,
-            s_axis_tdest  => axisWriteSrc_i.tdest,
-            s_axis_tuser  => (others => '0'),
             m_axis_tvalid => axisWriteSrcSlow.tvalid,
             m_axis_tready => axisWriteDstSlow.tready,
-            m_axis_tdata  => axisWriteSrcSlow.tdata,
-            m_axis_tid    => axisWriteSrcSlow.tid,
-            m_axis_tdest  => axisWriteSrcSlow.tdest,
-            m_axis_tuser  => open
+            m_axis_tdata  => axisWriteSrcSlow.tdata
         );
 
     u_syncRead : fifo_sync_data
@@ -152,20 +141,14 @@ begin
             s_axis_tvalid => axisReadSrcSlow.tvalid,
             s_axis_tready => axisReadDstSlow.tready,
             s_axis_tdata  => axisReadSrcSlow.tdata,
-            s_axis_tid    => axisReadSrcSlow.tid,
-            s_axis_tdest  => axisReadSrcSlow.tdest,
-            s_axis_tuser  => (others => '0'),
             m_axis_tvalid => axisReadSrc_o.tvalid,
             m_axis_tready => axisReadDst_i.tready,
-            m_axis_tdata  => axisReadSrc_o.tdata,
-            m_axis_tid    => axisReadSrc_o.tid,
-            m_axis_tdest  => axisReadSrc_o.tdest,
-            m_axis_tuser  => open
+            m_axis_tdata  => axisReadSrc_o.tdata
         );
 
     u_SpiMaster2Axis : entity work.SpiMaster2Axis
         generic map (
-            MARK_DEBUG_G    => MARK_DEBUG_G,
+            MARK_DEBUG_G    => "false",
             SPI_CPOL_G      => SPI_CPOL_G,
             SPI_CPHA_G      => SPI_CPHA_G,
             DATA_WIDTH_G    => DATA_WIDTH_G,
