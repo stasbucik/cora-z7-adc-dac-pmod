@@ -64,6 +64,7 @@ architecture Behavioral of DataGenerator is
             TLAST   => '0',
             TID     => (others => '0'),
             TDEST   => (others => '0'),
+            TUSER   => (others => '0'),
             TWAKEUP => '0'
         );
 
@@ -126,6 +127,7 @@ begin
         axisSrc_o.tlast   <= r.axiSrcDriver.tlast;
         axisSrc_o.tid     <= r.axiSrcDriver.tid;
         axisSrc_o.tdest   <= r.axiSrcDriver.tdest;
+        axisSrc_o.tuser   <= r.axiSrcDriver.tuser;
         axisSrc_o.twakeup <= r.axiSrcDriver.twakeup;
     end process p_Comb;
 

@@ -21,7 +21,7 @@
 
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
+use IEEE.NUMERIC_STD.ALL;
 
 package Axi4Pkg is
 
@@ -34,6 +34,7 @@ package Axi4Pkg is
 		TLAST   : STD_LOGIC;
 		TID     : STD_LOGIC_VECTOR;
 		TDEST   : STD_LOGIC_VECTOR;
+		TUSER   : STD_LOGIC_VECTOR;
 		TWAKEUP : STD_LOGIC;
 	end record Axi4StreamSource;
 
@@ -45,6 +46,7 @@ package Axi4Pkg is
 	--		TLAST   => '0',
 	--		TID     => (others => '0'),
 	--		TDEST   => (others => '0'),
+	--      TUSER   => (others => '0'),
 	--		TWAKEUP => '0'
 	--	);
 
@@ -70,6 +72,7 @@ package Axi4Pkg is
 		ARPROT   : STD_LOGIC_VECTOR(2 downto 0);
 		ARQOS    : STD_LOGIC_VECTOR(3 downto 0);
 		ARREGION : STD_LOGIC_VECTOR(3 downto 0);
+		ARUSER   : STD_LOGIC_VECTOR;
 		ARVALID  : STD_LOGIC;
 		-- Data
 		RREADY : STD_LOGIC;
@@ -83,6 +86,7 @@ package Axi4Pkg is
 		RDATA  : STD_LOGIC_VECTOR;
 		RRESP  : STD_LOGIC_VECTOR(1 downto 0);
 		RLAST  : STD_LOGIC;
+		RUSER  : STD_LOGIC_VECTOR;
 		RVALID : STD_LOGIC;
 
 	end record Axi4ReadDestination;
@@ -99,12 +103,14 @@ package Axi4Pkg is
 		AWPROT   : STD_LOGIC_VECTOR(2 downto 0);
 		AWQOS    : STD_LOGIC_VECTOR(3 downto 0);
 		AWREGION : STD_LOGIC_VECTOR(3 downto 0);
+		AWUSER   : STD_LOGIC_VECTOR;
 		AWVALID  : STD_LOGIC;
 		-- Data
 		WID    : STD_LOGIC_VECTOR;
 		WDATA  : STD_LOGIC_VECTOR;
 		WSTRB  : STD_LOGIC_VECTOR;
 		WLAST  : STD_LOGIC;
+		WUSER  : STD_LOGIC_VECTOR;
 		WVALID : STD_LOGIC;
 		-- Response
 		BREADY : STD_LOGIC;
@@ -118,6 +124,7 @@ package Axi4Pkg is
 		-- Response
 		BID    : STD_LOGIC_VECTOR;
 		BRESP  : STD_LOGIC_VECTOR(1 downto 0);
+		BUSER  : STD_LOGIC_VECTOR;
 		BVALID : STD_LOGIC;
 	end record Axi4WriteDestination;
 

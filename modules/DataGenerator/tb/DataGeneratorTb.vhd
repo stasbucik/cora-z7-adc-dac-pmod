@@ -24,7 +24,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx leaf cells in this code.
@@ -53,7 +53,8 @@ architecture Behavioral of DataGeneratorTb is
 		TSTRB(AXI_DATA_WIDTH_C/8-1 downto 0),
 		TKEEP(AXI_DATA_WIDTH_C/8-1 downto 0),
 		TID(1-1 downto 0),
-		TDEST(1-1 downto 0)
+		TDEST(1-1 downto 0),
+		TUSER(1-1 downto 0)
 	);
 	signal axisDst_i : Axi4StreamDestination;
 begin
