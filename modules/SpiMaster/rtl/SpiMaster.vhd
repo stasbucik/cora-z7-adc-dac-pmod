@@ -31,65 +31,157 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
+use work.SpiAdapterPkg.all;
+use work.Axi4Pkg.all;
+
 entity SpiMaster is
     Generic (
-        DATA_WIDTH_G    : natural := 10;
-        N_CYCLES_IDLE_G : natural := 1
+        MARK_DEBUG_G    : string           := "false";
+        SPI_CPOL_G      : SpiClockPolarity := SPI_CPOL_0;
+        SPI_CPHA_G      : SpiClockPhase    := SPI_CPHA_0;
+        DATA_WIDTH_G    : natural          := 16;
+        N_CYCLES_IDLE_G : natural          := 1
     );
     Port (
-        clk_i   : in STD_LOGIC;
-        rst_i   : in STD_LOGIC;
+        clk_i    : in STD_LOGIC;
+        spiClk_i : in STD_LOGIC;
+        rst_i    : in STD_LOGIC;
 
         -- SPI interface
-        miso_i : in  STD_LOGIC;
-        mosi_o : out STD_LOGIC;
-        cs_o   : out STD_LOGIC
+        miso_i  : in  STD_LOGIC;
+        mosi_o  : out STD_LOGIC;
+        cs_o    : out STD_LOGIC;
+        clk_o   : out STD_LOGIC;
+        highz_o : out STD_LOGIC;
 
         -- Write interface
-        -- axis
+        axisWriteSrc_i : in  Axi4StreamSource;
+        axisWriteDst_o : out Axi4StreamDestination;
 
         -- Read interface
-        -- axis
-        
+        axisReadSrc_o : out Axi4StreamSource;
+        axisReadDst_i : in  Axi4StreamDestination
     );
 end SpiMaster;
 
 architecture Behavioral of SpiMaster is
 
-    --type RegType is record
-    --    
-    --end record RegType;
---
-    --constant REG_TYPE_INIT_C : RegType := (
-    --        
-    --    );
+    COMPONENT fifo_sync_data
+        PORT (
+            wr_rst_busy   : OUT STD_LOGIC;
+            rd_rst_busy   : OUT STD_LOGIC;
+            m_aclk        : IN  STD_LOGIC;
+            s_aclk        : IN  STD_LOGIC;
+            s_aresetn     : IN  STD_LOGIC;
+            s_axis_tvalid : IN  STD_LOGIC;
+            s_axis_tready : OUT STD_LOGIC;
+            s_axis_tdata  : IN  STD_LOGIC_VECTOR(15 DOWNTO 0);
+            s_axis_tid    : IN  STD_LOGIC_VECTOR(3 DOWNTO 0);
+            s_axis_tdest  : IN  STD_LOGIC_VECTOR(3 DOWNTO 0);
+            s_axis_tuser  : IN  STD_LOGIC_VECTOR(3 DOWNTO 0);
+            m_axis_tvalid : OUT STD_LOGIC;
+            m_axis_tready : IN  STD_LOGIC;
+            m_axis_tdata  : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
+            m_axis_tid    : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+            m_axis_tdest  : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+            m_axis_tuser  : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
+        );
+    END COMPONENT;
 
-    signal r   : RegType;
-    signal rin : RegType;
+    signal syncRst : STD_LOGIC;
+
+    signal axisWriteSrcSlow : axisWriteSrc_i'subtype;
+    signal axisWriteDstSlow : Axi4StreamDestination;
+    signal axisReadSrcSlow  : axisReadSrc_o'subtype;
+    signal axisReadDstSlow  : Axi4StreamDestination;
+
+    signal wr_rst_busyRead  : STD_LOGIC;
+    signal rd_rst_busyRead  : STD_LOGIC;
+    signal wr_rst_busyWrite : STD_LOGIC;
+    signal rd_rst_busyWrite : STD_LOGIC;
+
+    ----------------------------------------------------------------------------
+    attribute mark_debug                     : string;
+    attribute mark_debug of syncRst          : signal is MARK_DEBUG_G;
+    attribute mark_debug of axisWriteSrcSlow : signal is MARK_DEBUG_G;
+    attribute mark_debug of axisWriteDstSlow : signal is MARK_DEBUG_G;
+    attribute mark_debug of axisReadSrcSlow  : signal is MARK_DEBUG_G;
+    attribute mark_debug of axisReadDstSlow  : signal is MARK_DEBUG_G;
+    ----------------------------------------------------------------------------
+
 begin
 
-    p_Comb     : process(all)
-        variable v : RegType;
-    begin
-        v := r;
+    u_SyncRst : entity work.SyncRst
+        generic map (
+            NUM_STAGES_G => 2
+        )
+        port map (
+            clk_i      => spiClk_i,
+            asyncRst_i => rst_i,
+            syncRst_o  => syncRst
+        );
 
-        -- combinatorial logic
-        
+    u_syncWrite : fifo_sync_data
+        PORT MAP (
+            wr_rst_busy   => wr_rst_busyWrite,
+            rd_rst_busy   => rd_rst_busyWrite,
+            m_aclk        => spiClk_i,
+            s_aclk        => clk_i,
+            s_aresetn     => not rst_i,
+            s_axis_tvalid => axisWriteSrc_i.tvalid,
+            s_axis_tready => axisWriteDst_o.tready,
+            s_axis_tdata  => axisWriteSrc_i.tdata,
+            s_axis_tid    => axisWriteSrc_i.tid,
+            s_axis_tdest  => axisWriteSrc_i.tdest,
+            s_axis_tuser  => (others => '0'),
+            m_axis_tvalid => axisWriteSrcSlow.tvalid,
+            m_axis_tready => axisWriteDstSlow.tready,
+            m_axis_tdata  => axisWriteSrcSlow.tdata,
+            m_axis_tid    => axisWriteSrcSlow.tid,
+            m_axis_tdest  => axisWriteSrcSlow.tdest,
+            m_axis_tuser  => open
+        );
 
-        if (rst_i = '1') then
-            v := REG_TYPE_INIT_C;
-        end if;
+    u_syncRead : fifo_sync_data
+        PORT MAP (
+            wr_rst_busy   => wr_rst_busyRead,
+            rd_rst_busy   => rd_rst_busyRead,
+            m_aclk        => clk_i,
+            s_aclk        => spiClk_i,
+            s_aresetn     => not syncRst,
+            s_axis_tvalid => axisReadSrcSlow.tvalid,
+            s_axis_tready => axisReadDstSlow.tready,
+            s_axis_tdata  => axisReadSrcSlow.tdata,
+            s_axis_tid    => axisReadSrcSlow.tid,
+            s_axis_tdest  => axisReadSrcSlow.tdest,
+            s_axis_tuser  => (others => '0'),
+            m_axis_tvalid => axisReadSrc_o.tvalid,
+            m_axis_tready => axisReadDst_i.tready,
+            m_axis_tdata  => axisReadSrc_o.tdata,
+            m_axis_tid    => axisReadSrc_o.tid,
+            m_axis_tdest  => axisReadSrc_o.tdest,
+            m_axis_tuser  => open
+        );
 
-        rin <= v;
-
-        -- Drive outputs
-        
-    end process p_Comb;
-
-    p_Seq : process(clk_i)
-    begin
-        if rising_edge(clk_i) then
-            r <= rin;
-        end if;
-    end process p_Seq;
+    u_SpiMaster2Axis : entity work.SpiMaster2Axis
+        generic map (
+            MARK_DEBUG_G    => MARK_DEBUG_G,
+            SPI_CPOL_G      => SPI_CPOL_G,
+            SPI_CPHA_G      => SPI_CPHA_G,
+            DATA_WIDTH_G    => DATA_WIDTH_G,
+            N_CYCLES_IDLE_G => N_CYCLES_IDLE_G
+        )
+        port map (
+            clk_i          => spiClk_i,
+            rst_i          => syncRst,
+            miso_i         => miso_i,
+            mosi_o         => mosi_o,
+            cs_o           => cs_o,
+            clk_o          => clk_o,
+            highz_o        => highz_o,
+            axisWriteSrc_i => axisWriteSrcSlow,
+            axisWriteDst_o => axisWriteDstSlow,
+            axisReadSrc_o  => axisReadSrcSlow,
+            axisReadDst_i  => axisReadDstSlow
+        );
 end Behavioral;

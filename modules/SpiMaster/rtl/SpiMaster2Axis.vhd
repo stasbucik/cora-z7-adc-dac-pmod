@@ -36,10 +36,11 @@ use work.Axi4Pkg.all;
 
 entity SpiMaster2Axis is
     Generic (
-        SPI_CPOL_G      : SpiClockPolarity;
-        SPI_CPHA_G      : SpiClockPhase;
-        DATA_WIDTH_G    : natural := 16;
-        N_CYCLES_IDLE_G : natural := 1
+        MARK_DEBUG_G    : string           := "false";
+        SPI_CPOL_G      : SpiClockPolarity := SPI_CPOL_0;
+        SPI_CPHA_G      : SpiClockPhase    := SPI_CPHA_0;
+        DATA_WIDTH_G    : natural          := 16;
+        N_CYCLES_IDLE_G : natural          := 1
     );
     Port (
         clk_i : in STD_LOGIC;
@@ -118,6 +119,12 @@ architecture Behavioral of SpiMaster2Axis is
     signal rin : RegType;
 
     constant AXI_FILL_ZEROS : STD_LOGIC_VECTOR(axisReadSrc_o.tdata'high - DATA_WIDTH_G downto 0) := (others => '0');
+
+    ----------------------------------------------------------------------------
+    attribute mark_debug        : string;
+    attribute mark_debug of r   : signal is MARK_DEBUG_G;
+    attribute mark_debug of rin : signal is MARK_DEBUG_G;
+    ----------------------------------------------------------------------------
 
 begin
 
