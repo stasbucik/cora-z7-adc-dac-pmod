@@ -41,7 +41,9 @@ entity SpiMaster is
         SPI_CPOL_G      : SpiClockPolarity := SPI_CPOL_0;
         SPI_CPHA_G      : SpiClockPhase    := SPI_CPHA_0;
         DATA_WIDTH_G    : natural          := 16;
-        N_CYCLES_IDLE_G : natural          := 1
+        N_CYCLES_IDLE_G : natural          := 1;
+        UNUSED_READ_G   : boolean          := false;
+        UNUSED_WRITE_G  : boolean          := false
     );
     Port (
         clk_i    : in STD_LOGIC;
@@ -67,21 +69,21 @@ end SpiMaster;
 
 architecture Behavioral of SpiMaster is
 
-COMPONENT fifo_sync_data
-  PORT (
-    wr_rst_busy : OUT STD_LOGIC;
-    rd_rst_busy : OUT STD_LOGIC;
-    m_aclk : IN STD_LOGIC;
-    s_aclk : IN STD_LOGIC;
-    s_aresetn : IN STD_LOGIC;
-    s_axis_tvalid : IN STD_LOGIC;
-    s_axis_tready : OUT STD_LOGIC;
-    s_axis_tdata : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-    m_axis_tvalid : OUT STD_LOGIC;
-    m_axis_tready : IN STD_LOGIC;
-    m_axis_tdata : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) 
-  );
-END COMPONENT;
+    COMPONENT fifo_sync_data
+        PORT (
+            wr_rst_busy   : OUT STD_LOGIC;
+            rd_rst_busy   : OUT STD_LOGIC;
+            m_aclk        : IN  STD_LOGIC;
+            s_aclk        : IN  STD_LOGIC;
+            s_aresetn     : IN  STD_LOGIC;
+            s_axis_tvalid : IN  STD_LOGIC;
+            s_axis_tready : OUT STD_LOGIC;
+            s_axis_tdata  : IN  STD_LOGIC_VECTOR(15 DOWNTO 0);
+            m_axis_tvalid : OUT STD_LOGIC;
+            m_axis_tready : IN  STD_LOGIC;
+            m_axis_tdata  : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
+        );
+    END COMPONENT;
 
     signal syncRst : STD_LOGIC;
 
@@ -116,35 +118,49 @@ begin
             syncRst_o  => syncRst
         );
 
-    u_syncWrite : fifo_sync_data
-        PORT MAP (
-            wr_rst_busy   => wr_rst_busyWrite,
-            rd_rst_busy   => rd_rst_busyWrite,
-            m_aclk        => spiClk_i,
-            s_aclk        => clk_i,
-            s_aresetn     => not rst_i,
-            s_axis_tvalid => axisWriteSrc_i.tvalid,
-            s_axis_tready => axisWriteDst_o.tready,
-            s_axis_tdata  => axisWriteSrc_i.tdata,
-            m_axis_tvalid => axisWriteSrcSlow.tvalid,
-            m_axis_tready => axisWriteDstSlow.tready,
-            m_axis_tdata  => axisWriteSrcSlow.tdata
-        );
+    g_syncWrite : if (UNUSED_WRITE_G = false) generate
+        u_syncWrite : fifo_sync_data
+            PORT MAP (
+                wr_rst_busy   => wr_rst_busyWrite,
+                rd_rst_busy   => rd_rst_busyWrite,
+                m_aclk        => spiClk_i,
+                s_aclk        => clk_i,
+                s_aresetn     => not rst_i,
+                s_axis_tvalid => axisWriteSrc_i.tvalid,
+                s_axis_tready => axisWriteDst_o.tready,
+                s_axis_tdata  => axisWriteSrc_i.tdata,
+                m_axis_tvalid => axisWriteSrcSlow.tvalid,
+                m_axis_tready => axisWriteDstSlow.tready,
+                m_axis_tdata  => axisWriteSrcSlow.tdata
+            );
+    end generate g_syncWrite;
 
-    u_syncRead : fifo_sync_data
-        PORT MAP (
-            wr_rst_busy   => wr_rst_busyRead,
-            rd_rst_busy   => rd_rst_busyRead,
-            m_aclk        => clk_i,
-            s_aclk        => spiClk_i,
-            s_aresetn     => not syncRst,
-            s_axis_tvalid => axisReadSrcSlow.tvalid,
-            s_axis_tready => axisReadDstSlow.tready,
-            s_axis_tdata  => axisReadSrcSlow.tdata,
-            m_axis_tvalid => axisReadSrc_o.tvalid,
-            m_axis_tready => axisReadDst_i.tready,
-            m_axis_tdata  => axisReadSrc_o.tdata
-        );
+    g_passWrite : if (UNUSED_WRITE_G = true) generate
+        axisWriteDst_o   <= axisWriteDstSlow;
+        axisWriteSrcSlow <= axisWriteSrc_i;
+    end generate g_passWrite;
+
+    g_syncRead : if (UNUSED_READ_G = false) generate
+        u_syncRead : fifo_sync_data
+            PORT MAP (
+                wr_rst_busy   => wr_rst_busyRead,
+                rd_rst_busy   => rd_rst_busyRead,
+                m_aclk        => clk_i,
+                s_aclk        => spiClk_i,
+                s_aresetn     => not syncRst,
+                s_axis_tvalid => axisReadSrcSlow.tvalid,
+                s_axis_tready => axisReadDstSlow.tready,
+                s_axis_tdata  => axisReadSrcSlow.tdata,
+                m_axis_tvalid => axisReadSrc_o.tvalid,
+                m_axis_tready => axisReadDst_i.tready,
+                m_axis_tdata  => axisReadSrc_o.tdata
+            );
+    end generate g_syncRead;
+
+    g_passRead : if (UNUSED_READ_G = true) generate
+        axisReadSrc_o   <= axisReadSrcSlow;
+        axisReadDstSlow <= axisReadDst_i;
+    end generate g_passRead;
 
     u_SpiMaster2Axis : entity work.SpiMaster2Axis
         generic map (

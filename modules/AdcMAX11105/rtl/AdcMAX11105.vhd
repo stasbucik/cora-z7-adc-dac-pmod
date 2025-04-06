@@ -120,7 +120,9 @@ begin
                 SPI_CPOL_G      => MAX11105_SPI_CPOL_C,
                 SPI_CPHA_G      => MAX11105_SPI_CPHA_C,
                 DATA_WIDTH_G    => MAX11105_SPI_DATA_WIDTH_C,
-                N_CYCLES_IDLE_G => N_CYCLES_IDLE_G + MAX11105_SPI_CS_HIGH_WIDTH_C
+                N_CYCLES_IDLE_G => N_CYCLES_IDLE_G + MAX11105_SPI_CS_HIGH_WIDTH_C,
+                UNUSED_READ_G   => false,
+                UNUSED_WRITE_G  => true
             )
             port map (
                 clk_i          => clk_i,
