@@ -11,5 +11,7 @@ loadIps "$::DIR_PATH/ip"
 
 loadRuckusTcl $::env(TOP_DIR)/modules/Axi4
 loadRuckusTcl $::env(TOP_DIR)/modules/SpiMaster
+loadRuckusTcl $::env(TOP_DIR)/modules/DacAD5451
+loadRuckusTcl $::env(TOP_DIR)/modules/AdcMAX11105
 loadRuckusTcl $::env(TOP_DIR)/modules/DataGenerator
 loadRuckusTcl $::env(TOP_DIR)/modules/Infrastructure

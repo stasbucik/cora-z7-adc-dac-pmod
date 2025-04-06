@@ -151,8 +151,8 @@ set_property -dict {PACKAGE_PIN P15 IOSTANDARD LVCMOS33} [get_ports Shield_I2C_s
 
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 
-set_false_path -from [get_clocks clk_fpga_0]
-set_false_path -from [get_clocks clk_out1_clk_wiz_dac]
+set_false_path -from [get_clocks clk_fpga_0] -to [get_clocks clk_out1_clk_wiz_mmc_100_64]
+set_false_path -from [get_clocks clk_out1_clk_wiz_mmc_100_64] -to [get_clocks clk_fpga_0]
 
 
 

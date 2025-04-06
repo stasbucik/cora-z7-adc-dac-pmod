@@ -24,18 +24,16 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx leaf cells in this code.
 library UNISIM;
 use UNISIM.VComponents.all;
 
-use IEEE.math_real."ceil";
-use IEEE.math_real."log2";
-
 use work.Axi4Pkg.all;
-use work.SpiAdapterPkg.all;
+use work.DacAD5451Pkg.all;
+use work.AdcMAX11105Pkg.all;
 
 entity CoraZ707S is
 	generic (
@@ -114,24 +112,31 @@ architecture Behavioral of CoraZ707S is
 	signal rstAdapter : STD_LOGIC_VECTOR(0 downto 0);
 
 	-- DAC signals
-	signal dacSdin   : STD_LOGIC;
-	signal dacSync   : STD_LOGIC;
-	signal dacHighz  : STD_LOGIC;
-	signal dacClk    : STD_LOGIC;
-	signal dacSpiClk : STD_LOGIC;
+	signal dacSdin  : STD_LOGIC;
+	signal dacSync  : STD_LOGIC;
+	signal dacHighz : STD_LOGIC;
+	signal dacSclk  : STD_LOGIC;
 
-	signal axisDacWriteSrc : Axi4StreamSource(
-		tdata(AXI_DATA_WIDTH_C-1 downto 0),
-		tstrb(AXI_DATA_WIDTH_C/8-1 downto 0),
-		tkeep(AXI_DATA_WIDTH_C/8-1 downto 0),
-		tid(4-1 downto 0),
-		tdest(4-1 downto 0)
+	signal axisDacWriteSrc : AD5451Axi4StreamSource(
+		tid(1-1 downto 0),
+		tdest(1-1 downto 0),
+		tuser(1-1 downto 0)
 	);
-	signal axisGenSrc      : axisDacWriteSrc'subtype;
 	signal axisDacWriteDst : Axi4StreamDestination;
 
-	signal axisDacReadSrc : axisDacWriteSrc'subtype;
-	signal axisDacReadDst : Axi4StreamDestination;
+	-- ADC signals
+	signal adcSpiClk : STD_LOGIC;
+	signal adcDout   : STD_LOGIC;
+	signal adcCs     : STD_LOGIC;
+	signal adcSclk   : STD_LOGIC;
+
+	signal axisAdcReadSrc : MAX11105Axi4StreamSource(
+		tid(1-1 downto 0),
+		tdest(1-1 downto 0),
+		tuser(1-1 downto 0)
+	);
+	signal axisAdcReadDst : Axi4StreamDestination;
+
 	-----------------------------------------------------------------------------
 	attribute mark_debug                    : string;
 	attribute mark_debug of dacSdin         : signal is MARK_DEBUG_G;
@@ -139,11 +144,9 @@ architecture Behavioral of CoraZ707S is
 	attribute mark_debug of dacHighz        : signal is MARK_DEBUG_G;
 	attribute mark_debug of axisDacWriteSrc : signal is MARK_DEBUG_G;
 	attribute mark_debug of axisDacWriteDst : signal is MARK_DEBUG_G;
-	attribute mark_debug of axisDacReadSrc  : signal is MARK_DEBUG_G;
-	attribute mark_debug of axisDacReadDst  : signal is MARK_DEBUG_G;
 	----------------------------------------------------------------------------
 
-	component clk_wiz_dac
+	component clk_wiz_mmc_100_64
 		port
 		(
 			clk_out1 : out std_logic;
@@ -213,9 +216,17 @@ begin
 		);
 
 	rst <= rstAdapter(0);
+	----------------------------------------------------------------------------
+	adc_clk : clk_wiz_mmc_100_64
+		port map (
+			clk_out1 => adcSpiClk,
+			reset    => rst,
+			locked   => open,
+			clk_in1  => clk
+		);
 
 	----------------------------------------------------------------------------
-	OBUF_DACSYNC : OBUF
+	OBUF_DAC_SYNC : OBUF
 		generic map (
 			DRIVE      => 12,
 			IOSTANDARD => "DEFAULT",
@@ -225,17 +236,31 @@ begin
 			I => dacSync -- Buffer input
 		);
 
-	BUFG_DACCLK : BUFG
+	BUFG_DAC_CLK : BUFG
 		port map (
-			O => ja1_n, -- 1-bit output: Clock output
-			I => dacClk -- 1-bit input: Clock input
+			O => ja1_n,  -- 1-bit output: Clock output
+			I => dacSclk -- 1-bit input: Clock input
 		);
 
-	ja2_p <= '0';
-	ja2_n <= '0';
+	BUFG_ADC_CLK : BUFG
+		port map (
+			O => ja2_p,  -- 1-bit output: Clock output
+			I => adcSclk -- 1-bit input: Clock input
+		);
+
+	OBUF_ADC_CS : OBUF
+		generic map (
+			DRIVE      => 12,
+			IOSTANDARD => "DEFAULT",
+			SLEW       => "SLOW")
+		port map (
+			O => ja2_n, -- Buffer output (connect directly to top-level port)
+			I => adcCs  -- Buffer input
+		);
+
 	ja3_p <= '0';
 
-	OBUFT_DACSDIN : OBUFT
+	OBUFT_DAC_SDIN : OBUFT
 		generic map (
 			DRIVE      => 12,
 			IOSTANDARD => "DEFAULT",
@@ -247,60 +272,64 @@ begin
 		);
 
 	ja4_p <= '0';
-	----------------------------------------------------------------------------
 
-	u_clk_wiz_dac : clk_wiz_dac
-		port map (
-			clk_out1 => dacSpiClk,
-			reset    => rst,
-			locked   => open,
-			clk_in1  => clk
-		);
-
-	u_SpiMasterDac : entity work.SpiMaster
+	IBUF_ADC_DOUT : IBUF
 		generic map (
-			MARK_DEBUG_G    => MARK_DEBUG_G,
-			SPI_CPOL_G      => SPI_CPOL_0,
-			SPI_CPHA_G      => SPI_CPHA_1,
-			DATA_WIDTH_G    => 16,
-			N_CYCLES_IDLE_G => 1
+			IBUF_LOW_PWR => FALSE, -- Low power (TRUE) vs. performance (FALSE) setting for referenced I/O standards
+			IOSTANDARD   => "LVCMOS33")
+		port map (
+			O => adcDout, -- Buffer output
+			I => ja4_n    -- Buffer input (connect directly to top-level port)
+		);
+	----------------------------------------------------------------------------
+	u_DacAD5451 : entity work.DacAD5451
+		generic map (
+			MARK_DEBUG_G    => "false",
+			SYNC_STAGE_G    => false,
+			N_CYCLES_IDLE_G => 2
 		)
 		port map (
 			clk_i          => clk,
-			spiClk_i       => dacSpiClk,
+			spiClk_i       => '0',
 			rst_i          => rst,
-			miso_i         => '0',
-			mosi_o         => dacSdin,
-			cs_o           => dacSync,
-			clk_o          => dacClk,
+			sdin_o         => dacSdin,
+			sync_o         => dacSync,
+			sclk_o         => dacSclk,
 			highz_o        => dacHighz,
 			axisWriteSrc_i => axisDacWriteSrc,
-			axisWriteDst_o => axisDacWriteDst,
-			axisReadSrc_o  => axisDacReadSrc,
-			axisReadDst_i  => axisDacReadDst
+			axisWriteDst_o => axisDacWriteDst
 		);
-
-	axisDacReadDst.tready <= '1';
 
 	u_DataGenerator : entity work.DataGenerator
 		generic map (
-			MAX_VAL_G => 0,
-			MIN_VAL_G => 1024
+			MAX_VAL_G => 1024,
+			MIN_VAL_G => 0
 		)
 		port map (
 			clk_i     => clk,
 			rst_i     => rst,
-			axisSrc_o => axisGenSrc,
+			axisSrc_o => axisDacWriteSrc,
 			axisDst_i => axisDacWriteDst
 		);
 
-	axisDacWriteSrc.TVALID  <= axisGenSrc.TVALID;
-	axisDacWriteSrc.TDATA   <= b"00" & axisGenSrc.TDATA(9 downto 0) & b"0000";
-	axisDacWriteSrc.TSTRB   <= axisGenSrc.TSTRB;
-	axisDacWriteSrc.TKEEP   <= axisGenSrc.TKEEP;
-	axisDacWriteSrc.TLAST   <= axisGenSrc.TLAST;
-	axisDacWriteSrc.TID     <= axisGenSrc.TID;
-	axisDacWriteSrc.TDEST   <= axisGenSrc.TDEST;
-	axisDacWriteSrc.TWAKEUP <= axisGenSrc.TWAKEUP;
+	------------------------------------------------------------------------
+	u_AdcMAX11105 : entity work.AdcMAX11105
+		generic map (
+			MARK_DEBUG_G    => "false",
+			SYNC_STAGE_G    => true,
+			N_CYCLES_IDLE_G => 0
+		)
+		port map (
+			clk_i         => clk,
+			spiClk_i      => adcSpiClk,
+			rst_i         => rst,
+			dout_i        => adcDout,
+			cs_o          => adcCs,
+			sclk_o        => adcSclk,
+			axisReadSrc_o => axisAdcReadSrc,
+			axisReadDst_i => axisAdcReadDst
+		);
+
+	axisAdcReadDst.tready <= '1';
 
 end Behavioral;
