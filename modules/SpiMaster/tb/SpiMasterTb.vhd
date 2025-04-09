@@ -65,6 +65,8 @@ architecture Behavioral of SpiMasterTb is
 	signal axisWriteDst_o : Axi4StreamDestination;
 	signal axisReadSrc_o  : axisWriteSrc_i'subtype;
 	signal axisReadDst_i  : Axi4StreamDestination;
+	signal run_i          : STD_LOGIC;
+	signal overflow_o     : STD_LOGIC;
 
 	constant AXI_4_STREAM_SRC_INIT_C : axisWriteSrc_i'subtype := (
 			TVALID  => '0',
@@ -120,7 +122,9 @@ begin
 			axisWriteSrc_i => axisWriteSrc_i,
 			axisWriteDst_o => axisWriteDst_o,
 			axisReadSrc_o  => axisReadSrc_o,
-			axisReadDst_i  => axisReadDst_i
+			axisReadDst_i  => axisReadDst_i,
+			run_i          => run_i,
+			overflow_o     => overflow_o
 		);
 
 	u_DataGenerator : entity work.DataGenerator
@@ -142,6 +146,7 @@ begin
 
 		miso_i        <= '0';
 		axisReadDst_i <= AXI_4_STREAM_DST_INIT_C;
+		run_i         <= '1';
 
 		wait for CLK_PERIOD2_C*3;
 
@@ -149,10 +154,19 @@ begin
 		------------------------------------------------------------------------
 		-- reset done
 		------------------------------------------------------------------------
+
+
 		wait for CLK_PERIOD2_C;
 		-- stimulus
 
+		axisReadDst_i.tready <= '0';
+		wait for CLK_PERIOD2_C*200*5;
 		axisReadDst_i.tready <= '1';
+
+		wait for CLK_PERIOD2_C*80;
+		run_i <= '0';
+		wait for CLK_PERIOD2_C*80;
+		run_i <= '1';
 
 		wait;
 

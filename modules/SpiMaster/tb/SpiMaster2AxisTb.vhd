@@ -63,6 +63,8 @@ architecture Behavioral of SpiMaster2AxisTb is
 	signal axisWriteDst_o1 : Axi4StreamDestination;
 	signal axisReadSrc_o1  : axisWriteSrc_i1'subtype;
 	signal axisReadDst_i1  : Axi4StreamDestination;
+	signal run_i1          : STD_LOGIC;
+	signal overflow_o1     : STD_LOGIC;
 
 
 	signal miso_i2         : STD_LOGIC;
@@ -74,6 +76,8 @@ architecture Behavioral of SpiMaster2AxisTb is
 	signal axisWriteDst_o2 : Axi4StreamDestination;
 	signal axisReadSrc_o2  : axisWriteSrc_i1'subtype;
 	signal axisReadDst_i2  : Axi4StreamDestination;
+	signal run_i2          : STD_LOGIC;
+	signal overflow_o2     : STD_LOGIC;
 
 	constant AXI_4_STREAM_SRC_INIT_C : axisWriteSrc_i1'subtype := (
 			TVALID  => '0',
@@ -119,7 +123,9 @@ begin
 			axisWriteSrc_i => axisWriteSrc_i1,
 			axisWriteDst_o => axisWriteDst_o1,
 			axisReadSrc_o  => axisReadSrc_o1,
-			axisReadDst_i  => axisReadDst_i1
+			axisReadDst_i  => axisReadDst_i1,
+			run_i          => run_i1,
+			overflow_o     => overflow_o1
 		);
 
 	SpiMasterAdapter_2 : entity work.SpiMaster2Axis
@@ -140,7 +146,9 @@ begin
 			axisWriteSrc_i => axisWriteSrc_i2,
 			axisWriteDst_o => axisWriteDst_o2,
 			axisReadSrc_o  => axisReadSrc_o2,
-			axisReadDst_i  => axisReadDst_i2
+			axisReadDst_i  => axisReadDst_i2,
+			run_i          => run_i2,
+			overflow_o     => overflow_o2
 		);
 	miso_i1 <= mosi_o1;
 	miso_i2 <= mosi_o2;
@@ -153,6 +161,7 @@ begin
 		--miso_i         <= '0';
 		axisWriteSrc_i1 <= AXI_4_STREAM_SRC_INIT_C;
 		axisReadDst_i1  <= AXI_4_STREAM_DST_INIT_C;
+		run_i1          <= '0';
 
 		wait for CLK_PERIOD_C*3.5;
 
@@ -161,20 +170,38 @@ begin
 		------------------------------------------------------------------------
 		-- reset
 		------------------------------------------------------------------------
-		axisReadDst_i1.tready <= '1';
+
+		axisWriteSrc_i1.tdata  <= STD_LOGIC_VECTOR(to_unsigned(42, AXI_DATA_WIDTH_C));
+		axisWriteSrc_i1.tvalid <= '1';
+		wait for CLK_PERIOD_C*5;
+		run_i1 <= '1';
 
 		for i in 0 to 1030 loop
-			wait for CLK_PERIOD_C;
-			axisWriteSrc_i1.tdata  <= STD_LOGIC_VECTOR(to_unsigned(i, AXI_DATA_WIDTH_C));
-			axisWriteSrc_i1.tvalid <= '1';
-
-			if (axisWriteDst_o1.tready = '1') then
-				wait for CLK_PERIOD_C;
+			if i < 4 then
+				axisReadDst_i1.tready <= '0';
 			else
-				wait until axisWriteDst_o1.tready = '1';
-				wait for CLK_PERIOD_C;
+				axisReadDst_i1.tready <= '1';
 			end if;
-			axisWriteSrc_i1.tvalid <= '0';
+			if i < 8 and i > 6 then
+				run_i1 <= '0';
+				wait for CLK_PERIOD_C;
+				axisWriteSrc_i1.tdata  <= STD_LOGIC_VECTOR(to_unsigned(i, AXI_DATA_WIDTH_C));
+				axisWriteSrc_i1.tvalid <= '1';
+				wait for CLK_PERIOD_C*40;
+			else
+				run_i1 <= '1';
+				wait for CLK_PERIOD_C;
+				axisWriteSrc_i1.tdata  <= STD_LOGIC_VECTOR(to_unsigned(i, AXI_DATA_WIDTH_C));
+				axisWriteSrc_i1.tvalid <= '1';
+
+				if (axisWriteDst_o1.tready = '1') then
+					wait for CLK_PERIOD_C;
+				else
+					wait until axisWriteDst_o1.tready = '1';
+					wait for CLK_PERIOD_C;
+				end if;
+				axisWriteSrc_i1.tvalid <= '0';
+			end if;
 		end loop;
 
 		wait;
@@ -188,6 +215,7 @@ begin
 		--miso_i         <= '0';
 		axisWriteSrc_i2 <= AXI_4_STREAM_SRC_INIT_C;
 		axisReadDst_i2  <= AXI_4_STREAM_DST_INIT_C;
+		run_i2          <= '0';
 
 		wait for CLK_PERIOD_C*3.5;
 
@@ -195,20 +223,38 @@ begin
 		------------------------------------------------------------------------
 		-- reset
 		------------------------------------------------------------------------
-		axisReadDst_i2.tready <= '1';
+
+		axisWriteSrc_i2.tdata  <= STD_LOGIC_VECTOR(to_unsigned(42, AXI_DATA_WIDTH_C));
+		axisWriteSrc_i2.tvalid <= '1';
+		wait for CLK_PERIOD_C*5;
+		run_i2 <= '1';
 
 		for i in 0 to 1030 loop
-			wait for CLK_PERIOD_C;
-			axisWriteSrc_i2.tdata  <= STD_LOGIC_VECTOR(to_unsigned(i, AXI_DATA_WIDTH_C));
-			axisWriteSrc_i2.tvalid <= '1';
-
-			if (axisWriteDst_o2.tready = '1') then
-				wait for CLK_PERIOD_C;
+			if i < 4 then
+				axisReadDst_i2.tready <= '0';
 			else
-				wait until axisWriteDst_o2.tready = '1';
-				wait for CLK_PERIOD_C;
+				axisReadDst_i2.tready <= '1';
 			end if;
-			axisWriteSrc_i2.tvalid <= '0';
+			if i < 8 and i > 6 then
+				run_i2 <= '0';
+				wait for CLK_PERIOD_C;
+				axisWriteSrc_i2.tdata  <= STD_LOGIC_VECTOR(to_unsigned(i, AXI_DATA_WIDTH_C));
+				axisWriteSrc_i2.tvalid <= '1';
+				wait for CLK_PERIOD_C*40;
+			else
+				run_i2 <= '1';
+				wait for CLK_PERIOD_C;
+				axisWriteSrc_i2.tdata  <= STD_LOGIC_VECTOR(to_unsigned(i, AXI_DATA_WIDTH_C));
+				axisWriteSrc_i2.tvalid <= '1';
+
+				if (axisWriteDst_o2.tready = '1') then
+					wait for CLK_PERIOD_C;
+				else
+					wait until axisWriteDst_o2.tready = '1';
+					wait for CLK_PERIOD_C;
+				end if;
+				axisWriteSrc_i2.tvalid <= '0';
+			end if;
 		end loop;
 
 		wait;

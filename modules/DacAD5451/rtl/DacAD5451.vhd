@@ -53,7 +53,8 @@ entity DacAD5451 is
 
         -- Write interface
         axisWriteSrc_i : in  AD5451Axi4StreamSource;
-        axisWriteDst_o : out Axi4StreamDestination
+        axisWriteDst_o : out Axi4StreamDestination;
+        run_i          : in  STD_LOGIC
     );
 end DacAD5451;
 
@@ -101,7 +102,9 @@ begin
                 axisWriteSrc_i => axisSrcDataRemap,
                 axisWriteDst_o => axisWriteDst_o,
                 axisReadSrc_o  => axisDummy,
-                axisReadDst_i  => AXI_4_STREAM_SINK_C
+                axisReadDst_i  => AXI_4_STREAM_SINK_C,
+                run_i          => run_i,
+                overflow_o     => open
             );
     end generate syncSpi_g;
 
@@ -128,7 +131,9 @@ begin
                 axisWriteSrc_i => axisSrcDataRemap,
                 axisWriteDst_o => axisWriteDst_o,
                 axisReadSrc_o  => axisDummy,
-                axisReadDst_i  => AXI_4_STREAM_SINK_C
+                axisReadDst_i  => AXI_4_STREAM_SINK_C,
+                run_i          => run_i,
+                overflow_o     => open
             );
     end generate asyncSpi_g;
 end Behavioral;

@@ -63,7 +63,9 @@ entity SpiMaster is
 
         -- Read interface
         axisReadSrc_o : out SpiMasterAxi4StreamSource;
-        axisReadDst_i : in  Axi4StreamDestination
+        axisReadDst_i : in  Axi4StreamDestination;
+        run_i         : in  STD_LOGIC;
+        overflow_o    : out STD_LOGIC
     );
 end SpiMaster;
 
@@ -96,6 +98,9 @@ architecture Behavioral of SpiMaster is
     signal rd_rst_busyRead  : STD_LOGIC;
     signal wr_rst_busyWrite : STD_LOGIC;
     signal rd_rst_busyWrite : STD_LOGIC;
+
+    signal syncOverflow : STD_LOGIC;
+    signal syncRun      : STD_LOGIC;
 
     ----------------------------------------------------------------------------
     attribute mark_debug                     : string;
@@ -181,6 +186,30 @@ begin
             axisWriteSrc_i => axisWriteSrcSlow,
             axisWriteDst_o => axisWriteDstSlow,
             axisReadSrc_o  => axisReadSrcSlow,
-            axisReadDst_i  => axisReadDstSlow
+            axisReadDst_i  => axisReadDstSlow,
+            run_i          => syncRun,
+            overflow_o     => syncOverflow
+        );
+
+    u_SyncOverflow : entity work.Sync
+        generic map (
+            NUM_STAGES_G => 2
+        )
+        port map (
+            clk_i => clk_i,
+            rst_i => rst_i,
+            sig_i => syncOverflow,
+            sig_o => overflow_o
+        );
+
+    u_SyncRun : entity work.Sync
+        generic map (
+            NUM_STAGES_G => 2
+        )
+        port map (
+            clk_i => spiClk_i,
+            rst_i => syncRst,
+            sig_i => run_i,
+            sig_o => syncRun
         );
 end Behavioral;

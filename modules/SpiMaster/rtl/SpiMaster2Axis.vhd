@@ -59,7 +59,9 @@ entity SpiMaster2Axis is
 
         -- Read interface
         axisReadSrc_o : out Axi4StreamSource;
-        axisReadDst_i : in  Axi4StreamDestination
+        axisReadDst_i : in  Axi4StreamDestination;
+        run_i         : in  STD_LOGIC;
+        overflow_o    : out STD_LOGIC
     );
 end SpiMaster2Axis;
 
@@ -71,6 +73,7 @@ architecture Behavioral of SpiMaster2Axis is
     type StateType is (
             INIT_S,
             IDLE_S,
+            WAITING_FOR_DATA_S,
             WAIT_TO_ASSERT_CS_S,
             TRANSFER_S,
             DEASSERT_S
@@ -82,41 +85,50 @@ architecture Behavioral of SpiMaster2Axis is
         );
 
     type RegType is record
-        state        : StateType;
-        cs           : STD_LOGIC;
-        highz        : STD_LOGIC;
-        clock        : STD_LOGIC;
-        tready       : STD_LOGIC;
-        wrBuffer     : STD_LOGIC_VECTOR(DATA_WIDTH_G-1 downto 0);
-        rdBuffer     : STD_LOGIC_VECTOR(DATA_WIDTH_G-1 downto 0);
-        wrCounter    : integer range 0 to DATA_WIDTH_G-1;
-        rdCounter    : integer range 0 to DATA_WIDTH_G-1;
-        wrAllowed    : STD_LOGIC;
-        csHold       : integer range 0 to N_CYCLES_IDLE_G-1;
-        transferDone : STD_LOGIC;
-        axiSrcState  : AxiReadSrcStateType;
-        tvalid       : STD_LOGIC;
+        state             : StateType;
+        cs                : STD_LOGIC;
+        highz             : STD_LOGIC;
+        clock             : STD_LOGIC;
+        tready            : STD_LOGIC;
+        tvalid            : STD_LOGIC;
+        tdata             : STD_LOGIC_VECTOR(axisReadSrc_o.tdata'range);
+        wrBuffer          : STD_LOGIC_VECTOR(DATA_WIDTH_G-1 downto 0);
+        rdBuffer          : STD_LOGIC_VECTOR(DATA_WIDTH_G-1 downto 0);
+        wrCounter         : integer range 0 to DATA_WIDTH_G-1;
+        rdCounter         : integer range 0 to DATA_WIDTH_G-1;
+        wrAllowed         : STD_LOGIC;
+        csHold            : integer range 0 to N_CYCLES_IDLE_G-1;
+        transferDone      : STD_LOGIC;
+        transferDoneDelay : STD_LOGIC;
+        axiSrcState       : AxiReadSrcStateType;
+        overflow          : STD_LOGIC;
     end record RegType;
 
     constant REG_TYPE_INIT_C : RegType := (
-            state        => INIT_S,
-            cs           => '1',
-            highz        => '1',
-            clock        => '0',
-            tready       => '0',
-            wrBuffer     => (others => '0'),
-            rdBuffer     => (others => '0'),
-            wrCounter    => 0,
-            rdCounter    => 0,
-            wrAllowed    => '0',
-            csHold       => 0,
-            transferDone => '0',
-            axiSrcState  => WAITING_S,
-            tvalid       => '0'
+            state             => INIT_S,
+            cs                => '1',
+            highz             => '1',
+            clock             => '0',
+            tready            => '0',
+            tvalid            => '0',
+            tdata             => (others => '0'),
+            wrBuffer          => (others => '0'),
+            rdBuffer          => (others => '0'),
+            wrCounter         => 0,
+            rdCounter         => 0,
+            wrAllowed         => '0',
+            csHold            => 0,
+            transferDone      => '0',
+            transferDoneDelay => '0',
+            axiSrcState       => WAITING_S,
+            overflow          => '0'
         );
 
     signal r   : RegType;
     signal rin : RegType;
+
+    signal transferDonePulse : STD_LOGIC;
+    signal concat            : STD_LOGIC_VECTOR(1 downto 0);
 
     constant AXI_FILL_ZEROS : STD_LOGIC_VECTOR(axisReadSrc_o.tdata'high - DATA_WIDTH_G downto 0) := (others => '0');
 
@@ -128,18 +140,29 @@ architecture Behavioral of SpiMaster2Axis is
 
 begin
 
+    concat <= r.transferDone & r.transferDoneDelay;
+
+    with concat select transferDonePulse <=
+        '1' when "10",
+        '0' when others;
+
     p_Comb     : process(all)
         variable v : RegType;
     begin
         v := r;
 
-        v.clock := not r.clock;
+        v.clock             := not r.clock;
+        v.transferDoneDelay := r.transferDone;
 
         -- combinatorial logic
         case r.state is
             when INIT_S =>
-                v.tready := '1';
-                v.state  := IDLE_S;
+                if (run_i = '0') then
+                    v.state := IDLE_S;
+                else
+                    v.tready := '1';
+                    v.state  := WAITING_FOR_DATA_S;
+                end if;
 
                 -- SPI_CPHA_0 requires to output the first bit on CS assert
                 if (SPI_CPHA_G = SPI_CPHA_0) then
@@ -147,6 +170,12 @@ begin
                 end if;
 
             when IDLE_S =>
+                if (run_i = '1') then
+                    v.tready := '1';
+                    v.state  := WAITING_FOR_DATA_S;
+                end if;
+
+            when WAITING_FOR_DATA_S =>
                 if (axisWriteSrc_i.tvalid = '1') then
                     -- sample data on axi
                     v.wrBuffer := axisWriteSrc_i.tdata(DATA_WIDTH_G-1 downto 0);
@@ -211,15 +240,23 @@ begin
                     if (N_CYCLES_IDLE_G > 0) then
                         v.state := DEASSERT_S;
                     else
-                        v.state  := IDLE_S;
-                        v.tready := '1';
+                        if (run_i = '0') then
+                            v.state := IDLE_S;
+                        else
+                            v.tready := '1';
+                            v.state  := WAITING_FOR_DATA_S;
+                        end if;
                     end if;
                 end if;
 
             when DEASSERT_S =>
                 if (r.csHold = N_CYCLES_IDLE_G - 1) then
-                    v.state  := IDLE_S;
-                    v.tready := '1';
+                    if (run_i = '0') then
+                        v.state := IDLE_S;
+                    else
+                        v.tready := '1';
+                        v.state  := WAITING_FOR_DATA_S;
+                    end if;
                 else
                     v.csHold := r.csHold + 1;
                 end if;
@@ -230,15 +267,21 @@ begin
 
         case r.axiSrcState is
             when WAITING_S =>
-                if (r.transferDone = '1') then
+                if (transferDonePulse = '1') then
                     v.tvalid      := '1';
+                    v.tdata       := AXI_FILL_ZEROS & r.rdBuffer;
                     v.axiSrcState := HANDHAKE_S;
                 end if;
 
             when HANDHAKE_S =>
                 if axisReadDst_i.tready = '1' then
                     v.tvalid      := '0';
+                    v.overflow    := '0';
                     v.axiSrcState := WAITING_S;
+                end if;
+
+                if (transferDonePulse = '1') then
+                    v.overflow := '1';
                 end if;
 
             when others =>
@@ -257,7 +300,7 @@ begin
         highz_o               <= r.highz;
         axisWriteDst_o.tready <= r.tready;
         axisReadSrc_o.tvalid  <= r.tvalid;
-        axisReadSrc_o.tdata   <= AXI_FILL_ZEROS & r.rdBuffer;
+        axisReadSrc_o.tdata   <= r.tdata;
         axisReadSrc_o.tstrb   <= (others => '1');
         axisReadSrc_o.tkeep   <= (others => '1');
         axisReadSrc_o.tlast   <= '1';
@@ -265,6 +308,7 @@ begin
         axisReadSrc_o.tdest   <= (others => '0');
         axisReadSrc_o.tuser   <= (others => '0');
         axisReadSrc_o.twakeup <= '0';
+        overflow_o            <= r.overflow;
     end process p_Comb;
 
     p_Seq : process(clk_i)

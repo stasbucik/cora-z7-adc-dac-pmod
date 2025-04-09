@@ -59,6 +59,9 @@ architecture Behavioral of AdcMAX11105Tb is
 	);
 	signal axisReadDst_i : Axi4StreamDestination;
 
+	signal run_i      : STD_LOGIC;
+	signal overflow_o : STD_LOGIC;
+
 	----------------------------------------------------------------------------
 	signal counter : unsigned(11 downto 0) := x"000";
 
@@ -115,7 +118,9 @@ begin
 			cs_o          => cs_o,
 			sclk_o        => sclk_o,
 			axisReadSrc_o => axisReadSrc_o,
-			axisReadDst_i => axisReadDst_i
+			axisReadDst_i => axisReadDst_i,
+			run_i         => run_i,
+			overflow_o    => overflow_o
 		);
 
 	stimulus1 : process
@@ -123,6 +128,7 @@ begin
 		rst_i <= '1';
 		-- initialize signals
 		axisReadDst_i <= AXI_4_STREAM_DST_INIT_C;
+		run_i <= '0';
 
 		wait for CLK_PERIOD2_C*3;
 
@@ -133,6 +139,8 @@ begin
 		wait for CLK_PERIOD2_C;
 		-- stimulus
 		axisReadDst_i.tready <= '1';
+		wait for CLK_PERIOD2_C*3;
+		run_i <= '1';
 
 		wait;
 
@@ -140,13 +148,10 @@ begin
 
 	stimulus2 : process
 	begin
-		rst_i <= '1';
 		-- initialize signals
 		dout_i <= '0';
 
 		wait for CLK_PERIOD2_C*3;
-
-		rst_i <= '0';
 		------------------------------------------------------------------------
 		-- reset done
 		------------------------------------------------------------------------
