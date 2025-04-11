@@ -67,13 +67,22 @@ end DataBuffer;
 
 architecture Behavioral of DataBuffer is
 
-    signal bramWriteSrc0 : BramSource;
-    signal bramWriteSrc1 : BramSource;
+    subtype BramBufferSource is BramSource(
+        we(DATA_WIDTH_G/BYTE_WIDTH_G-1 downto 0),
+        addr(ADDR_WIDTH_G-1 downto 0),
+        din(DATA_WIDTH_G-1 downto 0)
+    );
+    subtype BramBufferDestination is BramDestination(
+        dout(DATA_WIDTH_G-1 downto 0)
+    );
+
+    signal bramWriteSrc0 : BramBufferSource;
+    signal bramWriteSrc1 : BramBufferSource;
     signal writingInto   : natural range 0 to 1;
-    signal bramReadSrc0  : BramSource;
-    signal bramReadSrc1  : BramSource;
-    signal bramReadDst0  : BramDestination;
-    signal bramReadDst1  : BramDestination;
+    signal bramReadSrc0  : BramBufferSource;
+    signal bramReadSrc1  : BramBufferSource;
+    signal bramReadDst0  : BramBufferDestination;
+    signal bramReadDst1  : BramBufferDestination;
     signal readStart     : STD_LOGIC;
     signal address       : STD_LOGIC_VECTOR(ADDR_WIDTH_G-1 downto 0);
     signal length        : STD_LOGIC_VECTOR(LENGTH_WIDTH_G-1 downto 0);

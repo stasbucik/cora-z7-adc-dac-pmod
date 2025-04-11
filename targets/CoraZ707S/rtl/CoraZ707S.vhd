@@ -338,8 +338,6 @@ begin
 
 	rgb_led <= (0 => adcOverflow, others => '0');
 
-	axisAdcDst.tready <= '1';
-
 	----------------------------------------------------------------------------
 	u_DataBuffer : entity work.DataBuffer
 		generic map (
