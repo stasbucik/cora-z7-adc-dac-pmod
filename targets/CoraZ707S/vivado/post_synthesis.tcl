@@ -41,6 +41,8 @@ if { ${enable} == 1 } {
 
 	ConfigProbe ${ilaName} {axisAdcReadDst[TREADY]}
 
+	ConfigProbe ${ilaName} {adcOverflow}
+
 	WriteDebugProbes ${ilaName} ${PROJ_DIR}/images/debug_probes.ltx
 }
 
@@ -54,10 +56,8 @@ if { ${enable} == 1 } {
 	set_property C_DATA_DEPTH ${ilaSize} [get_debug_cores ${ilaName}]
 	SetDebugCoreClk ${ilaName} ${ilaClk}
 
-	ConfigProbe ${ilaName} {adcSpiClk}
 	ConfigProbe ${ilaName} {adcDout}
 	ConfigProbe ${ilaName} {adcCs}
-	ConfigProbe ${ilaName} {adcSclk}
 
 	WriteDebugProbes ${ilaName} ${PROJ_DIR}/images/debug_probes.ltx
 }
