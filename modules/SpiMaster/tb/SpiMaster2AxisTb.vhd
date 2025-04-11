@@ -30,7 +30,7 @@ use IEEE.NUMERIC_STD.ALL;
 -- any Xilinx leaf cells in this code.
 --library UNISIM;
 --use UNISIM.VComponents.all;
-
+use std.env.all;
 use work.SpiMaster2AxisPkg.all;
 use work.Axi4Pkg.all;
 
@@ -257,7 +257,8 @@ begin
 			end if;
 		end loop;
 
-		wait;
+        wait for CLK_PERIOD_C*5;
+		finish;
 
 	end process stimulus2;
 

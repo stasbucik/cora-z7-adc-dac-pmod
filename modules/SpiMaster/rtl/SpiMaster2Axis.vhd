@@ -130,7 +130,7 @@ architecture Behavioral of SpiMaster2Axis is
     signal transferDonePulse : STD_LOGIC;
     signal concat            : STD_LOGIC_VECTOR(1 downto 0);
 
-    constant AXI_FILL_ZEROS : STD_LOGIC_VECTOR(axisReadSrc_o.tdata'high - DATA_WIDTH_G downto 0) := (others => '0');
+    constant AXI_FILL_ZEROS : STD_LOGIC_VECTOR(axisReadSrc_o.tdata'length - DATA_WIDTH_G-1 downto 0) := (others => '0');
 
     ----------------------------------------------------------------------------
     attribute mark_debug        : string;

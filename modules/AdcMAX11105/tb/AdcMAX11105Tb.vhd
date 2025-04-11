@@ -30,7 +30,7 @@ use IEEE.NUMERIC_STD.ALL;
 -- any Xilinx leaf cells in this code.
 --library UNISIM;
 --use UNISIM.VComponents.all;
-
+use std.env.all;
 use work.SpiMaster2AxisPkg.all;
 use work.AdcMAX11105Pkg.all;
 use work.Axi4Pkg.all;
@@ -161,7 +161,8 @@ begin
 			WriteDataToMISO(STD_LOGIC_VECTOR(to_unsigned(i, 12)), dout_i);
 		end loop;
 
-		wait;
+		wait for CLK_PERIOD2_C*5;
+		finish;
 
 	end process stimulus2;
 
