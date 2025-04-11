@@ -38,41 +38,29 @@ package Axi4Pkg is
 		TWAKEUP : STD_LOGIC;
 	end record Axi4StreamSource;
 
-	--constant AXI_4_STREAM_SRC_INIT_C : Axi4StreamSource := (
-	--		TVALID  => '0',
-	--		TDATA   => (others => '0'),
-	--		TSTRB   => (others => '0'),
-	--		TKEEP   => (others => '0'),
-	--		TLAST   => '0',
-	--		TID     => (others => '0'),
-	--		TDEST   => (others => '0'),
-	--      TUSER   => (others => '0'),
-	--		TWAKEUP => '0'
-	--	);
-
 	type Axi4StreamDestination is record
 		TREADY : STD_LOGIC;
 	end record Axi4StreamDestination;
 
-	--constant AXI_4_STREAM_DST_INIT_C : Axi4StreamDestination := (
-	--		TREADY => '0'
-	--	);
-
 	----------------------------------------------------------------------------
+
+
+	constant AXI_DATA_WIDTH_C : natural := 32;
+	constant AXI_ADDR_WIDTH_C : natural := 32;
 
 	type Axi4ReadSource is record
 		-- Address
-		ARID     : STD_LOGIC_VECTOR;
-		ARADDR   : STD_LOGIC_VECTOR;
+		ARID     : STD_LOGIC_VECTOR(0 downto 0);
+		ARADDR   : STD_LOGIC_VECTOR(AXI_ADDR_WIDTH_C-1 downto 0);
 		ARLEN    : STD_LOGIC_VECTOR(7 downto 0);
 		ARSIZE   : STD_LOGIC_VECTOR(2 downto 0);
 		ARBURST  : STD_LOGIC_VECTOR(1 downto 0);
-		ARLOCK   : STD_LOGIC_VECTOR(1 downto 0);
+		ARLOCK   : STD_LOGIC_VECTOR(0 downto 0);
 		ARCACHE  : STD_LOGIC_VECTOR(3 downto 0);
 		ARPROT   : STD_LOGIC_VECTOR(2 downto 0);
 		ARQOS    : STD_LOGIC_VECTOR(3 downto 0);
 		ARREGION : STD_LOGIC_VECTOR(3 downto 0);
-		ARUSER   : STD_LOGIC_VECTOR;
+		ARUSER   : STD_LOGIC_VECTOR(0 downto 0);
 		ARVALID  : STD_LOGIC;
 		-- Data
 		RREADY : STD_LOGIC;
@@ -82,35 +70,34 @@ package Axi4Pkg is
 		-- Address
 		ARREADY : STD_LOGIC;
 		-- Data
-		RID    : STD_LOGIC_VECTOR;
-		RDATA  : STD_LOGIC_VECTOR;
+		RID    : STD_LOGIC_VECTOR(0 downto 0);
+		RDATA  : STD_LOGIC_VECTOR(AXI_DATA_WIDTH_C-1 downto 0);
 		RRESP  : STD_LOGIC_VECTOR(1 downto 0);
 		RLAST  : STD_LOGIC;
-		RUSER  : STD_LOGIC_VECTOR;
+		RUSER  : STD_LOGIC_VECTOR(0 downto 0);
 		RVALID : STD_LOGIC;
-
 	end record Axi4ReadDestination;
 
 	type Axi4WriteSource is record
 		-- Address
-		AWID     : STD_LOGIC_VECTOR;
-		AWADDR   : STD_LOGIC_VECTOR;
+		AWID     : STD_LOGIC_VECTOR(0 downto 0);
+		AWADDR   : STD_LOGIC_VECTOR(AXI_ADDR_WIDTH_C-1 downto 0);
 		AWLEN    : STD_LOGIC_VECTOR(7 downto 0);
 		AWSIZE   : STD_LOGIC_VECTOR(2 downto 0);
 		AWBURST  : STD_LOGIC_VECTOR(1 downto 0);
-		AWLOCK   : STD_LOGIC_VECTOR(1 downto 0);
+		AWLOCK   : STD_LOGIC_VECTOR(0 downto 0);
 		AWCACHE  : STD_LOGIC_VECTOR(3 downto 0);
 		AWPROT   : STD_LOGIC_VECTOR(2 downto 0);
 		AWQOS    : STD_LOGIC_VECTOR(3 downto 0);
 		AWREGION : STD_LOGIC_VECTOR(3 downto 0);
-		AWUSER   : STD_LOGIC_VECTOR;
+		AWUSER   : STD_LOGIC_VECTOR(0 downto 0);
 		AWVALID  : STD_LOGIC;
 		-- Data
-		WID    : STD_LOGIC_VECTOR;
-		WDATA  : STD_LOGIC_VECTOR;
-		WSTRB  : STD_LOGIC_VECTOR;
+		WID    : STD_LOGIC_VECTOR(0 downto 0);
+		WDATA  : STD_LOGIC_VECTOR(AXI_DATA_WIDTH_C-1 downto 0);
+		WSTRB  : STD_LOGIC_VECTOR(AXI_DATA_WIDTH_C/8-1 downto 0);
 		WLAST  : STD_LOGIC;
-		WUSER  : STD_LOGIC_VECTOR;
+		WUSER  : STD_LOGIC_VECTOR(0 downto 0);
 		WVALID : STD_LOGIC;
 		-- Response
 		BREADY : STD_LOGIC;
@@ -122,9 +109,9 @@ package Axi4Pkg is
 		-- Data
 		WREADY : STD_LOGIC;
 		-- Response
-		BID    : STD_LOGIC_VECTOR;
+		BID    : STD_LOGIC_VECTOR(0 downto 0);
 		BRESP  : STD_LOGIC_VECTOR(1 downto 0);
-		BUSER  : STD_LOGIC_VECTOR;
+		BUSER  : STD_LOGIC_VECTOR(0 downto 0);
 		BVALID : STD_LOGIC;
 	end record Axi4WriteDestination;
 
