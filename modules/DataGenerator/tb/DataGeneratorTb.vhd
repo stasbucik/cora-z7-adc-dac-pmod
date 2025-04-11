@@ -25,6 +25,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 use IEEE.NUMERIC_STD.ALL;
+use std.env.all;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx leaf cells in this code.
@@ -87,7 +88,7 @@ begin
 
 		axisDst_i.tready <= '0';
 
-		wait for CLK_PERIOD_C*3;
+		wait for CLK_PERIOD_C*3.5;
 
 
 		rst_i <= '0';
@@ -95,8 +96,21 @@ begin
 		-- reset done
 		------------------------------------------------------------------------
 
+		axisDst_i.tready <= '1';
+		for i in 0 to 5 loop
+			wait for CLK_PERIOD_C*4;
+			if (axisSrc_o.tvalid = '1') then
+				wait for CLK_PERIOD_C;
+			else
+				wait until axisSrc_o.tvalid = '1';
+			end if;
+		end loop ;
+		axisDst_i.tready <= '0' ;
+		wait for CLK_PERIOD_C*5;
+
+
 		-- stimulus
-		for i in 0 to 2048 loop
+		for i in 0 to 5 loop
 			wait for CLK_PERIOD_C*4;
 			axisDst_i.tready <= '1';
 			if (axisSrc_o.tvalid = '1') then
@@ -108,7 +122,7 @@ begin
 			axisDst_i.tready <= '0' ;
 		end loop ;
 
-		wait;
+		finish;
 
 	end process stimulus;
 

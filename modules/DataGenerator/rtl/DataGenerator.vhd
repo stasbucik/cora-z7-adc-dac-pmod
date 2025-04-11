@@ -46,8 +46,8 @@ end DataGenerator;
 architecture Behavioral of DataGenerator is
 
     type StateType is (
-            ADVANCE_S,
-            HANDSHAKE_S
+            IDLE_S,
+            ADVANCE_S
         );
 
     type RegType is record
@@ -69,7 +69,7 @@ architecture Behavioral of DataGenerator is
         );
 
     constant REG_TYPE_INIT_C : RegType := (
-            state        => ADVANCE_S,
+            state        => IDLE_S,
             axiSrcDriver => AXI_4_STREAM_SRC_INIT_C,
             upDown       => '0'
         );
@@ -83,30 +83,27 @@ begin
         v := r;
 
         case r.state is
-            when ADVANCE_S =>
-                if (r.upDown = '0') then
-                    if (to_integer(unsigned(r.axiSrcDriver.tdata)) = MAX_VAL_G-1) then
-                        v.upDown             := '1';
-                        v.axiSrcDriver.tdata := STD_LOGIC_VECTOR(unsigned(r.axiSrcDriver.tdata) - 1);
-                    else
-                        v.axiSrcDriver.tdata := STD_LOGIC_VECTOR(unsigned(r.axiSrcDriver.tdata) + 1);
-                    end if;
-                else
-                    if (to_integer(unsigned(r.axiSrcDriver.tdata)) = MIN_VAL_G) then
-                        v.upDown             := '0';
-                        v.axiSrcDriver.tdata := STD_LOGIC_VECTOR(unsigned(r.axiSrcDriver.tdata) + 1);
-                    else
-                        v.axiSrcDriver.tdata := STD_LOGIC_VECTOR(unsigned(r.axiSrcDriver.tdata) - 1);
-                    end if;
-                end if;
-
+            when IDLE_S =>
+                v.axiSrcDriver.tdata  := STD_LOGIC_VECTOR(to_unsigned(MIN_VAL_G, r.axiSrcDriver.tdata'length));
                 v.axiSrcDriver.tvalid := '1';
-                v.state               := HANDSHAKE_S;
-
-            when HANDSHAKE_S =>
+                v.state               := ADVANCE_S;
+            when ADVANCE_S =>
                 if (axisDst_i.tready = '1') then
-                    v.axiSrcDriver.tvalid := '0';
-                    v.state               := ADVANCE_S;
+                    if (r.upDown = '0') then
+                        if (to_integer(unsigned(r.axiSrcDriver.tdata)) = MAX_VAL_G-1) then
+                            v.upDown             := '1';
+                            v.axiSrcDriver.tdata := STD_LOGIC_VECTOR(unsigned(r.axiSrcDriver.tdata) - 1);
+                        else
+                            v.axiSrcDriver.tdata := STD_LOGIC_VECTOR(unsigned(r.axiSrcDriver.tdata) + 1);
+                        end if;
+                    else
+                        if (to_integer(unsigned(r.axiSrcDriver.tdata)) = MIN_VAL_G) then
+                            v.upDown             := '0';
+                            v.axiSrcDriver.tdata := STD_LOGIC_VECTOR(unsigned(r.axiSrcDriver.tdata) + 1);
+                        else
+                            v.axiSrcDriver.tdata := STD_LOGIC_VECTOR(unsigned(r.axiSrcDriver.tdata) - 1);
+                        end if;
+                    end if;
                 end if;
 
             when others =>
