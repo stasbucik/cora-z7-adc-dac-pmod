@@ -87,7 +87,7 @@ architecture Behavioral of DataBuffer is
     signal address       : STD_LOGIC_VECTOR(ADDR_WIDTH_G-1 downto 0);
     signal length        : STD_LOGIC_VECTOR(LENGTH_WIDTH_G-1 downto 0);
     signal readDone      : STD_LOGIC;
-    signal counter       : unsigned(LENGTH_WIDTH_G-1 downto 0);
+    signal counter       : unsigned(LENGTH_WIDTH_G downto 0);
     signal dataBuffer    : TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
     signal readingFrom   : natural range 0 to 1;
 

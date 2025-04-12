@@ -45,7 +45,7 @@ entity BramBufferReader is
         SAMPLE_DATA_WIDTH_G : natural := 12;
         LATENCY_G           : natural := 1;
         DATA_WIDTH_G        : natural := PACKING_G * SAMPLE_DATA_WIDTH_G;
-        MAX_LENGTH_G        : natural := 256;
+        MAX_LENGTH_G        : natural := 16;
         LENGTH_WIDTH_G      : natural := natural(ceil(log2(real(MAX_LENGTH_G))));
         ADDR_WIDTH_G        : natural := natural(ceil(log2(real(1024))))
     );
@@ -63,10 +63,10 @@ entity BramBufferReader is
         length_i    : in STD_LOGIC_VECTOR(LENGTH_WIDTH_G-1 downto 0);
 
         readDone_o : out STD_LOGIC;
-        counter_o  : out unsigned(LENGTH_WIDTH_G-1 downto 0);
+        counter_o  : out unsigned(LENGTH_WIDTH_G downto 0);
 
         buffer_o      : out TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
-        readingFrom_i : out natural range 0 to 1
+        readingFrom_i : in  natural range 0 to 1
 
     );
 end BramBufferReader;
@@ -83,11 +83,12 @@ architecture Behavioral of BramBufferReader is
         state           : StateType;
         addr            : unsigned(ADDR_WIDTH_G-1 downto 0);
         len             : unsigned(LENGTH_WIDTH_G-1 downto 0);
-        transferCounter : unsigned(LENGTH_WIDTH_G-1 downto 0);
+        transferCounter : unsigned(LENGTH_WIDTH_G downto 0);
         latencyCounter  : natural range 0 to LATENCY_G;
         enables         : STD_LOGIC_VECTOR(1 downto 0);
         tmpBuffer       : TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
         readDone        : STD_LOGIC;
+        readingFrom     : natural range 0 to 1;
     end record RegType;
 
     constant REG_TYPE_INIT_C : RegType := (
@@ -98,7 +99,8 @@ architecture Behavioral of BramBufferReader is
             latencyCounter  => 0,
             enables         => (others => '0'),
             tmpBuffer       => (others => (others => '0')),
-            readDone        => '0'
+            readDone        => '0',
+            readingFrom     => 0
         );
 
     signal r   : RegType;
@@ -126,6 +128,8 @@ begin
                     v.addr            := unsigned(address_i);
                     v.len             := unsigned(length_i);
                     v.transferCounter := (others => '0');
+
+                    v.readingFrom := readingFrom_i;
 
                     case readingFrom_i is
                         when 0 =>
@@ -168,8 +172,16 @@ begin
                     v.state          := IDLE_S;
                     v.readDone       := '1';
                 end if;
-                v.tmpBuffer(to_integer(r.transferCounter)) := bramReadDst0_i.dout;
-                v.transferCounter                          := r.transferCounter + 1;
+
+                case readingFrom_i is
+                    when 0 =>
+                        v.tmpBuffer(to_integer(r.transferCounter)) := bramReadDst0_i.dout;
+                    when 1 =>
+                        v.tmpBuffer(to_integer(r.transferCounter)) := bramReadDst1_i.dout;
+                    when others =>
+                        v.tmpBuffer(to_integer(r.transferCounter)) := (others => '0');
+                end case;
+                v.transferCounter := r.transferCounter + 1;
 
             when others =>
                 v := REG_TYPE_INIT_C;

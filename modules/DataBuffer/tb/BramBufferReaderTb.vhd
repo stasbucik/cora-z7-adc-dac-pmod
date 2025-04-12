@@ -98,7 +98,7 @@ architecture Behavioral of BramBufferReaderTb is
 	signal address_i      : STD_LOGIC_VECTOR(TB_ADDR_WIDTH_C-1 downto 0);
 	signal length_i       : STD_LOGIC_VECTOR(TB_LENGTH_WIDTH_C-1 downto 0);
 	signal readDone_o     : STD_LOGIC;
-	signal counter_o      : unsigned(TB_LENGTH_WIDTH_C-1 downto 0);
+	signal counter_o      : unsigned(TB_LENGTH_WIDTH_C downto 0);
 	signal buffer_o       : TmpBufferArray(TB_MAX_LENGTH_C-1 downto 0)(TB_DATA_WIDTH_C-1 downto 0);
 	signal readingFrom_i  : natural range 0 to 1;
 
@@ -252,6 +252,42 @@ begin
 		address_i     <= STD_LOGIC_VECTOR(to_unsigned(4, address_i'length));
 		length_i      <= STD_LOGIC_VECTOR(to_unsigned(3, length_i'length));
 		readingFrom_i <= 1;
+		wait for CLK_PERIOD_C;
+		readStart_i <= '0';
+		wait for CLK_PERIOD_C*9;
+
+
+
+
+
+		readStart_i   <= '1';
+		address_i     <= (others => '0');
+		length_i      <= STD_LOGIC_VECTOR(to_unsigned(0, length_i'length));
+		readingFrom_i <= 0;
+		wait for CLK_PERIOD_C;
+		readStart_i <= '0';
+		wait for CLK_PERIOD_C*6;
+
+		readStart_i   <= '1';
+		address_i     <= STD_LOGIC_VECTOR(to_unsigned(1, address_i'length));
+		length_i      <= STD_LOGIC_VECTOR(to_unsigned(1, length_i'length));
+		readingFrom_i <= 0;
+		wait for CLK_PERIOD_C;
+		readStart_i <= '0';
+		wait for CLK_PERIOD_C*7;
+
+		readStart_i   <= '1';
+		address_i     <= STD_LOGIC_VECTOR(to_unsigned(2, address_i'length));
+		length_i      <= STD_LOGIC_VECTOR(to_unsigned(2, length_i'length));
+		readingFrom_i <= 0;
+		wait for CLK_PERIOD_C;
+		readStart_i <= '0';
+		wait for CLK_PERIOD_C*8;
+
+		readStart_i   <= '1';
+		address_i     <= STD_LOGIC_VECTOR(to_unsigned(4, address_i'length));
+		length_i      <= STD_LOGIC_VECTOR(to_unsigned(3, length_i'length));
+		readingFrom_i <= 0;
 		wait for CLK_PERIOD_C;
 		readStart_i <= '0';
 		wait for CLK_PERIOD_C*9;
