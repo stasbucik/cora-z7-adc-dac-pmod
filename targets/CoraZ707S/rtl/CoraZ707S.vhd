@@ -150,6 +150,8 @@ architecture Behavioral of CoraZ707S is
 	attribute mark_debug of axisAdcSrc  : signal is MARK_DEBUG_G;
 	attribute mark_debug of axisAdcDst  : signal is MARK_DEBUG_G;
 	attribute mark_debug of adcOverflow : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiPsSrc    : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiPsDst    : signal is MARK_DEBUG_G;
 	----------------------------------------------------------------------------
 
 	component clk_wiz_mmc_100_64
@@ -358,8 +360,8 @@ begin
 			rst_i          => rst,
 			axisWriteSrc_i => axisAdcSrc,
 			axisWriteDst_o => axisAdcDst,
-			axiSrc_i   => axiPsSrc,
-			axiDst_o   => axiPsDst
+			axiSrc_i       => axiPsSrc,
+			axiDst_o       => axiPsDst
 		);
 
 end Behavioral;
