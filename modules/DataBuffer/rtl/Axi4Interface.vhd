@@ -69,10 +69,10 @@ architecture Behavioral of Axi4Interface is
 
     constant FILL_C : STD_LOGIC_VECTOR(axiReadDst_o.rdata'length - DATA_WIDTH_G - 1 downto 0) := (others => '0');
 
-    constant AXI_RESP_OK_C         : STD_LOGIC_VECTOR(1 downto 0) := "00";
-    constant AXI_RESP_SLVERR_C     : STD_LOGIC_VECTOR(1 downto 0) := "10";
-    constant AXI_BURST_SIZE_32_C   : STD_LOGIC_VECTOR(2 downto 0) := "101";
-    constant AXI_BURST_TYPE_INCR_C : STD_LOGIC_VECTOR(1 downto 0) := "01";
+    constant AXI_RESP_OK_C            : STD_LOGIC_VECTOR(1 downto 0) := "00";
+    constant AXI_RESP_SLVERR_C        : STD_LOGIC_VECTOR(1 downto 0) := "10";
+    constant AXI_BURST_SIZE_4_BYTES_C : STD_LOGIC_VECTOR(2 downto 0) := "010";
+    constant AXI_BURST_TYPE_INCR_C    : STD_LOGIC_VECTOR(1 downto 0) := "01";
 
     type StateType is (
             INIT_S,
@@ -231,13 +231,13 @@ begin
 
             when AR_HANDSHAKE_S =>
                 if (axiReadSrc_i.arvalid = '1') then
-                    v.arready := '0';
+                    v.arready   := '0';
+                    v.burst_len := unsigned(axiReadSrc_i.arlen);
 
                     if (axiReadSrc_i.arburst = AXI_BURST_TYPE_INCR_C and
-                            axiReadSrc_i.arsize = AXI_BURST_SIZE_32_C) then
+                            axiReadSrc_i.arsize = AXI_BURST_SIZE_4_BYTES_C) then
 
-                        v.addr      := axiReadSrc_i.araddr(ADDR_WIDTH_G-1 downto 0);
-                        v.burst_len := unsigned(axiReadSrc_i.arlen);
+                        v.addr := axiReadSrc_i.araddr(ADDR_WIDTH_G-1 downto 0);
 
                         if (to_integer(unsigned(axiReadSrc_i.arlen)) > MAX_LENGTH_G-1) then
                             v.read_len := to_unsigned(MAX_LENGTH_G-1, LENGTH_WIDTH_G);
@@ -250,11 +250,14 @@ begin
                         v.readStart   := '1';
                         v.state       := WAIT_FOR_DATA_S;
                     else
-                        v.rdata  := (others => '0');
-                        v.rresp  := AXI_RESP_SLVERR_C;
-                        v.rvalid := '1';
-                        v.rlast  := '1';
-                        v.state  := R_HANDSHAKE_ERR_S;
+                        v.rdata                := (others => '0');
+                        v.rresp                := AXI_RESP_SLVERR_C;
+                        v.rvalid               := '1';
+                        v.totalTransferCounter := r.totalTransferCounter + 1;
+                        if (uEq(r.totalTransferCounter, unsigned(axiReadSrc_i.arlen))) then
+                            v.rlast := '1';
+                        end if;
+                        v.state := R_HANDSHAKE_ERR_S;
                     end if;
 
                 end if;
@@ -316,11 +319,22 @@ begin
 
             when R_HANDSHAKE_ERR_S =>
                 if (axiReadSrc_i.rready = '1') then
-                    v.rresp   := AXI_RESP_OK_C;
-                    v.rvalid  := '0';
-                    v.rlast   := '0';
-                    v.arready := '1';
-                    v.state   := AR_HANDSHAKE_S;
+                    if (uLeq(r.totalTransferCounter, r.burst_len)) then
+                        v.rdata                := (others => '0');
+                        v.rresp                := AXI_RESP_SLVERR_C;
+                        v.rvalid               := '1';
+                        v.totalTransferCounter := r.totalTransferCounter + 1;
+                        if (uEq(r.totalTransferCounter, r.burst_len)) then
+                            v.rlast := '1';
+                        end if;
+                    else
+                        v.rresp                := AXI_RESP_OK_C;
+                        v.rvalid               := '0';
+                        v.rlast                := '0';
+                        v.totalTransferCounter := (others => '0');
+                        v.arready              := '1';
+                        v.state                := AR_HANDSHAKE_S;
+                    end if;
                 end if;
 
             when others =>
