@@ -61,7 +61,9 @@ entity DataBuffer is
         axisWriteDst_o : out Axi4StreamDestination;
 
         axiSrc_i : in  Axi4Source;
-        axiDst_o : out Axi4Destination
+        axiDst_o : out Axi4Destination;
+
+        interrupt_o : out STD_LOGIC
     );
 end DataBuffer;
 
@@ -90,6 +92,9 @@ architecture Behavioral of DataBuffer is
     signal counter       : unsigned(LENGTH_WIDTH_G downto 0);
     signal dataBuffer    : TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
     signal readingFrom   : natural range 0 to 1;
+
+    signal interruptDelayed : STD_LOGIC;
+    signal counterAdapter   : STD_LOGIC_VECTOR(counter'range);
 
     function getOtherBufferIndex (number : natural) return natural is
     begin
@@ -243,5 +248,18 @@ begin
         );
 
     axiDst_o.wr <= AXI_WRITE_DUMMY_C;
+
+    counterAdapter <= STD_LOGIC_VECTOR(counter);
+
+    p_Seq : process (clk_i, rst_i)
+    begin
+        if (rst_i = '1') then
+            interruptDelayed <= '0';
+            interrupt_o      <= '0';
+        elsif rising_edge(clk_i) then
+            interruptDelayed <= counterAdapter(0);
+            interrupt_o      <= counterAdapter(0) xor interruptDelayed;
+        end if;
+    end process p_Seq;
 
 end Behavioral;

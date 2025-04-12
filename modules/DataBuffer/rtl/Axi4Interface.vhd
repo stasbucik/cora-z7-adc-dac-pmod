@@ -67,7 +67,7 @@ end Axi4Interface;
 
 architecture Behavioral of Axi4Interface is
 
-    constant FILL_C : STD_LOGIC_VECTOR(axiReadDst_o.rdata'length - DATA_WIDTH_G - 1 downto 0) := (others => '0');
+    constant FILL_C : STD_LOGIC_VECTOR(axiReadDst_o.rdata'length - DATA_WIDTH_G - 2 downto 0) := (others => '0');
 
     constant AXI_RESP_OK_C            : STD_LOGIC_VECTOR(1 downto 0) := "00";
     constant AXI_RESP_SLVERR_C        : STD_LOGIC_VECTOR(1 downto 0) := "10";
@@ -264,7 +264,7 @@ begin
 
             when WAIT_FOR_DATA_S =>
                 if (counter_i > 0) then
-                    v.rdata              := FILL_C & buffer_i(0);
+                    v.rdata              := STD_LOGIC_VECTOR(counter_i(0 downto 0)) & FILL_C & buffer_i(0);
                     v.rresp              := AXI_RESP_OK_C; --okay
                     v.rvalid             := '1';
                     v.subTransferCounter := r.subTransferCounter + 1;
@@ -284,7 +284,7 @@ begin
                         if (uLeq(r.subTransferCounter, r.read_len)) then
                             -- we have enough data from bram
                             v.subTransferCounter := r.subTransferCounter + 1;
-                            v.rdata              := FILL_C & buffer_i(to_integer(r.subTransferCounter));
+                            v.rdata              := STD_LOGIC_VECTOR(counter_i(0 downto 0)) & FILL_C & buffer_i(to_integer(r.subTransferCounter));
                             v.rresp              := (others => '0'); --okay
                             v.rvalid             := '1';
                         else

@@ -324,7 +324,8 @@ begin
 			axisWriteSrc_i => axisAdcSrc,
 			axisWriteDst_o => axisAdcDst,
 			axiSrc_i       => axiPsSrc,
-			axiDst_o       => axiPsDst
+			axiDst_o       => axiPsDst,
+			interrupt_o    => interrupt
 		);
 
 end Behavioral;
