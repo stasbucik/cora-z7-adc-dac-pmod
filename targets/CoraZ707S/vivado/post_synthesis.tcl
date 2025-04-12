@@ -17,29 +17,29 @@ if { ${enable} == 1 } {
 	ConfigProbe ${ilaName} {dacSync}
 	ConfigProbe ${ilaName} {dacHighz}
 
-	ConfigProbe ${ilaName} {axisDacWriteSrc[TDEST]}
-	ConfigProbe ${ilaName} {axisDacWriteSrc[TID]}
-	ConfigProbe ${ilaName} {axisDacWriteSrc[TLAST]}
-	ConfigProbe ${ilaName} {axisDacWriteSrc[TUSER]}
-	ConfigProbe ${ilaName} {axisDacWriteSrc[TVALID]}
-	ConfigProbe ${ilaName} {axisDacWriteSrc[TWAKEUP]}
-	ConfigProbe ${ilaName} {axisDacWriteSrc[TDATA][*]}
-	ConfigProbe ${ilaName} {axisDacWriteSrc[TKEEP][*]}
-	ConfigProbe ${ilaName} {axisDacWriteSrc[TSTRB][*]}
+	ConfigProbe ${ilaName} {axisDacSrc[TDEST]}
+	ConfigProbe ${ilaName} {axisDacSrc[TID]}
+	ConfigProbe ${ilaName} {axisDacSrc[TLAST]}
+	ConfigProbe ${ilaName} {axisDacSrc[TUSER]}
+	ConfigProbe ${ilaName} {axisDacSrc[TVALID]}
+	ConfigProbe ${ilaName} {axisDacSrc[TWAKEUP]}
+	ConfigProbe ${ilaName} {axisDacSrc[TDATA][*]}
+	ConfigProbe ${ilaName} {axisDacSrc[TKEEP][*]}
+	ConfigProbe ${ilaName} {axisDacSrc[TSTRB][*]}
 
-	ConfigProbe ${ilaName} {axisDacWriteDst[TREADY]}
+	ConfigProbe ${ilaName} {axisDacDst[TREADY]}
 
-	ConfigProbe ${ilaName} {axisAdcReadSrc[TDEST]}
-	ConfigProbe ${ilaName} {axisAdcReadSrc[TID]}
-	ConfigProbe ${ilaName} {axisAdcReadSrc[TLAST]}
-	ConfigProbe ${ilaName} {axisAdcReadSrc[TUSER]}
-	ConfigProbe ${ilaName} {axisAdcReadSrc[TVALID]}
-	ConfigProbe ${ilaName} {axisAdcReadSrc[TWAKEUP]}
-	ConfigProbe ${ilaName} {axisAdcReadSrc[TDATA][*]}
-	ConfigProbe ${ilaName} {axisAdcReadSrc[TKEEP][*]}
-	ConfigProbe ${ilaName} {axisAdcReadSrc[TSTRB][*]}
+	ConfigProbe ${ilaName} {axisAdcSrc[TDEST]}
+	ConfigProbe ${ilaName} {axisAdcSrc[TID]}
+	ConfigProbe ${ilaName} {axisAdcSrc[TLAST]}
+	ConfigProbe ${ilaName} {axisAdcSrc[TUSER]}
+	ConfigProbe ${ilaName} {axisAdcSrc[TVALID]}
+	ConfigProbe ${ilaName} {axisAdcSrc[TWAKEUP]}
+	ConfigProbe ${ilaName} {axisAdcSrc[TDATA][*]}
+	ConfigProbe ${ilaName} {axisAdcSrc[TKEEP][*]}
+	ConfigProbe ${ilaName} {axisAdcSrc[TSTRB][*]}
 
-	ConfigProbe ${ilaName} {axisAdcReadDst[TREADY]}
+	ConfigProbe ${ilaName} {axisAdcDst[TREADY]}
 
 	ConfigProbe ${ilaName} {adcOverflow}
 	
