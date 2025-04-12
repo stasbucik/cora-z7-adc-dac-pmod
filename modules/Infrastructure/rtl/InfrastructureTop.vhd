@@ -27,6 +27,7 @@ entity InfrastructureTop is
           FIXED_IO_ps_clk   : inout STD_LOGIC;
           FIXED_IO_ps_porb  : inout STD_LOGIC;
           FIXED_IO_ps_srstb : inout STD_LOGIC;
+          IRQ_F2P           : in    STD_LOGIC;
           axiPsSrc          : out   Axi4Source;
           axiPsDst          : in    Axi4Destination;
           Shield_I2C_scl_io : inout STD_LOGIC;
@@ -36,33 +37,14 @@ entity InfrastructureTop is
           Shield_SPI_sck_io : inout STD_LOGIC;
           Shield_SPI_ss_io  : inout STD_LOGIC;
           peripheral_reset  : out   STD_LOGIC;
-          ps_clk            : out   STD_LOGIC;
-          vaux0_v_n         : in    STD_LOGIC;
-          vaux0_v_p         : in    STD_LOGIC;
-          vaux12_v_n        : in    STD_LOGIC;
-          vaux12_v_p        : in    STD_LOGIC;
-          vaux13_v_n        : in    STD_LOGIC;
-          vaux13_v_p        : in    STD_LOGIC;
-          vaux15_v_n        : in    STD_LOGIC;
-          vaux15_v_p        : in    STD_LOGIC;
-          vaux1_v_n         : in    STD_LOGIC;
-          vaux1_v_p         : in    STD_LOGIC;
-          vaux5_v_n         : in    STD_LOGIC;
-          vaux5_v_p         : in    STD_LOGIC;
-          vaux6_v_n         : in    STD_LOGIC;
-          vaux6_v_p         : in    STD_LOGIC;
-          vaux8_v_n         : in    STD_LOGIC;
-          vaux8_v_p         : in    STD_LOGIC;
-          vaux9_v_n         : in    STD_LOGIC;
-          vaux9_v_p         : in    STD_LOGIC;
-          vp_vn_v_n         : in    STD_LOGIC;
-          vp_vn_v_p         : in    STD_LOGIC
+          ps_clk            : out   STD_LOGIC
      );
 end InfrastructureTop;
 
 architecture STRUCTURE of InfrastructureTop is
 
      signal rstAdapter : STD_LOGIC_VECTOR(0 downto 0);
+     signal intAdapter : STD_LOGIC_VECTOR(0 downto 0);
 
 begin
      u_Infrastructure_wrapper : entity work.Infrastructure_wrapper
@@ -88,6 +70,7 @@ begin
                FIXED_IO_ps_clk   => FIXED_IO_ps_clk,
                FIXED_IO_ps_porb  => FIXED_IO_ps_porb,
                FIXED_IO_ps_srstb => FIXED_IO_ps_srstb,
+               IRQ_F2P           => intAdapter,
                M_AXI_ps_araddr   => axiPsSrc.rd.araddr,
                M_AXI_ps_arburst  => axiPsSrc.rd.arburst,
                M_AXI_ps_arcache  => axiPsSrc.rd.arcache,
@@ -128,28 +111,9 @@ begin
                Shield_SPI_sck_io => Shield_SPI_sck_io,
                Shield_SPI_ss_io  => Shield_SPI_ss_io,
                peripheral_reset  => rstAdapter,
-               ps_clk            => ps_clk,
-               vaux0_v_n         => vaux0_v_n,
-               vaux0_v_p         => vaux0_v_p,
-               vaux12_v_n        => vaux12_v_n,
-               vaux12_v_p        => vaux12_v_p,
-               vaux13_v_n        => vaux13_v_n,
-               vaux13_v_p        => vaux13_v_p,
-               vaux15_v_n        => vaux15_v_n,
-               vaux15_v_p        => vaux15_v_p,
-               vaux1_v_n         => vaux1_v_n,
-               vaux1_v_p         => vaux1_v_p,
-               vaux5_v_n         => vaux5_v_n,
-               vaux5_v_p         => vaux5_v_p,
-               vaux6_v_n         => vaux6_v_n,
-               vaux6_v_p         => vaux6_v_p,
-               vaux8_v_n         => vaux8_v_n,
-               vaux8_v_p         => vaux8_v_p,
-               vaux9_v_n         => vaux9_v_n,
-               vaux9_v_p         => vaux9_v_p,
-               vp_vn_v_n         => vp_vn_v_n,
-               vp_vn_v_p         => vp_vn_v_p
+               ps_clk            => ps_clk
           );
 
      peripheral_reset <= rstAdapter(0);
+     intAdapter       <= (others => IRQ_F2P);
 end STRUCTURE;

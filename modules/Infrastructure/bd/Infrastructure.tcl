@@ -131,7 +131,6 @@ set bCheckIPs 1
 if { $bCheckIPs == 1 } {
    set list_check_ips "\ 
 xilinx.com:ip:processing_system7:5.5\
-xilinx.com:ip:xadc_wiz:3.3\
 xilinx.com:ip:smartconnect:1.0\
 xilinx.com:ip:proc_sys_reset:5.0\
 xilinx.com:ip:xlconcat:2.1\
@@ -206,26 +205,6 @@ proc create_root_design { parentCell } {
 
   set Shield_SPI [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:spi_rtl:1.0 Shield_SPI ]
 
-  set vaux0 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 vaux0 ]
-
-  set vaux1 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 vaux1 ]
-
-  set vaux5 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 vaux5 ]
-
-  set vaux6 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 vaux6 ]
-
-  set vaux8 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 vaux8 ]
-
-  set vaux9 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 vaux9 ]
-
-  set vaux12 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 vaux12 ]
-
-  set vaux13 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 vaux13 ]
-
-  set vaux15 [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 vaux15 ]
-
-  set vp_vn [ create_bd_intf_port -mode Slave -vlnv xilinx.com:interface:diff_analog_io_rtl:1.0 vp_vn ]
-
   set M_AXI_ps [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M_AXI_ps ]
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
@@ -240,6 +219,11 @@ proc create_root_design { parentCell } {
    CONFIG.ASSOCIATED_BUSIF {M_AXI_ps} \
  ] $ps_clk
   set peripheral_reset [ create_bd_port -dir O -from 0 -to 0 -type rst peripheral_reset ]
+  set IRQ_F2P [ create_bd_port -dir I -from 0 -to 0 -type intr IRQ_F2P ]
+  set_property -dict [ list \
+   CONFIG.PortWidth {1} \
+   CONFIG.SENSITIVITY {EDGE_RISING} \
+ ] $IRQ_F2P
 
   # Create instance: processing_system7_0, and set properties
   set processing_system7_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0 ]
@@ -805,45 +789,10 @@ proc create_root_design { parentCell } {
   ] $processing_system7_0
 
 
-  # Create instance: xadc_wiz_0, and set properties
-  set xadc_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xadc_wiz:3.3 xadc_wiz_0 ]
-  set_property -dict [list \
-    CONFIG.CHANNEL_ENABLE_CALIBRATION {true} \
-    CONFIG.CHANNEL_ENABLE_TEMPERATURE {true} \
-    CONFIG.CHANNEL_ENABLE_VAUXP0_VAUXN0 {true} \
-    CONFIG.CHANNEL_ENABLE_VAUXP12_VAUXN12 {true} \
-    CONFIG.CHANNEL_ENABLE_VAUXP13_VAUXN13 {true} \
-    CONFIG.CHANNEL_ENABLE_VAUXP15_VAUXN15 {true} \
-    CONFIG.CHANNEL_ENABLE_VAUXP1_VAUXN1 {true} \
-    CONFIG.CHANNEL_ENABLE_VAUXP5_VAUXN5 {true} \
-    CONFIG.CHANNEL_ENABLE_VAUXP6_VAUXN6 {true} \
-    CONFIG.CHANNEL_ENABLE_VAUXP8_VAUXN8 {true} \
-    CONFIG.CHANNEL_ENABLE_VAUXP9_VAUXN9 {true} \
-    CONFIG.CHANNEL_ENABLE_VBRAM {true} \
-    CONFIG.CHANNEL_ENABLE_VCCAUX {true} \
-    CONFIG.CHANNEL_ENABLE_VCCDDRO {true} \
-    CONFIG.CHANNEL_ENABLE_VCCINT {true} \
-    CONFIG.CHANNEL_ENABLE_VCCPAUX {true} \
-    CONFIG.CHANNEL_ENABLE_VCCPINT {true} \
-    CONFIG.CHANNEL_ENABLE_VP_VN {true} \
-    CONFIG.CHANNEL_ENABLE_VREFN {true} \
-    CONFIG.CHANNEL_ENABLE_VREFP {true} \
-    CONFIG.ENABLE_RESET {false} \
-    CONFIG.ENABLE_VCCPAUX_ALARM {false} \
-    CONFIG.ENABLE_VCCPINT_ALARM {false} \
-    CONFIG.EXTERNAL_MUX_CHANNEL {VP_VN} \
-    CONFIG.INTERFACE_SELECTION {Enable_AXI} \
-    CONFIG.SEQUENCER_MODE {Continuous} \
-    CONFIG.SINGLE_CHANNEL_SELECTION {TEMPERATURE} \
-    CONFIG.USER_TEMP_ALARM {false} \
-    CONFIG.XADC_STARUP_SELECTION {channel_sequencer} \
-  ] $xadc_wiz_0
-
-
   # Create instance: axi_smc, and set properties
   set axi_smc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 axi_smc ]
   set_property -dict [list \
-    CONFIG.NUM_MI {2} \
+    CONFIG.NUM_MI {1} \
     CONFIG.NUM_SI {1} \
   ] $axi_smc
 
@@ -855,18 +804,7 @@ proc create_root_design { parentCell } {
   set xlconcat_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 xlconcat_0 ]
 
   # Create interface connections
-  connect_bd_intf_net -intf_net Vaux0_0_1 [get_bd_intf_ports vaux0] [get_bd_intf_pins xadc_wiz_0/Vaux0]
-  connect_bd_intf_net -intf_net Vaux12_0_1 [get_bd_intf_ports vaux12] [get_bd_intf_pins xadc_wiz_0/Vaux12]
-  connect_bd_intf_net -intf_net Vaux13_0_1 [get_bd_intf_ports vaux13] [get_bd_intf_pins xadc_wiz_0/Vaux13]
-  connect_bd_intf_net -intf_net Vaux15_0_1 [get_bd_intf_ports vaux15] [get_bd_intf_pins xadc_wiz_0/Vaux15]
-  connect_bd_intf_net -intf_net Vaux1_0_1 [get_bd_intf_ports vaux1] [get_bd_intf_pins xadc_wiz_0/Vaux1]
-  connect_bd_intf_net -intf_net Vaux5_0_1 [get_bd_intf_ports vaux5] [get_bd_intf_pins xadc_wiz_0/Vaux5]
-  connect_bd_intf_net -intf_net Vaux6_0_1 [get_bd_intf_ports vaux6] [get_bd_intf_pins xadc_wiz_0/Vaux6]
-  connect_bd_intf_net -intf_net Vaux8_0_1 [get_bd_intf_ports vaux8] [get_bd_intf_pins xadc_wiz_0/Vaux8]
-  connect_bd_intf_net -intf_net Vaux9_0_1 [get_bd_intf_ports vaux9] [get_bd_intf_pins xadc_wiz_0/Vaux9]
-  connect_bd_intf_net -intf_net Vp_Vn_0_1 [get_bd_intf_ports vp_vn] [get_bd_intf_pins xadc_wiz_0/Vp_Vn]
   connect_bd_intf_net -intf_net axi_smc_M00_AXI [get_bd_intf_pins axi_smc/M00_AXI] [get_bd_intf_ports M_AXI_ps]
-  connect_bd_intf_net -intf_net axi_smc_M01_AXI [get_bd_intf_pins axi_smc/M01_AXI] [get_bd_intf_pins xadc_wiz_0/s_axi_lite]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system7_0/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
   connect_bd_intf_net -intf_net processing_system7_0_IIC_0 [get_bd_intf_ports Shield_I2C] [get_bd_intf_pins processing_system7_0/IIC_0]
@@ -874,12 +812,13 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net processing_system7_0_SPI_0 [get_bd_intf_ports Shield_SPI] [get_bd_intf_pins processing_system7_0/SPI_0]
 
   # Create port connections
+  connect_bd_net -net IRQ_F2P_1  [get_bd_ports IRQ_F2P] \
+  [get_bd_pins processing_system7_0/IRQ_F2P]
   connect_bd_net -net processing_system7_0_FCLK_CLK0  [get_bd_pins processing_system7_0/FCLK_CLK0] \
   [get_bd_ports ps_clk] \
   [get_bd_pins axi_smc/aclk] \
   [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] \
-  [get_bd_pins rst_ps7_0_100M/slowest_sync_clk] \
-  [get_bd_pins xadc_wiz_0/s_axi_aclk]
+  [get_bd_pins rst_ps7_0_100M/slowest_sync_clk]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N  [get_bd_pins processing_system7_0/FCLK_RESET0_N] \
   [get_bd_pins rst_ps7_0_100M/ext_reset_in]
   connect_bd_net -net processing_system7_0_SPI0_SS1_O  [get_bd_pins processing_system7_0/SPI0_SS1_O] \
@@ -887,16 +826,12 @@ proc create_root_design { parentCell } {
   connect_bd_net -net processing_system7_0_SPI0_SS2_O  [get_bd_pins processing_system7_0/SPI0_SS2_O] \
   [get_bd_pins xlconcat_0/In1]
   connect_bd_net -net rst_ps7_0_100M_peripheral_aresetn  [get_bd_pins rst_ps7_0_100M/peripheral_aresetn] \
-  [get_bd_pins axi_smc/aresetn] \
-  [get_bd_pins xadc_wiz_0/s_axi_aresetn]
+  [get_bd_pins axi_smc/aresetn]
   connect_bd_net -net rst_ps7_0_100M_peripheral_reset  [get_bd_pins rst_ps7_0_100M/peripheral_reset] \
   [get_bd_ports peripheral_reset]
-  connect_bd_net -net xadc_wiz_0_ip2intc_irpt  [get_bd_pins xadc_wiz_0/ip2intc_irpt] \
-  [get_bd_pins processing_system7_0/IRQ_F2P]
 
   # Create address segments
   assign_bd_address -offset 0x46000000 -range 0x00020000 -with_name SEG_M_AXI_GP0_Reg -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXI_ps/Reg] -force
-  assign_bd_address -offset 0x43C10000 -range 0x00010000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs xadc_wiz_0/s_axi_lite/Reg] -force
 
 
   # Restore current instance

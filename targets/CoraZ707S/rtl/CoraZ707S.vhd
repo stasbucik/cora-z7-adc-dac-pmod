@@ -69,26 +69,6 @@ entity CoraZ707S is
 		Shield_SPI_sck_io : inout STD_LOGIC;
 		Shield_SPI_ss_io  : inout STD_LOGIC;
 		rgb_led           : out   STD_LOGIC_VECTOR ( 5 downto 0 );
-		vaux0_v_n         : in    STD_LOGIC;
-		vaux0_v_p         : in    STD_LOGIC;
-		vaux12_v_n        : in    STD_LOGIC;
-		vaux12_v_p        : in    STD_LOGIC;
-		vaux13_v_n        : in    STD_LOGIC;
-		vaux13_v_p        : in    STD_LOGIC;
-		vaux15_v_n        : in    STD_LOGIC;
-		vaux15_v_p        : in    STD_LOGIC;
-		vaux1_v_n         : in    STD_LOGIC;
-		vaux1_v_p         : in    STD_LOGIC;
-		vaux5_v_n         : in    STD_LOGIC;
-		vaux5_v_p         : in    STD_LOGIC;
-		vaux6_v_n         : in    STD_LOGIC;
-		vaux6_v_p         : in    STD_LOGIC;
-		vaux8_v_n         : in    STD_LOGIC;
-		vaux8_v_p         : in    STD_LOGIC;
-		vaux9_v_n         : in    STD_LOGIC;
-		vaux9_v_p         : in    STD_LOGIC;
-		vp_vn_v_n         : in    STD_LOGIC;
-		vp_vn_v_p         : in    STD_LOGIC;
 		ja1_p             : out   STD_LOGIC;
 		ja1_n             : out   STD_LOGIC;
 		ja2_p             : out   STD_LOGIC;
@@ -106,6 +86,8 @@ architecture Behavioral of CoraZ707S is
 
 	signal clk : STD_LOGIC;
 	signal rst : STD_LOGIC;
+
+	signal interrupt : STD_LOGIC;
 
 	-- DAC signals
 	signal dacSdin  : STD_LOGIC;
@@ -188,6 +170,7 @@ begin
 			FIXED_IO_ps_clk   => FIXED_IO_ps_clk,
 			FIXED_IO_ps_porb  => FIXED_IO_ps_porb,
 			FIXED_IO_ps_srstb => FIXED_IO_ps_srstb,
+			IRQ_F2P           => interrupt,
 			axiPsSrc          => axiPsSrc,
 			axiPsDst          => axiPsDst,
 			Shield_I2C_scl_io => Shield_I2C_scl_io,
@@ -197,27 +180,7 @@ begin
 			Shield_SPI_sck_io => Shield_SPI_sck_io,
 			Shield_SPI_ss_io  => Shield_SPI_ss_io,
 			peripheral_reset  => rst,
-			ps_clk            => clk,
-			vaux0_v_n         => vaux0_v_n,
-			vaux0_v_p         => vaux0_v_p,
-			vaux12_v_n        => vaux12_v_n,
-			vaux12_v_p        => vaux12_v_p,
-			vaux13_v_n        => vaux13_v_n,
-			vaux13_v_p        => vaux13_v_p,
-			vaux15_v_n        => vaux15_v_n,
-			vaux15_v_p        => vaux15_v_p,
-			vaux1_v_n         => vaux1_v_n,
-			vaux1_v_p         => vaux1_v_p,
-			vaux5_v_n         => vaux5_v_n,
-			vaux5_v_p         => vaux5_v_p,
-			vaux6_v_n         => vaux6_v_n,
-			vaux6_v_p         => vaux6_v_p,
-			vaux8_v_n         => vaux8_v_n,
-			vaux8_v_p         => vaux8_v_p,
-			vaux9_v_n         => vaux9_v_n,
-			vaux9_v_p         => vaux9_v_p,
-			vp_vn_v_n         => vp_vn_v_n,
-			vp_vn_v_p         => vp_vn_v_p
+			ps_clk            => clk
 		);
 
 
