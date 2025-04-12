@@ -8,7 +8,7 @@ use IEEE.math_real."log2";
 
 package BramBufferPkg is
 
-	constant BRAM_BUFFER_NUM_ADDRESSES_C     : natural := 1024;
+	constant BRAM_BUFFER_NUM_ADDRESSES_C     : natural := 1024 * 8;
 	constant BRAM_BUFFER_PACKING_C           : natural := 2;
 	constant BRAM_BUFFER_SAMPLE_DATA_WIDTH_C : natural := 12;
 	constant BRAM_BUFFER_DATA_WIDTH_C        : natural := BRAM_BUFFER_PACKING_C * BRAM_BUFFER_SAMPLE_DATA_WIDTH_C;
