@@ -129,7 +129,6 @@ if { ${enable} == 1 } {
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWPROT[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWQOS[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWVALID}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WID[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WDATA[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WSTRB[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WLAST}
