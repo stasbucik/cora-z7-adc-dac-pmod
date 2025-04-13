@@ -108,21 +108,23 @@ architecture Behavioral of DataBuffer is
     end function getOtherBufferIndex;
 
     -----------------------------------------------------------------------------
-    attribute mark_debug                  : string;
-    attribute mark_debug of bramWriteSrc0 : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramWriteSrc1 : signal is MARK_DEBUG_G;
-    attribute mark_debug of writingInto   : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadSrc0  : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadSrc1  : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadDst0  : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadDst1  : signal is MARK_DEBUG_G;
-    attribute mark_debug of readStart     : signal is MARK_DEBUG_G;
-    attribute mark_debug of address       : signal is MARK_DEBUG_G;
-    attribute mark_debug of length        : signal is MARK_DEBUG_G;
-    attribute mark_debug of readDone      : signal is MARK_DEBUG_G;
-    attribute mark_debug of counter       : signal is MARK_DEBUG_G;
-    attribute mark_debug of dataBuffer    : signal is MARK_DEBUG_G;
-    attribute mark_debug of readingFrom   : signal is MARK_DEBUG_G;
+    attribute mark_debug                     : string;
+    attribute mark_debug of bramWriteSrc0    : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramWriteSrc1    : signal is MARK_DEBUG_G;
+    attribute mark_debug of writingInto      : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadSrc0     : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadSrc1     : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadDst0     : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadDst1     : signal is MARK_DEBUG_G;
+    attribute mark_debug of readStart        : signal is MARK_DEBUG_G;
+    attribute mark_debug of address          : signal is MARK_DEBUG_G;
+    attribute mark_debug of length           : signal is MARK_DEBUG_G;
+    attribute mark_debug of readDone         : signal is MARK_DEBUG_G;
+    attribute mark_debug of counter          : signal is MARK_DEBUG_G;
+    attribute mark_debug of dataBuffer       : signal is MARK_DEBUG_G;
+    attribute mark_debug of readingFrom      : signal is MARK_DEBUG_G;
+    attribute mark_debug of interruptDelayed : signal is MARK_DEBUG_G;
+    attribute mark_debug of counterAdapter   : signal is MARK_DEBUG_G;
     ----------------------------------------------------------------------------
 
     constant AXI_WRITE_DUMMY_C : Axi4WriteDestination := (
@@ -137,7 +139,7 @@ architecture Behavioral of DataBuffer is
 begin
     u_BramBufferWriter : entity work.BramBufferWriter
         generic map (
-            MARK_DEBUG_G        => "false",
+            MARK_DEBUG_G        => "true",
             NUM_ADDRESSES_G     => NUM_ADDRESSES_G,
             PACKING_G           => PACKING_G,
             BYTE_WIDTH_G        => BYTE_WIDTH_G,
@@ -196,7 +198,7 @@ begin
 
     u_BramBufferReader : entity work.BramBufferReader
         generic map (
-            MARK_DEBUG_G        => "false",
+            MARK_DEBUG_G        => "true",
             PACKING_G           => PACKING_G,
             BYTE_WIDTH_G        => BYTE_WIDTH_G,
             SAMPLE_DATA_WIDTH_G => SAMPLE_DATA_WIDTH_G,

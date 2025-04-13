@@ -306,7 +306,7 @@ begin
 	----------------------------------------------------------------------------
 	u_DataBuffer : entity work.DataBuffer
 		generic map (
-			MARK_DEBUG_G        => "false",
+			MARK_DEBUG_G        => "true",
 			NUM_ADDRESSES_G     => BRAM_BUFFER_NUM_ADDRESSES_C,
 			PACKING_G           => BRAM_BUFFER_PACKING_C,
 			SAMPLE_DATA_WIDTH_G => BRAM_BUFFER_SAMPLE_DATA_WIDTH_C,
