@@ -3,7 +3,7 @@ source -quiet $::env(RUCKUS_DIR)/vivado_proc.tcl
 
 open_run synth_1
 
-set enable 1
+set enable 0
 if { ${enable} == 1 } {
 	set ilaName "u_ila_ps_clk_domain"
 	set ilaSize 2048
