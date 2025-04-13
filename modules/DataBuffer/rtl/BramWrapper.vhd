@@ -43,8 +43,8 @@ entity BramWrapper is
         LATENCY_G     : natural := 1
     );
     Port (
-        clk : STD_LOGIC;
-        rst : STD_LOGIC;
+        clk : in STD_LOGIC;
+        rst : in STD_LOGIC;
         -- Write port
         ena   : in STD_LOGIC;
         wea   : in STD_LOGIC_VECTOR(DATA_WIDTH_G/BYTE_WIDTH_G-1 downto 0);
@@ -82,12 +82,12 @@ begin
             RAM_DECOMP              => "auto",          -- String
             READ_DATA_WIDTH_B       => DATA_WIDTH_G,    -- DECIMAL
             READ_LATENCY_B          => LATENCY_G,       -- DECIMAL
-            READ_RESET_VALUE_B      => "0",             -- String
+            READ_RESET_VALUE_B      => "00000000",      -- String
             RST_MODE_A              => "SYNC",          -- String
             RST_MODE_B              => "SYNC",          -- String
-            SIM_ASSERT_CHK          => 0,               -- DECIMAL; 0=disable simulation messages, 1=enable simulation messages
+            SIM_ASSERT_CHK          => 1,               -- DECIMAL; 0=disable simulation messages, 1=enable simulation messages
             USE_EMBEDDED_CONSTRAINT => 0,               -- DECIMAL
-            USE_MEM_INIT            => 0,               -- DECIMAL
+            USE_MEM_INIT            => 1,               -- DECIMAL
             USE_MEM_INIT_MMI        => 0,               -- DECIMAL
             WAKEUP_TIME             => "disable_sleep", -- String
             WRITE_DATA_WIDTH_A      => DATA_WIDTH_G,    -- DECIMAL
