@@ -12,3 +12,10 @@ target : prom
 export PRJ_PART = xc7z007sclg400-1
 
 include ../../submodules/ruckus/system_vivado.mk
+
+.PHONY : sdt
+sdt : target
+	$(PROJ_DIR)/build-sdt.sh
+
+clean-sdt :
+	rm -rf $(PROJ_DIR)/sdt

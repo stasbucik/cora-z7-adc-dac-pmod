@@ -4,3 +4,6 @@
 [submodule "submodules/vivado-library"]
 	path = submodules/vivado-library
 	url = https://github.com/Digilent/vivado-library
+[submodule "submodules/system-device-tree-xlnx"]
+	path = submodules/system-device-tree-xlnx
+	url = https://github.com/stasbucik/system-device-tree-xlnx

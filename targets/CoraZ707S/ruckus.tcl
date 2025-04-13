@@ -1,5 +1,5 @@
 source $::env(RUCKUS_DIR)/vivado_proc.tcl
-source $::DIR_PATH/scripts.tcl
+source $::DIR_PATH/scripts/utils.tcl
 
 loadSource -dir "$::DIR_PATH/rtl" -fileType "vhdl 2008"
 loadConstraints -dir "$::DIR_PATH/rtl"
