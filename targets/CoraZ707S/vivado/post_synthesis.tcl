@@ -16,6 +16,8 @@ if { ${enable} == 1 } {
 	#ConfigProbe ${ilaName} {dacSdin}
 	#ConfigProbe ${ilaName} {dacSync}
 	#ConfigProbe ${ilaName} {dacHighz}
+	ConfigProbe ${ilaName} {adcOverflow}
+	ConfigProbe ${ilaName} {interrupt}
 
 	################################################
 	# axi streams
@@ -43,8 +45,6 @@ if { ${enable} == 1 } {
 
 	#ConfigProbe ${ilaName} {axisAdcDst[TREADY]}
 	################################################
-
-	ConfigProbe ${ilaName} {adcOverflow}
 	
 	################################################
 	# axi4 for my design

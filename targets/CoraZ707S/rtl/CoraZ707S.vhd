@@ -122,6 +122,7 @@ architecture Behavioral of CoraZ707S is
 
 	-----------------------------------------------------------------------------
 	attribute mark_debug                : string;
+	attribute mark_debug of interrupt   : signal is MARK_DEBUG_G;
 	attribute mark_debug of dacSdin     : signal is MARK_DEBUG_G;
 	attribute mark_debug of dacSync     : signal is MARK_DEBUG_G;
 	attribute mark_debug of dacHighz    : signal is MARK_DEBUG_G;
