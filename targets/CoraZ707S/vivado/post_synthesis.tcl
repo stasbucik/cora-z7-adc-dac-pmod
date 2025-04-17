@@ -168,30 +168,30 @@ if { ${enable} == 1 } {
 
 	################################################
 	# u_DataBuffer
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[en]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[we]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[addr][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[din][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[en]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[we]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[addr][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[din][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/writingInto}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[en]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[addr][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc1[en]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc1[addr][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst0[dout][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst1[dout][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/readStart}
-	#ConfigProbe ${ilaName} {u_DataBuffer/address[*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/length}
-	#ConfigProbe ${ilaName} {u_DataBuffer/readDone}
-	#ConfigProbe ${ilaName} {u_DataBuffer/counter[*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/dataBuffer[*][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/readingFrom}
-	#ConfigProbe ${ilaName} {u_DataBuffer/interruptDelayed}
-	#ConfigProbe ${ilaName} {u_DataBuffer/counterAdapter[*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[en]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[we]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[addr][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[din][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[en]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[we]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[addr][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[din][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/writingInto}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[en]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[addr][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc1[en]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc1[addr][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst0[dout][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst1[dout][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/readStart}
+	ConfigProbe ${ilaName} {u_DataBuffer/address[*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/length}
+	ConfigProbe ${ilaName} {u_DataBuffer/readDone}
+	ConfigProbe ${ilaName} {u_DataBuffer/counter[*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/dataBuffer[*][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/readingFrom}
+	ConfigProbe ${ilaName} {u_DataBuffer/interruptDelayed}
+	ConfigProbe ${ilaName} {u_DataBuffer/counterAdapter[*]}
 
 
 	WriteDebugProbes ${ilaName} ${PROJ_DIR}/images/debug_probes.ltx
