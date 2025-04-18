@@ -349,7 +349,7 @@ begin
 
 	u_Sync : entity work.Sync
 		generic map (
-			NUM_STAGES_G => NUM_STAGES_G
+			NUM_STAGES_G => 2
 		)
 		port map (
 			clk_i => clk,
