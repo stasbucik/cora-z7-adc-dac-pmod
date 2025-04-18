@@ -69,6 +69,7 @@ entity CoraZ707S is
 		Shield_SPI_sck_io : inout STD_LOGIC;
 		Shield_SPI_ss_io  : inout STD_LOGIC;
 		rgb_led           : out   STD_LOGIC_VECTOR ( 5 downto 0 );
+		btn               : in    STD_LOGIC_VECTOR(1 downto 0);
 		ja1_p             : out   STD_LOGIC;
 		ja1_n             : out   STD_LOGIC;
 		ja2_p             : out   STD_LOGIC;
@@ -89,6 +90,8 @@ architecture Behavioral of CoraZ707S is
 
 	signal interruptFast : STD_LOGIC;
 	signal interrupt     : STD_LOGIC;
+	signal interruptMask : STD_LOGIC;
+	signal btnSync       : STD_LOGIC;
 
 	-- DAC signals
 	signal dacSdin  : STD_LOGIC;
@@ -125,6 +128,8 @@ architecture Behavioral of CoraZ707S is
 	attribute mark_debug                  : string;
 	attribute mark_debug of interruptFast : signal is MARK_DEBUG_G;
 	attribute mark_debug of interrupt     : signal is MARK_DEBUG_G;
+	attribute mark_debug of interruptMask : signal is MARK_DEBUG_G;
+	attribute mark_debug of btnSync       : signal is MARK_DEBUG_G;
 	attribute mark_debug of dacSdin       : signal is MARK_DEBUG_G;
 	attribute mark_debug of dacSync       : signal is MARK_DEBUG_G;
 	attribute mark_debug of dacHighz      : signal is MARK_DEBUG_G;
@@ -173,7 +178,7 @@ begin
 			FIXED_IO_ps_clk   => FIXED_IO_ps_clk,
 			FIXED_IO_ps_porb  => FIXED_IO_ps_porb,
 			FIXED_IO_ps_srstb => FIXED_IO_ps_srstb,
-			IRQ_F2P           => interrupt,
+			IRQ_F2P           => interruptMask,
 			axiPsSrc          => axiPsSrc,
 			axiPsDst          => axiPsDst,
 			Shield_I2C_scl_io => Shield_I2C_scl_io,
@@ -341,5 +346,18 @@ begin
 			sig_i => interruptFast,
 			sig_o => interrupt
 		);
+
+	u_Sync : entity work.Sync
+		generic map (
+			NUM_STAGES_G => NUM_STAGES_G
+		)
+		port map (
+			clk_i => clk,
+			rst_i => rst,
+			sig_i => btn(0),
+			sig_o => btnSync
+		);
+
+	interruptMask <= interrupt and btnSync;
 
 end Behavioral;
