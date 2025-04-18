@@ -29,7 +29,7 @@ architecture Behavioral of ExtendPulse is
 
     type RegType is record
         state   : StateType;
-        counter : unsigned(integer(ceil(log2(real(NUM_G)))));
+        counter : unsigned(to_integer(ceil(log2(real(NUM_G)))));
         driver  : STD_LOGIC;
     end record RegType;
 
