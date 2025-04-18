@@ -17,7 +17,9 @@ if { ${enable} == 1 } {
 	#ConfigProbe ${ilaName} {dacSync}
 	#ConfigProbe ${ilaName} {dacHighz}
 	ConfigProbe ${ilaName} {adcOverflow}
+	ConfigProbe ${ilaName} {interruptFast}
 	ConfigProbe ${ilaName} {interrupt}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/xlconcat_1_dout[*]}
 
 	################################################
 	# axi streams
@@ -191,7 +193,7 @@ if { ${enable} == 1 } {
 	ConfigProbe ${ilaName} {u_DataBuffer/dataBuffer[*][*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/readingFrom}
 	ConfigProbe ${ilaName} {u_DataBuffer/interruptDelayed}
-	ConfigProbe ${ilaName} {u_DataBuffer/counterAdapter[*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/wrIntoAdapter[*]}
 
 
 	WriteDebugProbes ${ilaName} ${PROJ_DIR}/images/debug_probes.ltx

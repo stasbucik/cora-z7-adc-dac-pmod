@@ -173,7 +173,7 @@ begin
                     v.readDone       := '1';
                 end if;
 
-                case readingFrom_i is
+                case r.readingFrom is
                     when 0 =>
                         v.tmpBuffer(to_integer(r.transferCounter)) := bramReadDst0_i.dout;
                     when 1 =>

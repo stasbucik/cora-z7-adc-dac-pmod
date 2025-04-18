@@ -87,7 +87,8 @@ architecture Behavioral of CoraZ707S is
 	signal clk : STD_LOGIC;
 	signal rst : STD_LOGIC;
 
-	signal interrupt : STD_LOGIC;
+	signal interruptFast : STD_LOGIC;
+	signal interrupt     : STD_LOGIC;
 
 	-- DAC signals
 	signal dacSdin  : STD_LOGIC;
@@ -121,20 +122,21 @@ architecture Behavioral of CoraZ707S is
 	signal adcOverflow : STD_LOGIC;
 
 	-----------------------------------------------------------------------------
-	attribute mark_debug                : string;
-	attribute mark_debug of interrupt   : signal is MARK_DEBUG_G;
-	attribute mark_debug of dacSdin     : signal is MARK_DEBUG_G;
-	attribute mark_debug of dacSync     : signal is MARK_DEBUG_G;
-	attribute mark_debug of dacHighz    : signal is MARK_DEBUG_G;
-	attribute mark_debug of axisDacSrc  : signal is MARK_DEBUG_G;
-	attribute mark_debug of axisDacDst  : signal is MARK_DEBUG_G;
-	attribute mark_debug of adcDout     : signal is MARK_DEBUG_G;
-	attribute mark_debug of adcCs       : signal is MARK_DEBUG_G;
-	attribute mark_debug of axisAdcSrc  : signal is MARK_DEBUG_G;
-	attribute mark_debug of axisAdcDst  : signal is MARK_DEBUG_G;
-	attribute mark_debug of adcOverflow : signal is MARK_DEBUG_G;
-	attribute mark_debug of axiPsSrc    : signal is MARK_DEBUG_G;
-	attribute mark_debug of axiPsDst    : signal is MARK_DEBUG_G;
+	attribute mark_debug                  : string;
+	attribute mark_debug of interruptFast : signal is MARK_DEBUG_G;
+	attribute mark_debug of interrupt     : signal is MARK_DEBUG_G;
+	attribute mark_debug of dacSdin       : signal is MARK_DEBUG_G;
+	attribute mark_debug of dacSync       : signal is MARK_DEBUG_G;
+	attribute mark_debug of dacHighz      : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisDacSrc    : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisDacDst    : signal is MARK_DEBUG_G;
+	attribute mark_debug of adcDout       : signal is MARK_DEBUG_G;
+	attribute mark_debug of adcCs         : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisAdcSrc    : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisAdcDst    : signal is MARK_DEBUG_G;
+	attribute mark_debug of adcOverflow   : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiPsSrc      : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiPsDst      : signal is MARK_DEBUG_G;
 	----------------------------------------------------------------------------
 
 	component clk_wiz_mmc_100_64
@@ -326,7 +328,18 @@ begin
 			axisWriteDst_o => axisAdcDst,
 			axiSrc_i       => axiPsSrc,
 			axiDst_o       => axiPsDst,
-			interrupt_o    => interrupt
+			interrupt_o    => interruptFast
+		);
+
+	u_ExtendPulse : entity work.ExtendPulse
+		generic map (
+			NUM_G => 5
+		)
+		port map (
+			clk_i => clk,
+			rst_i => rst,
+			sig_i => interruptFast,
+			sig_o => interrupt
 		);
 
 end Behavioral;
