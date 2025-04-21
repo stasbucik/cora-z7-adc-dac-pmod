@@ -150,7 +150,7 @@ if { ${enable} == 1 } {
 	# u_BramBufferReader
 	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[state][*]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[addr][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[len]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[len][*]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[transferCounter][*]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[latencyCounter]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[enables][*]}
@@ -189,7 +189,7 @@ if { ${enable} == 1 } {
 	ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst1[dout][*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/readStart}
 	#ConfigProbe ${ilaName} {u_DataBuffer/address[*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/length}
+	ConfigProbe ${ilaName} {u_DataBuffer/length[*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/readDone}
 	#ConfigProbe ${ilaName} {u_DataBuffer/counter[*]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/dataBuffer[*][*]}
