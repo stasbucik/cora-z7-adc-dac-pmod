@@ -18,8 +18,8 @@ if { ${enable} == 1 } {
 	#ConfigProbe ${ilaName} {dacHighz}
 	#ConfigProbe ${ilaName} {adcOverflow}
 	#ConfigProbe ${ilaName} {interruptFast}
-	#ConfigProbe ${ilaName} {interrupt}
-	#ConfigProbe ${ilaName} {interruptMask}
+	ConfigProbe ${ilaName} {interrupt}
+	ConfigProbe ${ilaName} {interruptMask}
 	#ConfigProbe ${ilaName} {btnSync}
 	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/xlconcat_1_dout[*]}
 
@@ -104,24 +104,24 @@ if { ${enable} == 1 } {
 
 	################################################
 	# axi4 from fpga
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARID[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARADDR[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLEN[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARSIZE[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARBURST[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLOCK[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARCACHE[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARPROT[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARQOS[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARVALID}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RREADY}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARID[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARADDR[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLEN[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARSIZE[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARBURST[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLOCK[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARCACHE[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARPROT[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARQOS[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARVALID}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RREADY}
 
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARREADY}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RID[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RDATA[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RRESP[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RLAST}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RVALID}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARREADY}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RID[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RDATA[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RRESP[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RLAST}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RVALID}
 
 	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWID[*]}
 	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWADDR[*]}
@@ -148,27 +148,27 @@ if { ${enable} == 1 } {
 	
 	################################################
 	# u_BramBufferReader
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[state][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[addr][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[len][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[transferCounter][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[latencyCounter]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[enables][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[tmpBuffer][*][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[readDone]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[readingFrom]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[state][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[addr][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[len][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[transferCounter][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[latencyCounter]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[enables][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[tmpBuffer][*][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[readDone]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[readingFrom]}
 
 	################################################
 	# u_BramBufferWriter
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[state]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[tready]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[addressCounter][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[bufferIndex]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[previousBufferIndex]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[rowCounter][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[we][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[wrAddr][*]}
-	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[wrData][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[state]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[tready]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[addressCounter][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[bufferIndex]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[previousBufferIndex]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[rowCounter][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[we][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[wrAddr][*]}
+	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferWriter/r[wrData][*]}
 
 	################################################
 	# u_DataBuffer
@@ -181,12 +181,12 @@ if { ${enable} == 1 } {
 	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[addr][*]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[din][*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/writingInto}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[en]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[addr][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc1[en]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc1[addr][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst0[dout][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst1[dout][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[en]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[addr][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc1[en]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc1[addr][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst0[dout][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst1[dout][*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/readStart}
 	#ConfigProbe ${ilaName} {u_DataBuffer/address[*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/length[*]}
