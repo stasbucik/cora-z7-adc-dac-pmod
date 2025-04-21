@@ -240,7 +240,7 @@ begin
                     if (axiReadSrc_i.arburst = AXI_BURST_TYPE_INCR_C and
                             axiReadSrc_i.arsize = AXI_BURST_SIZE_4_BYTES_C) then
 
-                        v.axiAddr := STD_LOGIC_VECTOR(shift_left(uSub(unsigned(axiReadSrc_i.araddr), AXI_ADDRESS_G), 2));
+                        v.axiAddr := STD_LOGIC_VECTOR(shift_right(uSub(unsigned(axiReadSrc_i.araddr), AXI_ADDRESS_G), 2));
                         v.addr    := v.axiAddr(ADDR_WIDTH_G-1 downto 0);
 
                         if (to_integer(unsigned(axiReadSrc_i.arlen)) > MAX_LENGTH_G-1) then
