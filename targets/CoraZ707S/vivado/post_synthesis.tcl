@@ -154,7 +154,7 @@ if { ${enable} == 1 } {
 	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[transferCounter][*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[latencyCounter]}
 	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[enables][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[tmpBuffer][*][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[tmpBuffer][*][*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[readDone]}
 	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[readingFrom]}
 
