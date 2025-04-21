@@ -83,7 +83,7 @@ end CoraZ707S;
 
 architecture Behavioral of CoraZ707S is
 
-	constant AXI_DATA_WIDTH_C : natural := 16;
+	constant AXI_ADDRESS_C : unsigned(31 downto 0) := x"4600_0000";
 
 	signal clk : STD_LOGIC;
 	signal rst : STD_LOGIC;
@@ -324,7 +324,8 @@ begin
 			MEMORY_SIZE_G       => BRAM_BUFFER_MEMORY_SIZE_C,
 			ADDR_WIDTH_G        => BRAM_BUFFER_ADDR_WIDTH_C,
 			MAX_LENGTH_G        => BRAM_BUFFER_MAX_LENGTH_C,
-			LENGTH_WIDTH_G      => BRAM_BUFFER_LENGTH_WIDTH_C
+			LENGTH_WIDTH_G      => BRAM_BUFFER_LENGTH_WIDTH_C,
+			AXI_ADDRESS_G       => AXI_ADDRESS_C
 		)
 		port map (
 			clk_i          => clk,

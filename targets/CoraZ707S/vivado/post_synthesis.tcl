@@ -16,12 +16,12 @@ if { ${enable} == 1 } {
 	#ConfigProbe ${ilaName} {dacSdin}
 	#ConfigProbe ${ilaName} {dacSync}
 	#ConfigProbe ${ilaName} {dacHighz}
-	ConfigProbe ${ilaName} {adcOverflow}
-	ConfigProbe ${ilaName} {interruptFast}
-	ConfigProbe ${ilaName} {interrupt}
-	ConfigProbe ${ilaName} {interruptMask}
-	ConfigProbe ${ilaName} {btnSync}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/xlconcat_1_dout[*]}
+	#ConfigProbe ${ilaName} {adcOverflow}
+	#ConfigProbe ${ilaName} {interruptFast}
+	#ConfigProbe ${ilaName} {interrupt}
+	#ConfigProbe ${ilaName} {interruptMask}
+	#ConfigProbe ${ilaName} {btnSync}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/xlconcat_1_dout[*]}
 
 	################################################
 	# axi streams
@@ -52,27 +52,27 @@ if { ${enable} == 1 } {
 	
 	################################################
 	# axi4 for my design
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARID]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARADDR][*]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARLEN][*]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARSIZE][*]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARBURST][*]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARLOCK]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARCACHE][*]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARPROT][*]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARQOS][*]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARREGION][*]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARUSER]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][ARVALID]}
-	#ConfigProbe ${ilaName} {axiPsSrc[rd][RREADY]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARID]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARADDR][*]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARLEN][*]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARSIZE][*]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARBURST][*]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARLOCK]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARCACHE][*]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARPROT][*]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARQOS][*]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARREGION][*]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARUSER]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][ARVALID]}
+	ConfigProbe ${ilaName} {axiPsSrc[rd][RREADY]}
 
-	#ConfigProbe ${ilaName} {axiPsDst[rd][ARREADY]}
-	#ConfigProbe ${ilaName} {axiPsDst[rd][RID]}
-	#ConfigProbe ${ilaName} {axiPsDst[rd][RDATA][*]}
-	#ConfigProbe ${ilaName} {axiPsDst[rd][RRESP][*]}
-	#ConfigProbe ${ilaName} {axiPsDst[rd][RLAST]}
-	#ConfigProbe ${ilaName} {axiPsDst[rd][RUSER]}
-	#ConfigProbe ${ilaName} {axiPsDst[rd][RVALID]}
+	ConfigProbe ${ilaName} {axiPsDst[rd][ARREADY]}
+	ConfigProbe ${ilaName} {axiPsDst[rd][RID]}
+	ConfigProbe ${ilaName} {axiPsDst[rd][RDATA][*]}
+	ConfigProbe ${ilaName} {axiPsDst[rd][RRESP][*]}
+	ConfigProbe ${ilaName} {axiPsDst[rd][RLAST]}
+	ConfigProbe ${ilaName} {axiPsDst[rd][RUSER]}
+	ConfigProbe ${ilaName} {axiPsDst[rd][RVALID]}
 
 	#ConfigProbe ${ilaName} {axiPsSrc[wr][AWID]}
 	#ConfigProbe ${ilaName} {axiPsSrc[wr][AWADDR][*]}
@@ -172,14 +172,14 @@ if { ${enable} == 1 } {
 
 	################################################
 	# u_DataBuffer
-	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[en]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[we]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[addr][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[din][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[en]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[we]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[addr][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[din][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[en]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[we]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[addr][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc0[din][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[en]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[we]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[addr][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[din][*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/writingInto}
 	ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[en]}
 	ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[addr][*]}
@@ -188,14 +188,14 @@ if { ${enable} == 1 } {
 	ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst0[dout][*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst1[dout][*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/readStart}
-	ConfigProbe ${ilaName} {u_DataBuffer/address[*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/address[*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/length}
 	ConfigProbe ${ilaName} {u_DataBuffer/readDone}
-	ConfigProbe ${ilaName} {u_DataBuffer/counter[*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/dataBuffer[*][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/counter[*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/dataBuffer[*][*]}
 	ConfigProbe ${ilaName} {u_DataBuffer/readingFrom}
-	ConfigProbe ${ilaName} {u_DataBuffer/interruptDelayed}
-	ConfigProbe ${ilaName} {u_DataBuffer/wrIntoAdapter[*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/interruptDelayed}
+	#ConfigProbe ${ilaName} {u_DataBuffer/wrIntoAdapter[*]}
 
 
 	WriteDebugProbes ${ilaName} ${PROJ_DIR}/images/debug_probes.ltx

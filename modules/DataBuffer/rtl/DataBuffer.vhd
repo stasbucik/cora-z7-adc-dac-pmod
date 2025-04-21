@@ -51,7 +51,8 @@ entity DataBuffer is
         MEMORY_SIZE_G       : natural := NUM_ADDRESSES_G * DATA_WIDTH_G;
         ADDR_WIDTH_G        : natural := natural(ceil(log2(real(NUM_ADDRESSES_G))));
         MAX_LENGTH_G        : natural := 256;
-        LENGTH_WIDTH_G      : natural := natural(ceil(log2(real(MAX_LENGTH_G))))
+        LENGTH_WIDTH_G      : natural := natural(ceil(log2(real(MAX_LENGTH_G))));
+        AXI_ADDRESS_G       : unsigned(31 downto 0) := x"8000_0000"
     );
     Port (
         clk_i : in STD_LOGIC;
@@ -234,7 +235,8 @@ begin
             DATA_WIDTH_G        => DATA_WIDTH_G,
             MAX_LENGTH_G        => MAX_LENGTH_G,
             LENGTH_WIDTH_G      => LENGTH_WIDTH_G,
-            ADDR_WIDTH_G        => ADDR_WIDTH_G
+            ADDR_WIDTH_G        => ADDR_WIDTH_G,
+            AXI_ADDRESS_G       => AXI_ADDRESS_G
         )
         port map (
             clk_i        => clk_i,

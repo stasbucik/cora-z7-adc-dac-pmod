@@ -52,16 +52,17 @@ architecture Behavioral of Axi4InterfaceTb is
 	constant TB_AXI_DATA_WIDTH_C : natural := 32;
 	constant TB_AXI_ADDR_WIDTH_C : natural := 32;
 
-	constant TB_NUM_ADDRESSES_C     : natural := 8;
-	constant TB_PACKING_C           : natural := 2;
-	constant TB_SAMPLE_DATA_WIDTH_C : natural := 12;
-	constant TB_DATA_WIDTH_C        : natural := TB_PACKING_C * TB_SAMPLE_DATA_WIDTH_C;
-	constant TB_BYTE_WIDTH_C        : natural := TB_DATA_WIDTH_C;
-	constant TB_LATENCY_C           : natural := 3;
-	constant TB_MEMORY_SIZE_C       : natural := TB_NUM_ADDRESSES_C * TB_DATA_WIDTH_C;
-	constant TB_ADDR_WIDTH_C        : natural := natural(ceil(log2(real(TB_NUM_ADDRESSES_C))));
-	constant TB_MAX_LENGTH_C        : natural := 4;
-	constant TB_LENGTH_WIDTH_C      : natural := natural(ceil(log2(real(TB_MAX_LENGTH_C))));
+	constant TB_NUM_ADDRESSES_C     : natural                                := 8;
+	constant TB_PACKING_C           : natural                                := 2;
+	constant TB_SAMPLE_DATA_WIDTH_C : natural                                := 12;
+	constant TB_DATA_WIDTH_C        : natural                                := TB_PACKING_C * TB_SAMPLE_DATA_WIDTH_C;
+	constant TB_BYTE_WIDTH_C        : natural                                := TB_DATA_WIDTH_C;
+	constant TB_LATENCY_C           : natural                                := 3;
+	constant TB_MEMORY_SIZE_C       : natural                                := TB_NUM_ADDRESSES_C * TB_DATA_WIDTH_C;
+	constant TB_ADDR_WIDTH_C        : natural                                := natural(ceil(log2(real(TB_NUM_ADDRESSES_C))));
+	constant TB_MAX_LENGTH_C        : natural                                := 4;
+	constant TB_LENGTH_WIDTH_C      : natural                                := natural(ceil(log2(real(TB_MAX_LENGTH_C))));
+	constant TB_AXI_ADDRESS_C       : unsigned(TB_AXI_ADDR_WIDTH_C downto 0) := x"8000_0000";
 
 	constant TB_ACTION_TIMEOUT : time := 80 ns;
 
@@ -164,7 +165,8 @@ begin
 			DATA_WIDTH_G        => TB_DATA_WIDTH_C,
 			MAX_LENGTH_G        => TB_MAX_LENGTH_C,
 			LENGTH_WIDTH_G      => TB_LENGTH_WIDTH_C,
-			ADDR_WIDTH_G        => TB_ADDR_WIDTH_C
+			ADDR_WIDTH_G        => TB_ADDR_WIDTH_C,
+			AXI_ADDRESS_G       => TB_AXI_ADDRESS_C
 		)
 		port map (
 			clk_i        => clk_i,
@@ -265,7 +267,7 @@ begin
 
 
 		-- axi test error
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(to_unsigned(0, axiReadSrc_i.araddr'length));
+		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
 		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(6-1, axiReadSrc_i.arlen'length));
 		axiReadSrc_i.arsize  <= "011";
 		axiReadSrc_i.arburst <= "01";
@@ -291,7 +293,7 @@ begin
 
 
 		-- axi ready immediately, wait for data, read 1
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(to_unsigned(0, axiReadSrc_i.araddr'length));
+		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
 		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(1-1, axiReadSrc_i.arlen'length));
 		axiReadSrc_i.arsize  <= "010";
 		axiReadSrc_i.arburst <= "01";
@@ -319,7 +321,7 @@ begin
 
 
 		-- axi not ready immediately, wait for data, read 1
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(to_unsigned(0, axiReadSrc_i.araddr'length));
+		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
 		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(1-1, axiReadSrc_i.arlen'length));
 		axiReadSrc_i.arsize  <= "010";
 		axiReadSrc_i.arburst <= "01";
@@ -347,7 +349,7 @@ begin
 
 
 		-- axi ready immediately, wait for data, read 2
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(to_unsigned(0, axiReadSrc_i.araddr'length));
+		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
 		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(2-1, axiReadSrc_i.arlen'length));
 		axiReadSrc_i.arsize  <= "010";
 		axiReadSrc_i.arburst <= "01";
@@ -374,7 +376,7 @@ begin
 
 
 		-- axi ready immediately, wait for data, read 3
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(to_unsigned(0, axiReadSrc_i.araddr'length));
+		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
 		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(3-1, axiReadSrc_i.arlen'length));
 		axiReadSrc_i.arsize  <= "010";
 		axiReadSrc_i.arburst <= "01";
@@ -402,7 +404,7 @@ begin
 
 
 		-- axi ready immediately, wait for data, read 4
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(to_unsigned(0, axiReadSrc_i.araddr'length));
+		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
 		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(4-1, axiReadSrc_i.arlen'length));
 		axiReadSrc_i.arsize  <= "010";
 		axiReadSrc_i.arburst <= "01";
@@ -430,7 +432,7 @@ begin
 
 
 		-- axi ready immediately, wait for data, read 5
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(to_unsigned(0, axiReadSrc_i.araddr'length));
+		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
 		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(5-1, axiReadSrc_i.arlen'length));
 		axiReadSrc_i.arsize  <= "010";
 		axiReadSrc_i.arburst <= "01";

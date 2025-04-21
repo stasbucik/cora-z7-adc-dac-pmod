@@ -39,13 +39,14 @@ use IEEE.math_real."log2";
 
 entity Axi4Interface is
     generic(
-        MARK_DEBUG_G        : string  := "false";
-        PACKING_G           : natural := 2;
-        SAMPLE_DATA_WIDTH_G : natural := 12;
-        DATA_WIDTH_G        : natural := PACKING_G * SAMPLE_DATA_WIDTH_G;
-        MAX_LENGTH_G        : natural := 16;
-        LENGTH_WIDTH_G      : natural := natural(ceil(log2(real(MAX_LENGTH_G))));
-        ADDR_WIDTH_G        : natural := natural(ceil(log2(real(1024))))
+        MARK_DEBUG_G        : string                := "false";
+        PACKING_G           : natural               := 2;
+        SAMPLE_DATA_WIDTH_G : natural               := 12;
+        DATA_WIDTH_G        : natural               := PACKING_G * SAMPLE_DATA_WIDTH_G;
+        MAX_LENGTH_G        : natural               := 16;
+        LENGTH_WIDTH_G      : natural               := natural(ceil(log2(real(MAX_LENGTH_G))));
+        ADDR_WIDTH_G        : natural               := natural(ceil(log2(real(1024))));
+        AXI_ADDRESS_G       : unsigned(31 downto 0) := x"8000_0000"
     );
     Port (
         clk_i : in STD_LOGIC;
@@ -85,6 +86,7 @@ architecture Behavioral of Axi4Interface is
     type RegType is record
         state                : StateType;
         addr                 : STD_LOGIC_VECTOR(ADDR_WIDTH_G-1 downto 0);
+        axiAddr              : STD_LOGIC_VECTOR(axiReadSrc_i.araddr'range);
         burst_len            : unsigned(axiReadSrc_i.ARLEN'range);
         read_len             : unsigned(LENGTH_WIDTH_G-1 downto 0);
         burst_width          : STD_LOGIC_VECTOR(axiReadSrc_i.ARSIZE'range);
@@ -104,6 +106,7 @@ architecture Behavioral of Axi4Interface is
     constant REG_TYPE_INIT_C : RegType := (
             state                => INIT_S,
             addr                 => (others => '0'),
+            axiAddr              => (others => '0'),
             burst_len            => (others => '0'),
             read_len             => (others => '0'),
             burst_width          => (others => '0'),
@@ -237,7 +240,8 @@ begin
                     if (axiReadSrc_i.arburst = AXI_BURST_TYPE_INCR_C and
                             axiReadSrc_i.arsize = AXI_BURST_SIZE_4_BYTES_C) then
 
-                        v.addr := axiReadSrc_i.araddr(ADDR_WIDTH_G-1 downto 0);
+                        v.axiAddr := STD_LOGIC_VECTOR(shift_left(uSub(unsigned(axiReadSrc_i.araddr), AXI_ADDRESS_G), 2));
+                        v.addr    := v.axiAddr(ADDR_WIDTH_G-1 downto 0);
 
                         if (to_integer(unsigned(axiReadSrc_i.arlen)) > MAX_LENGTH_G-1) then
                             v.read_len := to_unsigned(MAX_LENGTH_G-1, LENGTH_WIDTH_G);
