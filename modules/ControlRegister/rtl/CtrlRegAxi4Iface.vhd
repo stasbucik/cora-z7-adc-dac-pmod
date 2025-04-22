@@ -48,8 +48,11 @@ entity CtrlRegAxi4Iface is
         clk_i : in STD_LOGIC;
         rst_i : in STD_LOGIC;
 
-        axiSrc_i : in  Axi4Source;
-        axiDst_o : out Axi4Destination;
+        axiReadSrc_i : in  Axi4ReadSource;
+        axiReadDst_o : out Axi4ReadDestination;
+
+        axiWriteSrc_i : in  Axi4WriteSource;
+        axiWriteDst_o : out Axi4WriteDestination;
 
         writeEnable_o : out STD_LOGIC;
         data_o        : out STD_LOGIC_VECTOR(WIDTH_G-1 downto 0);
@@ -79,19 +82,19 @@ architecture Behavioral of CtrlRegAxi4Iface is
 
     type RegType is record
         state           : StateType;
-        axiAddr         : STD_LOGIC_VECTOR(axiSrc_i.rd.araddr'range);
-        burst_len       : unsigned(axiSrc_i.rd.ARLEN'range);
-        transferCounter : unsigned(axiSrc_i.rd.ARLEN'length downto 0); -- one more bit to prevent overflow
+        axiAddr         : STD_LOGIC_VECTOR(axiReadSrc_i.araddr'range);
+        burst_len       : unsigned(axiReadSrc_i.ARLEN'range);
+        transferCounter : unsigned(axiReadSrc_i.ARLEN'length downto 0); -- one more bit to prevent overflow
         writeData       : STD_LOGIC_VECTOR(WIDTH_G-1 downto 0);
         writeEnable     : STD_LOGIC;
         arready         : STD_LOGIC;
-        rdata           : STD_LOGIC_VECTOR(axiDst_o.rd.rdata'range);
-        rresp           : STD_LOGIC_VECTOR(axiDst_o.rd.rresp'range);
+        rdata           : STD_LOGIC_VECTOR(axiReadDst_o.rdata'range);
+        rresp           : STD_LOGIC_VECTOR(axiReadDst_o.rresp'range);
         rlast           : STD_LOGIC;
         rvalid          : STD_LOGIC;
         awready         : STD_LOGIC;
         wready          : STD_LOGIC;
-        bresp           : STD_LOGIC_VECTOR(axiDst_o.wr.bresp'range);
+        bresp           : STD_LOGIC_VECTOR(axiWriteDst_o.bresp'range);
         bvalid          : STD_LOGIC;
     end record RegType;
 
@@ -138,14 +141,14 @@ begin
                 v.state   := INITAL_ADDR_HANDSHAKE_S;
 
             when INITAL_ADDR_HANDSHAKE_S =>
-                if (axiSrc_i.rd.arvalid = '1') then
+                if (axiReadSrc_i.arvalid = '1') then
                     -- we are going to do a read
                     v.arready   := '0';
-                    v.burst_len := unsigned(axiSrc_i.rd.arlen);
+                    v.burst_len := unsigned(axiReadSrc_i.arlen);
 
-                    if (axiSrc_i.rd.arlen = x"00" and axiSrc_i.rd.arsize = AXI_BURST_SIZE_4_BYTES_C) then
+                    if (axiReadSrc_i.arlen = x"00" and axiReadSrc_i.arsize = AXI_BURST_SIZE_4_BYTES_C) then
 
-                        v.axiAddr := STD_LOGIC_VECTOR(shift_right(uSub(unsigned(axiSrc_i.rd.araddr), AXI_ADDRESS_G), 2));
+                        v.axiAddr := STD_LOGIC_VECTOR(shift_right(uSub(unsigned(axiReadSrc_i.araddr), AXI_ADDRESS_G), 2));
 
                         v.rdata  := data_i;
                         v.rresp  := AXI_RESP_OK_C; --okay
@@ -157,18 +160,18 @@ begin
                         v.rresp           := AXI_RESP_SLVERR_C;
                         v.rvalid          := '1';
                         v.transferCounter := r.transferCounter + 1;
-                        if (uEq(r.transferCounter, unsigned(axiSrc_i.rd.arlen))) then
+                        if (uEq(r.transferCounter, unsigned(axiReadSrc_i.arlen))) then
                             v.rlast := '1';
                         end if;
                         v.state := R_HANDSHAKE_ERR_S;
                     end if;
 
-                elsif (axiSrc_i.wr.awvalid = '1') then
+                elsif (axiWriteSrc_i.awvalid = '1') then
                     -- we are going to do a write
                     v.arready := '0';
                     v.awready := '1';
 
-                    if (axiSrc_i.wr.awlen = x"00" and axiSrc_i.wr.awsize = AXI_BURST_SIZE_4_BYTES_C) then
+                    if (axiWriteSrc_i.awlen = x"00" and axiWriteSrc_i.awsize = AXI_BURST_SIZE_4_BYTES_C) then
                         v.state := AW_HANDSHAKE_GOOD_S;
                     else
                         v.state := AW_HANDSHAKE_ERR_S;
@@ -176,7 +179,7 @@ begin
                 end if;
 
             when R_HANDSHAKE_GOOD_S =>
-                if (axiSrc_i.rd.rready = '1') then
+                if (axiReadSrc_i.rready = '1') then
                     --burst completed
                     v.rvalid  := '0';
                     v.rlast   := '0';
@@ -186,33 +189,35 @@ begin
                 end if;
 
             when R_HANDSHAKE_ERR_S =>
-                if (axiSrc_i.rd.rready = '1') then
+                if (axiReadSrc_i.rready = '1') then
                     if (uLeq(r.transferCounter, r.burst_len)) then
-                        v.rdata  := (others => '0');
-                        v.rresp  := AXI_RESP_SLVERR_C;
-                        v.rvalid := '1';
+                        v.rdata           := (others => '0');
+                        v.rresp           := AXI_RESP_SLVERR_C;
+                        v.rvalid          := '1';
+                        v.transferCounter := r.transferCounter + 1;
                         if (uEq(r.transferCounter, r.burst_len)) then
                             v.rlast := '1';
                         end if;
                     else
-                        v.rresp   := AXI_RESP_OK_C;
-                        v.rvalid  := '0';
-                        v.rlast   := '0';
-                        v.arready := '1';
-                        v.state   := INITAL_ADDR_HANDSHAKE_S;
+                        v.rresp           := AXI_RESP_OK_C;
+                        v.rvalid          := '0';
+                        v.rlast           := '0';
+                        v.arready         := '1';
+                        v.transferCounter := (others => '0');
+                        v.state           := INITAL_ADDR_HANDSHAKE_S;
                     end if;
                 end if;
 
             when AW_HANDSHAKE_GOOD_S =>
                 v.awready := '0';
                 v.wready  := '1';
-                v.axiAddr := STD_LOGIC_VECTOR(shift_right(uSub(unsigned(axiSrc_i.wr.awaddr), AXI_ADDRESS_G), 2));
+                v.axiAddr := STD_LOGIC_VECTOR(shift_right(uSub(unsigned(axiWriteSrc_i.awaddr), AXI_ADDRESS_G), 2));
                 v.state   := W_HANDSHAKE_GOOD_S;
 
             when W_HANDSHAKE_GOOD_S =>
-                if (axiSrc_i.wr.wvalid = '1') then
+                if (axiWriteSrc_i.wvalid = '1') then
                     --burst completed
-                    v.writeData   := axiSrc_i.wr.wdata;
+                    v.writeData   := axiWriteSrc_i.wdata;
                     v.writeEnable := '1';
                     v.wready      := '0';
                     v.bresp       := AXI_RESP_OK_C;
@@ -221,7 +226,7 @@ begin
                 end if;
 
             when B_HANDSHAKE_GOOD_S =>
-                if (axiSrc_i.wr.bready = '1') then
+                if (axiWriteSrc_i.bready = '1') then
                     v.bvalid  := '0';
                     v.arready := '1';
                     v.state   := INITAL_ADDR_HANDSHAKE_S;
@@ -230,24 +235,25 @@ begin
             when AW_HANDSHAKE_ERR_S =>
                 v.awready   := '0';
                 v.wready    := '1';
-                v.burst_len := unsigned(axiSrc_i.wr.awlen);
+                v.burst_len := unsigned(axiWriteSrc_i.awlen);
                 v.state     := W_HANDSHAKE_ERR_S;
 
             when W_HANDSHAKE_ERR_S =>
-                if (axiSrc_i.wr.wvalid = '1') then
+                if (axiWriteSrc_i.wvalid = '1') then
                     if (uEq(r.transferCounter, r.burst_len)) then
                         --burst completed
-                        v.wready := '0';
-                        v.bresp  := AXI_RESP_SLVERR_C;
-                        v.bvalid := '1';
-                        v.state  := B_HANDSHAKE_ERR_S;
+                        v.wready          := '0';
+                        v.bresp           := AXI_RESP_SLVERR_C;
+                        v.bvalid          := '1';
+                        v.transferCounter := (others => '0');
+                        v.state           := B_HANDSHAKE_ERR_S;
                     else
                         v.transferCounter := r.transferCounter + 1;
                     end if;
                 end if;
 
             when B_HANDSHAKE_ERR_S =>
-                if (axiSrc_i.wr.bready = '1') then
+                if (axiWriteSrc_i.bready = '1') then
                     v.bvalid  := '0';
                     v.arready := '1';
                     v.state   := INITAL_ADDR_HANDSHAKE_S;
@@ -265,20 +271,20 @@ begin
         rin <= v;
 
         -- Drive outputs
-        axiDst_o.rd.arready <= r.arready;
-        axiDst_o.rd.rid     <= (others => '0');
-        axiDst_o.rd.rdata   <= r.rdata;
-        axiDst_o.rd.rresp   <= r.rresp;
-        axiDst_o.rd.rlast   <= r.rlast;
-        axiDst_o.rd.ruser   <= (others => '0');
-        axiDst_o.rd.rvalid  <= r.rvalid;
+        axiReadDst_o.arready <= r.arready;
+        axiReadDst_o.rid     <= (others => '0');
+        axiReadDst_o.rdata   <= r.rdata;
+        axiReadDst_o.rresp   <= r.rresp;
+        axiReadDst_o.rlast   <= r.rlast;
+        axiReadDst_o.ruser   <= (others => '0');
+        axiReadDst_o.rvalid  <= r.rvalid;
 
-        axiDst_o.wr.awready <= r.awready;
-        axiDst_o.wr.wready  <= r.wready;
-        axiDst_o.wr.bid     <= (others => '0');
-        axiDst_o.wr.bresp   <= r.bresp;
-        axiDst_o.wr.buser   <= (others => '0');
-        axiDst_o.wr.bvalid  <= r.bvalid;
+        axiWriteDst_o.awready <= r.awready;
+        axiWriteDst_o.wready  <= r.wready;
+        axiWriteDst_o.bid     <= (others => '0');
+        axiWriteDst_o.bresp   <= r.bresp;
+        axiWriteDst_o.buser   <= (others => '0');
+        axiWriteDst_o.bvalid  <= r.bvalid;
 
         writeEnable_o <= r.writeEnable;
         data_o        <= r.writeData;
