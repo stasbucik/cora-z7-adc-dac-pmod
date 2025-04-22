@@ -53,27 +53,27 @@ if { ${enable} == 1 } {
 	
 	################################################
 	# axi4 for reading buffer
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARID]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARADDR][*]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARLEN][*]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARSIZE][*]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARBURST][*]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARLOCK]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARCACHE][*]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARPROT][*]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARQOS][*]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARREGION][*]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARUSER]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][ARVALID]}
-	ConfigProbe ${ilaName} {axiBufferSrc[rd][RREADY]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARID]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARADDR][*]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARLEN][*]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARSIZE][*]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARBURST][*]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARLOCK]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARCACHE][*]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARPROT][*]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARQOS][*]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARREGION][*]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARUSER]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][ARVALID]}
+	#ConfigProbe ${ilaName} {axiBufferSrc[rd][RREADY]}
 
-	ConfigProbe ${ilaName} {axiBufferDst[rd][ARREADY]}
-	ConfigProbe ${ilaName} {axiBufferDst[rd][RID]}
-	ConfigProbe ${ilaName} {axiBufferDst[rd][RDATA][*]}
-	ConfigProbe ${ilaName} {axiBufferDst[rd][RRESP][*]}
-	ConfigProbe ${ilaName} {axiBufferDst[rd][RLAST]}
-	ConfigProbe ${ilaName} {axiBufferDst[rd][RUSER]}
-	ConfigProbe ${ilaName} {axiBufferDst[rd][RVALID]}
+	#ConfigProbe ${ilaName} {axiBufferDst[rd][ARREADY]}
+	#ConfigProbe ${ilaName} {axiBufferDst[rd][RID]}
+	#ConfigProbe ${ilaName} {axiBufferDst[rd][RDATA][*]}
+	#ConfigProbe ${ilaName} {axiBufferDst[rd][RRESP][*]}
+	#ConfigProbe ${ilaName} {axiBufferDst[rd][RLAST]}
+	#ConfigProbe ${ilaName} {axiBufferDst[rd][RUSER]}
+	#ConfigProbe ${ilaName} {axiBufferDst[rd][RVALID]}
 
 	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWID]}
 	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWADDR][*]}
@@ -127,76 +127,76 @@ if { ${enable} == 1 } {
 	#ConfigProbe ${ilaName} {axiCtrlDst[rd][RUSER]}
 	#ConfigProbe ${ilaName} {axiCtrlDst[rd][RVALID]}
 
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWID]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWADDR][*]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWLEN][*]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWSIZE][*]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWBURST][*]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWLOCK]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWCACHE][*]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWPROT][*]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWQOS][*]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWREGION][*]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWUSER]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWVALID]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][WID]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][WDATA][*]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][WSTRB][*]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][WLAST]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][WUSER]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][WVALID]}
-	ConfigProbe ${ilaName} {axiCtrlSrc[wr][BREADY]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWID]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWADDR][*]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWLEN][*]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWSIZE][*]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWBURST][*]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWLOCK]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWCACHE][*]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWPROT][*]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWQOS][*]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWREGION][*]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWUSER]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][AWVALID]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][WID]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][WDATA][*]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][WSTRB][*]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][WLAST]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][WUSER]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][WVALID]}
+	#ConfigProbe ${ilaName} {axiCtrlSrc[wr][BREADY]}
 
-	ConfigProbe ${ilaName} {axiCtrlDst[wr][AWREADY]}
-	ConfigProbe ${ilaName} {axiCtrlDst[wr][WREADY]}
-	ConfigProbe ${ilaName} {axiCtrlDst[wr][BID]}
-	ConfigProbe ${ilaName} {axiCtrlDst[wr][BRESP][*]}
-	ConfigProbe ${ilaName} {axiCtrlDst[wr][BUSER]}
-	ConfigProbe ${ilaName} {axiCtrlDst[wr][BVALID]}
+	#ConfigProbe ${ilaName} {axiCtrlDst[wr][AWREADY]}
+	#ConfigProbe ${ilaName} {axiCtrlDst[wr][WREADY]}
+	#ConfigProbe ${ilaName} {axiCtrlDst[wr][BID]}
+	#ConfigProbe ${ilaName} {axiCtrlDst[wr][BRESP][*]}
+	#ConfigProbe ${ilaName} {axiCtrlDst[wr][BUSER]}
+	#ConfigProbe ${ilaName} {axiCtrlDst[wr][BVALID]}
 	################################################
 
 	################################################
 	# axi4 from fpga
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARID[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARADDR[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLEN[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARSIZE[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARBURST[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLOCK[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARCACHE[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARPROT[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARQOS[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARVALID}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RREADY}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARID[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARADDR[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLEN[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARSIZE[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARBURST[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLOCK[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARCACHE[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARPROT[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARQOS[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARVALID}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RREADY}
 
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARREADY}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RID[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RDATA[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RRESP[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RLAST}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RVALID}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARREADY}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RID[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RDATA[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RRESP[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RLAST}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RVALID}
 
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWID[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWADDR[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWLEN[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWSIZE[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWBURST[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWLOCK[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWCACHE[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWPROT[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWQOS[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWVALID}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WDATA[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WSTRB[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WLAST}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WVALID}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_BREADY}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWID[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWADDR[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWLEN[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWSIZE[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWBURST[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWLOCK[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWCACHE[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWPROT[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWQOS[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWVALID}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WDATA[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WSTRB[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WLAST}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WVALID}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_BREADY}
 
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWREADY}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WREADY}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_BID[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_BRESP[*]}
-	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_BVALID}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWREADY}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WREADY}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_BID[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_BRESP[*]}
+	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_BVALID}
 	################################################
 	
 	################################################
