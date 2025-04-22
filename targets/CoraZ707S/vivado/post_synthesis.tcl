@@ -19,8 +19,6 @@ if { ${enable} == 1 } {
 	#ConfigProbe ${ilaName} {adcOverflow}
 	#ConfigProbe ${ilaName} {interruptFast}
 	ConfigProbe ${ilaName} {interrupt}
-	ConfigProbe ${ilaName} {interruptMask}
-	#ConfigProbe ${ilaName} {btnSync}
 	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/xlconcat_1_dout[*]}
 
 	################################################

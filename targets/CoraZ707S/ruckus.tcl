@@ -9,7 +9,6 @@ setBoardPart "digilentinc.com:cora-z7-07s:part0:1.1"
 setIpRepo "$::env(TOP_DIR)/submodules"
 loadIps "$::DIR_PATH/ip"
 
-loadRuckusTcl $::env(TOP_DIR)/modules/Common
 loadRuckusTcl $::env(TOP_DIR)/modules/Axi4
 loadRuckusTcl $::env(TOP_DIR)/modules/SpiMaster
 loadRuckusTcl $::env(TOP_DIR)/modules/DataBuffer
