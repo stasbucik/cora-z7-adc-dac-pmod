@@ -66,4 +66,6 @@ begin
             writeCtrl_i => writeCtrl
         );
 
+    reg_o <= dataRead;
+
 end Behavioral;
