@@ -82,7 +82,8 @@ end CoraZ707S;
 
 architecture Behavioral of CoraZ707S is
 
-	constant AXI_ADDRESS_C : unsigned(31 downto 0) := x"4600_0000";
+	constant AXI_BUFFER_ADDRESS_C : unsigned(31 downto 0) := x"4600_0000";
+	constant AXI_CTRL_ADDRESS_C   : unsigned(31 downto 0) := x"43C0_0000";
 
 	signal clk : STD_LOGIC;
 	signal rst : STD_LOGIC;
@@ -116,8 +117,11 @@ architecture Behavioral of CoraZ707S is
 	);
 	signal axisAdcDst : Axi4StreamDestination;
 
-	signal axiPsSrc : Axi4Source;
-	signal axiPsDst : Axi4Destination;
+	signal axiBufferSrc : Axi4Source;
+	signal axiBufferDst : Axi4Destination;
+
+	signal axiCtrlSrc : Axi4Source;
+	signal axiCtrlDst : Axi4Destination;
 
 	signal adcOverflow : STD_LOGIC;
 
@@ -135,8 +139,10 @@ architecture Behavioral of CoraZ707S is
 	attribute mark_debug of axisAdcSrc    : signal is MARK_DEBUG_G;
 	attribute mark_debug of axisAdcDst    : signal is MARK_DEBUG_G;
 	attribute mark_debug of adcOverflow   : signal is MARK_DEBUG_G;
-	attribute mark_debug of axiPsSrc      : signal is MARK_DEBUG_G;
-	attribute mark_debug of axiPsDst      : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiBufferSrc  : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiBufferDst  : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiCtrlSrc    : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiCtrlDst    : signal is MARK_DEBUG_G;
 	----------------------------------------------------------------------------
 
 	component clk_wiz_mmc_100_64
@@ -174,8 +180,10 @@ begin
 			FIXED_IO_ps_porb  => FIXED_IO_ps_porb,
 			FIXED_IO_ps_srstb => FIXED_IO_ps_srstb,
 			IRQ_F2P           => interrupt,
-			axiPsSrc          => axiPsSrc,
-			axiPsDst          => axiPsDst,
+			axiBufferSrc      => axiBufferSrc,
+			axiBufferDst      => axiBufferDst,
+			axiCtrlSrc        => axiCtrlSrc,
+			axiCtrlDst        => axiCtrlDst,
 			Shield_I2C_scl_io => Shield_I2C_scl_io,
 			Shield_I2C_sda_io => Shield_I2C_sda_io,
 			Shield_SPI_io0_io => Shield_SPI_io0_io,
@@ -320,15 +328,15 @@ begin
 			ADDR_WIDTH_G        => BRAM_BUFFER_ADDR_WIDTH_C,
 			MAX_LENGTH_G        => BRAM_BUFFER_MAX_LENGTH_C,
 			LENGTH_WIDTH_G      => BRAM_BUFFER_LENGTH_WIDTH_C,
-			AXI_ADDRESS_G       => AXI_ADDRESS_C
+			AXI_ADDRESS_G       => AXI_BUFFER_ADDRESS_C
 		)
 		port map (
 			clk_i          => clk,
 			rst_i          => rst,
 			axisWriteSrc_i => axisAdcSrc,
 			axisWriteDst_o => axisAdcDst,
-			axiSrc_i       => axiPsSrc,
-			axiDst_o       => axiPsDst,
+			axiSrc_i       => axiBufferSrc,
+			axiDst_o       => axiBufferDst,
 			interrupt_o    => interruptFast
 		);
 
