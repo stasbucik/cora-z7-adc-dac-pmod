@@ -1,0 +1,295 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date: 03/31/2025 10:10:56 AM
+-- Design Name: 
+-- Module Name: CtrlRegAxi4Iface - Behavioral
+-- Project Name: 
+-- Target Devices: 
+-- Tool Versions: 
+-- Description: 
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+use work.BramPkg.all;
+use work.BramBufferPkg.all;
+use work.Axi4Pkg.all;
+use work.UnsignedOpsPkg.all;
+
+use IEEE.math_real."ceil";
+use IEEE.math_real."log2";
+
+entity CtrlRegAxi4Iface is
+    generic(
+        MARK_DEBUG_G  : string                := "false";
+        WIDTH_G       : positive              := 32;
+        AXI_ADDRESS_G : unsigned(31 downto 0) := x"8000_0000"
+    );
+    Port (
+        clk_i : in STD_LOGIC;
+        rst_i : in STD_LOGIC;
+
+        axiSrc_i : in  Axi4Source;
+        axiDst_o : out Axi4Destination;
+
+        writeEnable_o : out STD_LOGIC;
+        data_o        : out STD_LOGIC_VECTOR(WIDTH_G-1 downto 0);
+        data_i        : in  STD_LOGIC_VECTOR(WIDTH_G-1 downto 0)
+
+    );
+end CtrlRegAxi4Iface;
+
+architecture Behavioral of CtrlRegAxi4Iface is
+
+    constant AXI_RESP_OK_C            : STD_LOGIC_VECTOR(1 downto 0) := "00";
+    constant AXI_RESP_SLVERR_C        : STD_LOGIC_VECTOR(1 downto 0) := "10";
+    constant AXI_BURST_SIZE_4_BYTES_C : STD_LOGIC_VECTOR(2 downto 0) := "010";
+
+    type StateType is (
+            INIT_S,
+            INITAL_ADDR_HANDSHAKE_S,
+            R_HANDSHAKE_GOOD_S,
+            R_HANDSHAKE_ERR_S,
+            AW_HANDSHAKE_GOOD_S,
+            W_HANDSHAKE_GOOD_S,
+            B_HANDSHAKE_GOOD_S,
+            AW_HANDSHAKE_ERR_S,
+            W_HANDSHAKE_ERR_S,
+            B_HANDSHAKE_ERR_S
+        );
+
+    type RegType is record
+        state           : StateType;
+        axiAddr         : STD_LOGIC_VECTOR(axiSrc_i.rd.araddr'range);
+        burst_len       : unsigned(axiSrc_i.rd.ARLEN'range);
+        transferCounter : unsigned(axiSrc_i.rd.ARLEN'length downto 0); -- one more bit to prevent overflow
+        writeData       : STD_LOGIC_VECTOR(WIDTH_G-1 downto 0);
+        writeEnable     : STD_LOGIC;
+        arready         : STD_LOGIC;
+        rdata           : STD_LOGIC_VECTOR(axiDst_o.rd.rdata'range);
+        rresp           : STD_LOGIC_VECTOR(axiDst_o.rd.rresp'range);
+        rlast           : STD_LOGIC;
+        rvalid          : STD_LOGIC;
+        awready         : STD_LOGIC;
+        wready          : STD_LOGIC;
+        bresp           : STD_LOGIC_VECTOR(axiDst_o.wr.bresp'range);
+        bvalid          : STD_LOGIC;
+    end record RegType;
+
+    constant REG_TYPE_INIT_C : RegType := (
+            state           => INIT_S,
+            axiAddr         => (others => '0'),
+            burst_len       => (others => '0'),
+            transferCounter => (others => '0'),
+            writeData       => (others => '0'),
+            writeEnable     => '0',
+            arready         => '0',
+            rdata           => (others => '0'),
+            rresp           => (others => '0'),
+            rlast           => '0',
+            rvalid          => '0',
+            awready         => '0',
+            wready          => '0',
+            bresp           => (others => '0'),
+            bvalid          => '0'
+        );
+
+    signal r   : RegType;
+    signal rin : RegType;
+
+    -----------------------------------------------------------------------------
+    attribute mark_debug        : string;
+    attribute mark_debug of r   : signal is MARK_DEBUG_G;
+    attribute mark_debug of rin : signal is MARK_DEBUG_G;
+    ----------------------------------------------------------------------------
+
+begin
+
+    p_Comb     : process(all)
+        variable v : RegType;
+    begin
+        v := r;
+
+        v.writeEnable := '0';
+
+        -- combinatorial logic
+        case r.state is
+            when INIT_S =>
+                v.arready := '1';
+                v.state   := INITAL_ADDR_HANDSHAKE_S;
+
+            when INITAL_ADDR_HANDSHAKE_S =>
+                if (axiSrc_i.rd.arvalid = '1') then
+                    -- we are going to do a read
+                    v.arready   := '0';
+                    v.burst_len := unsigned(axiSrc_i.rd.arlen);
+
+                    if (axiSrc_i.rd.arlen = x"00" and axiSrc_i.rd.arsize = AXI_BURST_SIZE_4_BYTES_C) then
+
+                        v.axiAddr := STD_LOGIC_VECTOR(shift_right(uSub(unsigned(axiSrc_i.rd.araddr), AXI_ADDRESS_G), 2));
+
+                        v.rdata  := data_i;
+                        v.rresp  := AXI_RESP_OK_C; --okay
+                        v.rvalid := '1';
+                        v.rlast  := '1';
+                        v.state  := R_HANDSHAKE_GOOD_S;
+                    else
+                        v.rdata           := (others => '0');
+                        v.rresp           := AXI_RESP_SLVERR_C;
+                        v.rvalid          := '1';
+                        v.transferCounter := r.transferCounter + 1;
+                        if (uEq(r.transferCounter, unsigned(axiSrc_i.rd.arlen))) then
+                            v.rlast := '1';
+                        end if;
+                        v.state := R_HANDSHAKE_ERR_S;
+                    end if;
+
+                elsif (axiSrc_i.wr.awvalid = '1') then
+                    -- we are going to do a write
+                    v.arready := '0';
+                    v.awready := '1';
+
+                    if (axiSrc_i.wr.awlen = x"00" and axiSrc_i.wr.awsize = AXI_BURST_SIZE_4_BYTES_C) then
+                        v.state := AW_HANDSHAKE_GOOD_S;
+                    else
+                        v.state := AW_HANDSHAKE_ERR_S;
+                    end if;
+                end if;
+
+            when R_HANDSHAKE_GOOD_S =>
+                if (axiSrc_i.rd.rready = '1') then
+                    --burst completed
+                    v.rvalid  := '0';
+                    v.rlast   := '0';
+                    v.rdata   := (others => '0');
+                    v.arready := '1';
+                    v.state   := INITAL_ADDR_HANDSHAKE_S;
+                end if;
+
+            when R_HANDSHAKE_ERR_S =>
+                if (axiSrc_i.rd.rready = '1') then
+                    if (uLeq(r.transferCounter, r.burst_len)) then
+                        v.rdata  := (others => '0');
+                        v.rresp  := AXI_RESP_SLVERR_C;
+                        v.rvalid := '1';
+                        if (uEq(r.transferCounter, r.burst_len)) then
+                            v.rlast := '1';
+                        end if;
+                    else
+                        v.rresp   := AXI_RESP_OK_C;
+                        v.rvalid  := '0';
+                        v.rlast   := '0';
+                        v.arready := '1';
+                        v.state   := INITAL_ADDR_HANDSHAKE_S;
+                    end if;
+                end if;
+
+            when AW_HANDSHAKE_GOOD_S =>
+                v.awready := '0';
+                v.wready  := '1';
+                v.axiAddr := STD_LOGIC_VECTOR(shift_right(uSub(unsigned(axiSrc_i.wr.awaddr), AXI_ADDRESS_G), 2));
+                v.state   := W_HANDSHAKE_GOOD_S;
+
+            when W_HANDSHAKE_GOOD_S =>
+                if (axiSrc_i.wr.wvalid = '1') then
+                    --burst completed
+                    v.writeData   := axiSrc_i.wr.wdata;
+                    v.writeEnable := '1';
+                    v.wready      := '0';
+                    v.bresp       := AXI_RESP_OK_C;
+                    v.bvalid      := '1';
+                    v.state       := B_HANDSHAKE_GOOD_S;
+                end if;
+
+            when B_HANDSHAKE_GOOD_S =>
+                if (axiSrc_i.wr.bready = '1') then
+                    v.bvalid  := '0';
+                    v.arready := '1';
+                    v.state   := INITAL_ADDR_HANDSHAKE_S;
+                end if;
+
+            when AW_HANDSHAKE_ERR_S =>
+                v.awready   := '0';
+                v.wready    := '1';
+                v.burst_len := unsigned(axiSrc_i.wr.awlen);
+                v.state     := W_HANDSHAKE_ERR_S;
+
+            when W_HANDSHAKE_ERR_S =>
+                if (axiSrc_i.wr.wvalid = '1') then
+                    if (uEq(r.transferCounter, r.burst_len)) then
+                        --burst completed
+                        v.wready := '0';
+                        v.bresp  := AXI_RESP_SLVERR_C;
+                        v.bvalid := '1';
+                        v.state  := B_HANDSHAKE_ERR_S;
+                    else
+                        v.transferCounter := r.transferCounter + 1;
+                    end if;
+                end if;
+
+            when B_HANDSHAKE_ERR_S =>
+                if (axiSrc_i.wr.bready = '1') then
+                    v.bvalid  := '0';
+                    v.arready := '1';
+                    v.state   := INITAL_ADDR_HANDSHAKE_S;
+                end if;
+
+            when others =>
+                v := REG_TYPE_INIT_C;
+
+        end case;
+
+        if (rst_i = '1') then
+            v := REG_TYPE_INIT_C;
+        end if;
+
+        rin <= v;
+
+        -- Drive outputs
+        axiDst_o.rd.arready <= r.arready;
+        axiDst_o.rd.rid     <= (others => '0');
+        axiDst_o.rd.rdata   <= r.rdata;
+        axiDst_o.rd.rresp   <= r.rresp;
+        axiDst_o.rd.rlast   <= r.rlast;
+        axiDst_o.rd.ruser   <= (others => '0');
+        axiDst_o.rd.rvalid  <= r.rvalid;
+
+        axiDst_o.wr.awready <= r.awready;
+        axiDst_o.wr.wready  <= r.wready;
+        axiDst_o.wr.bid     <= (others => '0');
+        axiDst_o.wr.bresp   <= r.bresp;
+        axiDst_o.wr.buser   <= (others => '0');
+        axiDst_o.wr.bvalid  <= r.bvalid;
+
+        writeEnable_o <= r.writeEnable;
+        data_o        <= r.writeData;
+
+    end process p_Comb;
+
+    p_Seq : process(clk_i)
+    begin
+        if rising_edge(clk_i) then
+            r <= rin;
+        end if;
+    end process p_Seq;
+
+end Behavioral;
