@@ -64,6 +64,7 @@ entity DataBuffer is
         axiSrc_i : in  Axi4Source;
         axiDst_o : out Axi4Destination;
 
+        clear_i     : in  STD_LOGIC;
         interrupt_o : out STD_LOGIC
     );
 end DataBuffer;
@@ -94,8 +95,7 @@ architecture Behavioral of DataBuffer is
     signal dataBuffer    : TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
     signal readingFrom   : natural range 0 to 1;
 
-    signal interruptDelayed : STD_LOGIC;
-    signal wrIntoAdapter    : STD_LOGIC_VECTOR(1 downto 0);
+    signal wrIntoAdapter : STD_LOGIC_VECTOR(1 downto 0);
 
     function getOtherBufferIndex (number : natural) return natural is
     begin
@@ -124,7 +124,6 @@ architecture Behavioral of DataBuffer is
     attribute mark_debug of counter          : signal is MARK_DEBUG_G;
     attribute mark_debug of dataBuffer       : signal is MARK_DEBUG_G;
     attribute mark_debug of readingFrom      : signal is MARK_DEBUG_G;
-    attribute mark_debug of interruptDelayed : signal is MARK_DEBUG_G;
     attribute mark_debug of wrIntoAdapter    : signal is MARK_DEBUG_G;
     ----------------------------------------------------------------------------
 
@@ -154,7 +153,8 @@ begin
             axisWriteDst_o  => axisWriteDst_o,
             bramWriteSrc0_o => bramWriteSrc0,
             bramWriteSrc1_o => bramWriteSrc1,
-            writingInto_o   => writingInto
+            writingInto_o   => writingInto,
+            clear_i         => clear_i
         );
 
     u_BramWrapper0 : entity work.BramWrapper
@@ -255,15 +255,16 @@ begin
 
     wrIntoAdapter <= STD_LOGIC_VECTOR(to_unsigned(writingInto, 2));
 
-    p_Seq : process (clk_i, rst_i)
-    begin
-        if (rst_i = '1') then
-            interruptDelayed <= '0';
-            interrupt_o      <= '0';
-        elsif rising_edge(clk_i) then
-            interruptDelayed <= wrIntoAdapter(0);
-            interrupt_o      <= wrIntoAdapter(0) xor interruptDelayed;
-        end if;
-    end process p_Seq;
+    u_EdgeDetect : entity work.EdgeDetect
+        generic map (
+            POSITIVE_EDGE_G => true,
+            NEGATIVE_EDGE_G => true
+        )
+        port map (
+            clk_i => clk_i,
+            rst_i => rst_i,
+            sig_i => wrIntoAdapter(0),
+            sig_o => interrupt_o
+        );
 
 end Behavioral;

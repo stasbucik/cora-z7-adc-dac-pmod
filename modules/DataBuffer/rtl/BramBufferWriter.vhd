@@ -55,7 +55,8 @@ entity BramBufferWriter is
         bramWriteSrc0_o : out BramSource;
         bramWriteSrc1_o : out BramSource;
 
-        writingInto_o : out natural range 0 to 1
+        writingInto_o : out natural range 0 to 1;
+        clear_i       : in  STD_LOGIC
     );
 end BramBufferWriter;
 
@@ -152,6 +153,16 @@ begin
                     end if;
                 else
                     v.we(r.previousBufferIndex) := (others => '0');
+
+                    if (clear_i = '1') then
+                        v.addressCounter      := 0;
+                        v.bufferIndex         := 0;
+                        v.previousBufferIndex := 0;
+                        v.rowCounter          := 0;
+                        v.we                  := (others => (others => '0'));
+                        v.wrAddr              := (others => '0');
+                        v.wrData              := (others => '0');
+                    end if;
                 end if;
             when others =>
                 v := REG_TYPE_INIT_C;

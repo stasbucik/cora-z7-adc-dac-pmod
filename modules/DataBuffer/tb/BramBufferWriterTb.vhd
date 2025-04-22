@@ -82,7 +82,8 @@ architecture Behavioral of BramBufferWriterTb is
 		addr(TB_BRAM_BUFFER_ADDR_WIDTH_C-1 downto 0),
 		din(TB_BRAM_BUFFER_DATA_WIDTH_C-1 downto 0));
 	signal bramWriteSrc1_o : bramWriteSrc0_o'subtype;
-	signal writingInto_o : natural range 0 to 1;
+	signal writingInto_o   : natural range 0 to 1;
+	signal clear_i         : STD_LOGIC;
 	--
 
 	signal dout_i : STD_LOGIC;
@@ -142,7 +143,8 @@ begin
 			axisWriteDst_o  => axisBramBufferDst,
 			bramWriteSrc0_o => bramWriteSrc0_o,
 			bramWriteSrc1_o => bramWriteSrc1_o,
-			writingInto_o   => writingInto_o
+			writingInto_o   => writingInto_o,
+			clear_i         => clear_i
 		);
 
 	--------------------------------------------------------------------------------
@@ -163,6 +165,7 @@ begin
 			axisReadSrc_o => axisBramBufferSrc,
 			axisReadDst_i => axisBramBufferDst,
 			run_i         => run_i,
+			clear_i       => clear_i,
 			overflow_o    => overflow_o
 		);
 
@@ -170,7 +173,8 @@ begin
 	begin
 		rst_i <= '1';
 		-- initialize signals
-		run_i <= '0';
+		run_i   <= '0';
+		clear_i <= '0';
 
 		wait for CLK_PERIOD_C*3;
 		rst_i <= '0';
@@ -180,7 +184,14 @@ begin
 		wait for CLK_PERIOD_C*25;
 		run_i <= '1';
 
-		wait for CLK_PERIOD_C*2500;
+		wait for CLK_PERIOD_C*500;
+		clear_i <= '1';
+		run_i   <= '0';
+		wait for CLK_PERIOD_C*5;
+		clear_i <= '0';
+		run_i   <= '1';
+
+		wait for CLK_PERIOD_C*2000;
 
 		wait;
 

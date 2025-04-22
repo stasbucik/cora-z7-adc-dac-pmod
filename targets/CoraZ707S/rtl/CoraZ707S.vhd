@@ -84,12 +84,19 @@ architecture Behavioral of CoraZ707S is
 
 	constant AXI_BUFFER_ADDRESS_C : unsigned(31 downto 0) := x"4600_0000";
 	constant AXI_CTRL_ADDRESS_C   : unsigned(31 downto 0) := x"43C0_0000";
+	constant CTRL_REG_SIZE_C      : natural               := 32;
+
+	constant ADC_RUN_BIT_C : natural := 0;
+	constant DAC_RUN_BIT_C : natural := 1;
 
 	signal clk : STD_LOGIC;
 	signal rst : STD_LOGIC;
 
-	signal interruptFast : STD_LOGIC;
-	signal interrupt     : STD_LOGIC;
+	signal interruptFast   : STD_LOGIC;
+	signal interrupt       : STD_LOGIC;
+	signal clearBuffer     : STD_LOGIC;
+	signal clearBufferFast : STD_LOGIC;
+	signal ctrlReg         : STD_LOGIC_VECTOR(CTRL_REG_SIZE_C-1 downto 0);
 
 	-- DAC signals
 	signal dacSdin  : STD_LOGIC;
@@ -126,23 +133,26 @@ architecture Behavioral of CoraZ707S is
 	signal adcOverflow : STD_LOGIC;
 
 	-----------------------------------------------------------------------------
-	attribute mark_debug                  : string;
-	attribute mark_debug of interruptFast : signal is MARK_DEBUG_G;
-	attribute mark_debug of interrupt     : signal is MARK_DEBUG_G;
-	attribute mark_debug of dacSdin       : signal is MARK_DEBUG_G;
-	attribute mark_debug of dacSync       : signal is MARK_DEBUG_G;
-	attribute mark_debug of dacHighz      : signal is MARK_DEBUG_G;
-	attribute mark_debug of axisDacSrc    : signal is MARK_DEBUG_G;
-	attribute mark_debug of axisDacDst    : signal is MARK_DEBUG_G;
-	attribute mark_debug of adcDout       : signal is MARK_DEBUG_G;
-	attribute mark_debug of adcCs         : signal is MARK_DEBUG_G;
-	attribute mark_debug of axisAdcSrc    : signal is MARK_DEBUG_G;
-	attribute mark_debug of axisAdcDst    : signal is MARK_DEBUG_G;
-	attribute mark_debug of adcOverflow   : signal is MARK_DEBUG_G;
-	attribute mark_debug of axiBufferSrc  : signal is MARK_DEBUG_G;
-	attribute mark_debug of axiBufferDst  : signal is MARK_DEBUG_G;
-	attribute mark_debug of axiCtrlSrc    : signal is MARK_DEBUG_G;
-	attribute mark_debug of axiCtrlDst    : signal is MARK_DEBUG_G;
+	attribute mark_debug                    : string;
+	attribute mark_debug of interruptFast   : signal is MARK_DEBUG_G;
+	attribute mark_debug of interrupt       : signal is MARK_DEBUG_G;
+	attribute mark_debug of dacSdin         : signal is MARK_DEBUG_G;
+	attribute mark_debug of dacSync         : signal is MARK_DEBUG_G;
+	attribute mark_debug of dacHighz        : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisDacSrc      : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisDacDst      : signal is MARK_DEBUG_G;
+	attribute mark_debug of adcDout         : signal is MARK_DEBUG_G;
+	attribute mark_debug of adcCs           : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisAdcSrc      : signal is MARK_DEBUG_G;
+	attribute mark_debug of axisAdcDst      : signal is MARK_DEBUG_G;
+	attribute mark_debug of adcOverflow     : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiBufferSrc    : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiBufferDst    : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiCtrlSrc      : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiCtrlDst      : signal is MARK_DEBUG_G;
+	attribute mark_debug of ctrlReg         : signal is MARK_DEBUG_G;
+	attribute mark_debug of clearBuffer     : signal is MARK_DEBUG_G;
+	attribute mark_debug of clearBufferFast : signal is MARK_DEBUG_G;
 	----------------------------------------------------------------------------
 
 	component clk_wiz_mmc_100_64
@@ -261,6 +271,29 @@ begin
 			I => ja4_n    -- Buffer input (connect directly to top-level port)
 		);
 	----------------------------------------------------------------------------
+	u_EdgeDetect : entity work.EdgeDetect
+		generic map (
+			POSITIVE_EDGE_G => false,
+			NEGATIVE_EDGE_G => true
+		)
+		port map (
+			clk_i => clk,
+			rst_i => rst,
+			sig_i => ctrlReg(ADC_RUN_BIT_C),
+			sig_o => clearBufferFast
+		);
+
+	u_ExtendPulseClearBuffer : entity work.ExtendPulse
+		generic map (
+			NUM_G => 5
+		)
+		port map (
+			clk_i => clk,
+			rst_i => rst,
+			sig_i => clearBufferFast,
+			sig_o => clearBuffer
+		);
+	----------------------------------------------------------------------------
 	u_DacAD5451 : entity work.DacAD5451
 		generic map (
 			MARK_DEBUG_G    => "false",
@@ -277,7 +310,8 @@ begin
 			highz_o        => dacHighz,
 			axisWriteSrc_i => axisDacSrc,
 			axisWriteDst_o => axisDacDst,
-			run_i          => '1'
+			run_i          => ctrlReg(DAC_RUN_BIT_C),
+			clear_i        => '0'
 		);
 
 	u_DataGenerator : entity work.DataGenerator
@@ -308,7 +342,8 @@ begin
 			sclk_o        => adcSclk,
 			axisReadSrc_o => axisAdcSrc,
 			axisReadDst_i => axisAdcDst,
-			run_i         => '1',
+			run_i         => ctrlReg(ADC_RUN_BIT_C),
+			clear_i       => clearBuffer,
 			overflow_o    => adcOverflow
 		);
 
@@ -337,10 +372,11 @@ begin
 			axisWriteDst_o => axisAdcDst,
 			axiSrc_i       => axiBufferSrc,
 			axiDst_o       => axiBufferDst,
+			clear_i        => clearBuffer,
 			interrupt_o    => interruptFast
 		);
 
-	u_ExtendPulse : entity work.ExtendPulse
+	u_ExtendPulseInterrupt : entity work.ExtendPulse
 		generic map (
 			NUM_G => 5
 		)
@@ -349,6 +385,22 @@ begin
 			rst_i => rst,
 			sig_i => interruptFast,
 			sig_o => interrupt
+		);
+
+	----------------------------------------------------------------------------
+
+	u_ControlRegister : entity work.ControlRegister
+		generic map (
+			MARK_DEBUG_G  => "true",
+			AXI_ADDRESS_G => AXI_CTRL_ADDRESS_C,
+			WIDTH_G       => CTRL_REG_SIZE_C
+		)
+		port map (
+			clk_i    => clk,
+			rst_i    => rst,
+			axiSrc_i => axiCtrlSrc,
+			axiDst_o => axiCtrlDst,
+			reg_o    => ctrlReg
 		);
 
 end Behavioral;

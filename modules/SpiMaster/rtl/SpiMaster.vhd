@@ -65,6 +65,7 @@ entity SpiMaster is
         axisReadSrc_o : out SpiMasterAxi4StreamSource;
         axisReadDst_i : in  Axi4StreamDestination;
         run_i         : in  STD_LOGIC;
+        clear_i       : in  STD_LOGIC;
         overflow_o    : out STD_LOGIC
     );
 end SpiMaster;
@@ -87,7 +88,8 @@ architecture Behavioral of SpiMaster is
         );
     END COMPONENT;
 
-    signal syncRst : STD_LOGIC;
+    signal syncRst   : STD_LOGIC;
+    signal syncClear : STD_LOGIC;
 
     signal axisWriteSrcSlow : axisWriteSrc_i'subtype;
     signal axisWriteDstSlow : Axi4StreamDestination;
@@ -105,6 +107,7 @@ architecture Behavioral of SpiMaster is
     ----------------------------------------------------------------------------
     attribute mark_debug                     : string;
     attribute mark_debug of syncRst          : signal is MARK_DEBUG_G;
+    attribute mark_debug of syncClear        : signal is MARK_DEBUG_G;
     attribute mark_debug of axisWriteSrcSlow : signal is MARK_DEBUG_G;
     attribute mark_debug of axisWriteDstSlow : signal is MARK_DEBUG_G;
     attribute mark_debug of axisReadSrcSlow  : signal is MARK_DEBUG_G;
@@ -123,6 +126,17 @@ begin
             syncRst_o  => syncRst
         );
 
+    u_SyncClear : entity work.Sync
+        generic map (
+            NUM_STAGES_G => 2
+        )
+        port map (
+            clk_i => spiClk_i,
+            rst_i => syncRst,
+            sig_i => clear_i,
+            sig_o => syncClear
+        );
+
     g_syncWrite : if (UNUSED_WRITE_G = false) generate
         u_syncWrite : fifo_sync_data
             PORT MAP (
@@ -130,7 +144,7 @@ begin
                 rd_rst_busy   => rd_rst_busyWrite,
                 m_aclk        => spiClk_i,
                 s_aclk        => clk_i,
-                s_aresetn     => not rst_i,
+                s_aresetn     => not (rst_i or clear_i),
                 s_axis_tvalid => axisWriteSrc_i.tvalid,
                 s_axis_tready => axisWriteDst_o.tready,
                 s_axis_tdata  => axisWriteSrc_i.tdata,
@@ -152,7 +166,7 @@ begin
                 rd_rst_busy   => rd_rst_busyRead,
                 m_aclk        => clk_i,
                 s_aclk        => spiClk_i,
-                s_aresetn     => not syncRst,
+                s_aresetn     => not (syncRst or syncClear),
                 s_axis_tvalid => axisReadSrcSlow.tvalid,
                 s_axis_tready => axisReadDstSlow.tready,
                 s_axis_tdata  => axisReadSrcSlow.tdata,

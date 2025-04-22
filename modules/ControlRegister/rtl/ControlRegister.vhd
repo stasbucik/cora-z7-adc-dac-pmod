@@ -7,24 +7,25 @@ use work.Axi4Pkg.all;
 entity ControlRegister is
     Generic (
         MARK_DEBUG_G  : string                := "false";
-        AXI_ADDRESS_G : unsigned(31 downto 0) := x"8000_0000"
+        AXI_ADDRESS_G : unsigned(31 downto 0) := x"8000_0000";
+        WIDTH_G       : positive              := 32
     );
     Port (
         clk_i : in STD_LOGIC;
         rst_i : in STD_LOGIC;
 
         axiSrc_i : in  Axi4Source;
-        axiDst_o : out Axi4Destination
+        axiDst_o : out Axi4Destination;
+
+        reg_o : out STD_LOGIC_VECTOR(WIDTH_G-1 downto 0)
     );
 end ControlRegister;
 
 architecture Behavioral of ControlRegister is
 
-    constant WIDTH_C : natural := 32;
-
     signal writeCtrl : STD_LOGIC;
-    signal dataWrite : STD_LOGIC_VECTOR(WIDTH_C-1 downto 0);
-    signal dataRead  : STD_LOGIC_VECTOR(WIDTH_C-1 downto 0);
+    signal dataWrite : STD_LOGIC_VECTOR(WIDTH_G-1 downto 0);
+    signal dataRead  : STD_LOGIC_VECTOR(WIDTH_G-1 downto 0);
 
     -----------------------------------------------------------------------------
     attribute mark_debug              : string;
@@ -38,14 +39,16 @@ begin
     u_CtrlRegAxi4Iface : entity work.CtrlRegAxi4Iface
         generic map (
             MARK_DEBUG_G  => "true",
-            WIDTH_G       => WIDTH_C,
+            WIDTH_G       => WIDTH_G,
             AXI_ADDRESS_G => AXI_ADDRESS_G
         )
         port map (
             clk_i         => clk_i,
             rst_i         => rst_i,
-            axiSrc_i      => axiSrc_i,
-            axiDst_o      => axiDst_o,
+            axiReadSrc_i  => axiSrc_i.rd,
+            axiReadDst_o  => axiDst_o.rd,
+            axiWriteSrc_i => axiSrc_i.wr,
+            axiWriteDst_o => axiDst_o.wr,
             writeEnable_o => writeCtrl,
             data_o        => dataWrite,
             data_i        => dataRead
@@ -53,7 +56,7 @@ begin
 
     u_SimpleRegister : entity work.SimpleRegister
         generic map (
-            WIDTH_G => WIDTH_C
+            WIDTH_G => WIDTH_G
         )
         port map (
             clk_i       => clk_i,

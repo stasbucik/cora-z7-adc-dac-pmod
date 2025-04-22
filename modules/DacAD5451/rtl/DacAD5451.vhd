@@ -54,7 +54,8 @@ entity DacAD5451 is
         -- Write interface
         axisWriteSrc_i : in  AD5451Axi4StreamSource;
         axisWriteDst_o : out Axi4StreamDestination;
-        run_i          : in  STD_LOGIC
+        run_i          : in  STD_LOGIC;
+        clear_i        : in  STD_LOGIC
     );
 end DacAD5451;
 
@@ -133,6 +134,7 @@ begin
                 axisReadSrc_o  => axisDummy,
                 axisReadDst_i  => AXI_4_STREAM_SINK_C,
                 run_i          => run_i,
+                clear_i        => clear_i,
                 overflow_o     => open
             );
     end generate asyncSpi_g;

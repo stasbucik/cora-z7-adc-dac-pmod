@@ -54,6 +54,7 @@ entity AdcMAX11105 is
         axisReadSrc_o : out MAX11105Axi4StreamSource;
         axisReadDst_i : in  Axi4StreamDestination;
         run_i         : in  STD_LOGIC;
+        clear_i       : in  STD_LOGIC;
         overflow_o    : out STD_LOGIC
     );
 end AdcMAX11105;
@@ -142,6 +143,7 @@ begin
                 axisReadSrc_o  => axisSrcDataRemap,
                 axisReadDst_i  => axisReadDst_i,
                 run_i          => run_i,
+                clear_i        => clear_i,
                 overflow_o     => overflow_o
             );
     end generate asyncSpi_g;

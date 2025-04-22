@@ -61,6 +61,7 @@ architecture Behavioral of AdcMAX11105Tb is
 
 	signal run_i      : STD_LOGIC;
 	signal overflow_o : STD_LOGIC;
+	signal clear_i    : STD_LOGIC;
 
 	----------------------------------------------------------------------------
 	signal counter : unsigned(11 downto 0) := x"000";
@@ -120,6 +121,7 @@ begin
 			axisReadSrc_o => axisReadSrc_o,
 			axisReadDst_i => axisReadDst_i,
 			run_i         => run_i,
+			clear_i       => clear_i,
 			overflow_o    => overflow_o
 		);
 
@@ -128,7 +130,7 @@ begin
 		rst_i <= '1';
 		-- initialize signals
 		axisReadDst_i <= AXI_4_STREAM_DST_INIT_C;
-		run_i <= '0';
+		run_i         <= '0';
 
 		wait for CLK_PERIOD2_C*3;
 
@@ -149,7 +151,8 @@ begin
 	stimulus2 : process
 	begin
 		-- initialize signals
-		dout_i <= '0';
+		dout_i  <= '0';
+		clear_i <= '0';
 
 		wait for CLK_PERIOD2_C*3;
 		------------------------------------------------------------------------
@@ -158,6 +161,11 @@ begin
 		-- stimulus
 		for i in 0 to 5000 loop
 			counter <= to_unsigned(i, 12);
+			if (i = 1000) then
+				clear_i <= '1';
+				wait for CLK_PERIOD2_C*5;
+				clear_i <= '0';
+			end if;
 			WriteDataToMISO(STD_LOGIC_VECTOR(to_unsigned(i, 12)), dout_i);
 		end loop;
 
