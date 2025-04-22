@@ -41,17 +41,17 @@ use work.Axi4Pkg.all;
 
 entity DataBuffer is
     Generic (
-        MARK_DEBUG_G        : string  := "false";
-        NUM_ADDRESSES_G     : natural := 1024;
-        PACKING_G           : natural := 2;
-        SAMPLE_DATA_WIDTH_G : natural := 12;
-        DATA_WIDTH_G        : natural := PACKING_G * SAMPLE_DATA_WIDTH_G;
-        BYTE_WIDTH_G        : natural := DATA_WIDTH_G;
-        LATENCY_G           : natural := 1;
-        MEMORY_SIZE_G       : natural := NUM_ADDRESSES_G * DATA_WIDTH_G;
-        ADDR_WIDTH_G        : natural := natural(ceil(log2(real(NUM_ADDRESSES_G))));
-        MAX_LENGTH_G        : natural := 256;
-        LENGTH_WIDTH_G      : natural := natural(ceil(log2(real(MAX_LENGTH_G))));
+        MARK_DEBUG_G        : string                := "false";
+        NUM_ADDRESSES_G     : natural               := 1024;
+        PACKING_G           : natural               := 2;
+        SAMPLE_DATA_WIDTH_G : natural               := 12;
+        DATA_WIDTH_G        : natural               := PACKING_G * SAMPLE_DATA_WIDTH_G;
+        BYTE_WIDTH_G        : natural               := DATA_WIDTH_G;
+        LATENCY_G           : natural               := 1;
+        MEMORY_SIZE_G       : natural               := NUM_ADDRESSES_G * DATA_WIDTH_G;
+        ADDR_WIDTH_G        : natural               := natural(ceil(log2(real(NUM_ADDRESSES_G))));
+        MAX_LENGTH_G        : natural               := 256;
+        LENGTH_WIDTH_G      : natural               := natural(ceil(log2(real(MAX_LENGTH_G))));
         AXI_ADDRESS_G       : unsigned(31 downto 0) := x"8000_0000"
     );
     Port (
@@ -227,7 +227,7 @@ begin
 
     readingFrom <= getOtherBufferIndex(writingInto);
 
-    u_Axi4Interface : entity work.Axi4Interface
+    u_BufferAxi4Iface : entity work.BufferAxi4Iface
         generic map (
             MARK_DEBUG_G        => "false",
             PACKING_G           => PACKING_G,

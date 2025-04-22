@@ -4,7 +4,7 @@
 -- 
 -- Create Date: 03/31/2025 02:26:07 PM
 -- Design Name: 
--- Module Name: Axi4InterfaceTb - Behavioral
+-- Module Name: BufferAxi4IfaceTb - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
@@ -42,27 +42,27 @@ use work.Axi4Pkg.all;
 
 use std.textio.all;
 
-entity Axi4InterfaceTb is
+entity BufferAxi4IfaceTb is
 --  Port ( );
-end Axi4InterfaceTb;
+end BufferAxi4IfaceTb;
 
-architecture Behavioral of Axi4InterfaceTb is
+architecture Behavioral of BufferAxi4IfaceTb is
 
 	constant CLK_PERIOD_C        : time    := 10 ns;
 	constant TB_AXI_DATA_WIDTH_C : natural := 32;
 	constant TB_AXI_ADDR_WIDTH_C : natural := 32;
 
-	constant TB_NUM_ADDRESSES_C     : natural                                := 8;
-	constant TB_PACKING_C           : natural                                := 2;
-	constant TB_SAMPLE_DATA_WIDTH_C : natural                                := 12;
-	constant TB_DATA_WIDTH_C        : natural                                := TB_PACKING_C * TB_SAMPLE_DATA_WIDTH_C;
-	constant TB_BYTE_WIDTH_C        : natural                                := TB_DATA_WIDTH_C;
-	constant TB_LATENCY_C           : natural                                := 3;
-	constant TB_MEMORY_SIZE_C       : natural                                := TB_NUM_ADDRESSES_C * TB_DATA_WIDTH_C;
-	constant TB_ADDR_WIDTH_C        : natural                                := natural(ceil(log2(real(TB_NUM_ADDRESSES_C))));
-	constant TB_MAX_LENGTH_C        : natural                                := 4;
-	constant TB_LENGTH_WIDTH_C      : natural                                := natural(ceil(log2(real(TB_MAX_LENGTH_C))));
-	constant TB_AXI_ADDRESS_C       : unsigned(TB_AXI_ADDR_WIDTH_C downto 0) := x"8000_0000";
+	constant TB_NUM_ADDRESSES_C     : natural                                  := 8;
+	constant TB_PACKING_C           : natural                                  := 2;
+	constant TB_SAMPLE_DATA_WIDTH_C : natural                                  := 12;
+	constant TB_DATA_WIDTH_C        : natural                                  := TB_PACKING_C * TB_SAMPLE_DATA_WIDTH_C;
+	constant TB_BYTE_WIDTH_C        : natural                                  := TB_DATA_WIDTH_C;
+	constant TB_LATENCY_C           : natural                                  := 3;
+	constant TB_MEMORY_SIZE_C       : natural                                  := TB_NUM_ADDRESSES_C * TB_DATA_WIDTH_C;
+	constant TB_ADDR_WIDTH_C        : natural                                  := natural(ceil(log2(real(TB_NUM_ADDRESSES_C))));
+	constant TB_MAX_LENGTH_C        : natural                                  := 4;
+	constant TB_LENGTH_WIDTH_C      : natural                                  := natural(ceil(log2(real(TB_MAX_LENGTH_C))));
+	constant TB_AXI_ADDRESS_C       : unsigned(TB_AXI_ADDR_WIDTH_C-1 downto 0) := x"8000_0000";
 
 	constant TB_ACTION_TIMEOUT : time := 80 ns;
 
@@ -158,7 +158,7 @@ begin
 	end process;
 
 	-- UUT
-	Axi4Interface_1 : entity work.Axi4Interface
+	BufferAxi4Iface_1 : entity work.BufferAxi4Iface
 		generic map (
 			PACKING_G           => TB_PACKING_C,
 			SAMPLE_DATA_WIDTH_G => TB_SAMPLE_DATA_WIDTH_C,
@@ -349,7 +349,7 @@ begin
 
 
 		-- axi ready immediately, wait for data, read 2
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
+		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(4*1, axiReadSrc_i.araddr'length));
 		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(2-1, axiReadSrc_i.arlen'length));
 		axiReadSrc_i.arsize  <= "010";
 		axiReadSrc_i.arburst <= "01";
@@ -376,7 +376,7 @@ begin
 
 
 		-- axi ready immediately, wait for data, read 3
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
+		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(4*3, axiReadSrc_i.araddr'length));
 		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(3-1, axiReadSrc_i.arlen'length));
 		axiReadSrc_i.arsize  <= "010";
 		axiReadSrc_i.arburst <= "01";

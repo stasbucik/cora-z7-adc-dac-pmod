@@ -4,7 +4,7 @@
 -- 
 -- Create Date: 03/31/2025 10:10:56 AM
 -- Design Name: 
--- Module Name: Axi4Interface - Behavioral
+-- Module Name: BufferAxi4Iface - Behavioral
 -- Project Name: 
 -- Target Devices: 
 -- Tool Versions: 
@@ -33,11 +33,12 @@ use IEEE.NUMERIC_STD.ALL;
 use work.BramPkg.all;
 use work.BramBufferPkg.all;
 use work.Axi4Pkg.all;
+use work.UnsignedOpsPkg.all;
 
 use IEEE.math_real."ceil";
 use IEEE.math_real."log2";
 
-entity Axi4Interface is
+entity BufferAxi4Iface is
     generic(
         MARK_DEBUG_G        : string                := "false";
         PACKING_G           : natural               := 2;
@@ -64,9 +65,9 @@ entity Axi4Interface is
         buffer_i   : in TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0)
 
     );
-end Axi4Interface;
+end BufferAxi4Iface;
 
-architecture Behavioral of Axi4Interface is
+architecture Behavioral of BufferAxi4Iface is
 
     constant FILL_C : STD_LOGIC_VECTOR(axiReadDst_o.rdata'length - DATA_WIDTH_G - 1 downto 0) := (others => '0');
 
@@ -89,16 +90,11 @@ architecture Behavioral of Axi4Interface is
         axiAddr              : STD_LOGIC_VECTOR(axiReadSrc_i.araddr'range);
         burst_len            : unsigned(axiReadSrc_i.ARLEN'range);
         read_len             : unsigned(LENGTH_WIDTH_G-1 downto 0);
-        burst_width          : STD_LOGIC_VECTOR(axiReadSrc_i.ARSIZE'range);
-        burst_type           : STD_LOGIC_VECTOR(axiReadSrc_i.ARBURST'range);
         totalTransferCounter : unsigned(axiReadSrc_i.ARLEN'length downto 0); -- one more bit to prevent overflow
         subTransferCounter   : unsigned(LENGTH_WIDTH_G downto 0);            -- one more bit to prevent overflow
-        arready              : STD_LOGIC;
-        rid                  : STD_LOGIC_VECTOR(axiReadDst_o.rid'range);
-        rdata                : STD_LOGIC_VECTOR(axiReadDst_o.rdata'range);
+        arready              : STD_LOGIC;        rdata                : STD_LOGIC_VECTOR(axiReadDst_o.rdata'range);
         rresp                : STD_LOGIC_VECTOR(axiReadDst_o.rresp'range);
         rlast                : STD_LOGIC;
-        ruser                : STD_LOGIC_VECTOR(axiReadDst_o.ruser'range);
         rvalid               : STD_LOGIC;
         readStart            : STD_LOGIC;
     end record RegType;
@@ -109,16 +105,12 @@ architecture Behavioral of Axi4Interface is
             axiAddr              => (others => '0'),
             burst_len            => (others => '0'),
             read_len             => (others => '0'),
-            burst_width          => (others => '0'),
-            burst_type           => (others => '0'),
             totalTransferCounter => (others => '0'),
             subTransferCounter   => (others => '0'),
             arready              => '0',
-            rid                  => (others => '0'),
             rdata                => (others => '0'),
             rresp                => (others => '0'),
             rlast                => '0',
-            ruser                => (others => '0'),
             rvalid               => '0',
             readStart            => '0'
         );
@@ -126,91 +118,6 @@ architecture Behavioral of Axi4Interface is
     signal r   : RegType;
     signal rin : RegType;
 
-    function max (
-            a : integer;
-            b : integer
-        ) return integer is
-    begin
-        if (a > b) then
-            return a;
-        else
-            return b;
-        end if;
-    end function max;
-
-    function uAdd (
-            a : unsigned;
-            b : unsigned
-        ) return unsigned is
-        constant padding : STD_LOGIC_VECTOR(abs(a'length - b'length)-1 downto 0) := (others => '0');
-        variable tmp     : STD_LOGIC_VECTOR(max(a'length, b'length)-1 downto 0);
-    begin
-        if (a'length > b'length) then
-            tmp := padding & STD_LOGIC_VECTOR(b);
-            return a + unsigned(tmp);
-        elsif (a'length < b'length) then
-            tmp := padding & STD_LOGIC_VECTOR(a);
-            return unsigned(tmp) + b;
-        else
-            return a + b;
-        end if;
-    end function uAdd;
-
-    function uSub (
-            a : unsigned;
-            b : unsigned
-        ) return unsigned is
-        constant padding : STD_LOGIC_VECTOR(abs(a'length - b'length)-1 downto 0) := (others => '0');
-        variable tmp     : STD_LOGIC_VECTOR(max(a'length, b'length)-1 downto 0);
-    begin
-        if (a'length > b'length) then
-            tmp := padding & STD_LOGIC_VECTOR(b);
-            return a - unsigned(tmp);
-        elsif (a'length < b'length) then
-            tmp := padding & STD_LOGIC_VECTOR(a);
-            return unsigned(tmp) - b;
-        else
-            return a - b;
-        end if;
-    end function uSub;
-
-    function uEq (
-            a : unsigned;
-            b : unsigned
-        ) return boolean is
-        constant padding : STD_LOGIC_VECTOR(abs(a'length - b'length)-1 downto 0) := (others => '0');
-        variable tmp     : STD_LOGIC_VECTOR(max(a'length, b'length)-1 downto 0);
-    begin
-        if (a'length > b'length) then
-            tmp := padding & STD_LOGIC_VECTOR(b);
-            return a = unsigned(tmp);
-        elsif (a'length < b'length) then
-            tmp := padding & STD_LOGIC_VECTOR(a);
-            return unsigned(tmp) = b;
-        else
-            return a = b;
-        end if;
-    end function uEq;
-
-    function uLeq (
-            a : unsigned;
-            b : unsigned
-        ) return boolean is
-        constant padding : STD_LOGIC_VECTOR(abs(a'length - b'length)-1 downto 0) := (others => '0');
-        variable tmp     : STD_LOGIC_VECTOR(max(a'length, b'length)-1 downto 0);
-    begin
-        if (a'length > b'length) then
-            tmp := padding & STD_LOGIC_VECTOR(b);
-
-            return a <= unsigned(tmp);
-        elsif (a'length < b'length) then
-            tmp := padding & STD_LOGIC_VECTOR(a);
-
-            return unsigned(tmp) <= b;
-        else
-            return a <= b;
-        end if;
-    end function uLeq;
     -----------------------------------------------------------------------------
     attribute mark_debug        : string;
     attribute mark_debug of r   : signal is MARK_DEBUG_G;
@@ -249,8 +156,6 @@ begin
                             v.read_len := unsigned(axiReadSrc_i.arlen(LENGTH_WIDTH_G-1 downto 0));
                         end if;
 
-                        v.burst_width := axiReadSrc_i.arsize;
-                        v.burst_type  := axiReadSrc_i.arburst;
                         v.readStart   := '1';
                         v.state       := WAIT_FOR_DATA_S;
                     else
@@ -289,7 +194,7 @@ begin
                             -- we have enough data from bram
                             v.subTransferCounter := r.subTransferCounter + 1;
                             v.rdata              := FILL_C & buffer_i(to_integer(r.subTransferCounter));
-                            v.rresp              := (others => '0'); --okay
+                            v.rresp              := AXI_RESP_OK_C;
                             v.rvalid             := '1';
                         else
                             -- new read from bram must begin
@@ -354,11 +259,11 @@ begin
 
         -- Drive outputs
         axiReadDst_o.arready <= r.arready;
-        axiReadDst_o.rid     <= r.rid;
+        axiReadDst_o.rid     <= (others => '0');
         axiReadDst_o.rdata   <= r.rdata;
         axiReadDst_o.rresp   <= r.rresp;
         axiReadDst_o.rlast   <= r.rlast;
-        axiReadDst_o.ruser   <= r.ruser;
+        axiReadDst_o.ruser   <= (others => '0');
         axiReadDst_o.rvalid  <= r.rvalid;
 
         readStart_o <= rin.readStart;
