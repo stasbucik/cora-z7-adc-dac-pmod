@@ -347,8 +347,6 @@ begin
 			overflow_o    => adcOverflow
 		);
 
-	rgb_led <= (0 => adcOverflow, others => '0');
-
 	----------------------------------------------------------------------------
 	u_DataBuffer : entity work.DataBuffer
 		generic map (
@@ -402,5 +400,12 @@ begin
 			axiDst_o => axiCtrlDst,
 			reg_o    => ctrlReg
 		);
+
+	rgb_led <= (
+			0      => adcOverflow,
+			3      => ctrlReg(ADC_RUN_BIT_C),
+			4      => ctrlReg(DAC_RUN_BIT_C),
+			others => '0'
+	);
 
 end Behavioral;
