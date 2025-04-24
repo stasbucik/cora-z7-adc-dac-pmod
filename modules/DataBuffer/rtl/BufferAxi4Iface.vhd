@@ -266,9 +266,9 @@ begin
         axiReadDst_o.ruser   <= (others => '0');
         axiReadDst_o.rvalid  <= r.rvalid;
 
-        readStart_o <= rin.readStart;
-        address_o   <= rin.addr;
-        length_o    <= STD_LOGIC_VECTOR(rin.read_len);
+        readStart_o <= r.readStart;
+        address_o   <= r.addr;
+        length_o    <= STD_LOGIC_VECTOR(r.read_len);
 
     end process p_Comb;
 
