@@ -65,7 +65,7 @@ entity BramBufferReader is
         readDone_o : out STD_LOGIC;
         counter_o  : out unsigned(LENGTH_WIDTH_G downto 0);
 
-        buffer_o      : out TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
+        buffer_o      : out TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G downto 0);
         readingFrom_i : in  natural range 0 to 1
 
     );
@@ -86,7 +86,7 @@ architecture Behavioral of BramBufferReader is
         transferCounter : unsigned(LENGTH_WIDTH_G downto 0);
         latencyCounter  : natural range 0 to LATENCY_G;
         enables         : STD_LOGIC_VECTOR(1 downto 0);
-        tmpBuffer       : TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
+        tmpBuffer       : TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G downto 0);
         readDone        : STD_LOGIC;
         readingFrom     : natural range 0 to 1;
     end record RegType;
@@ -175,9 +175,9 @@ begin
 
                 case r.readingFrom is
                     when 0 =>
-                        v.tmpBuffer(to_integer(r.transferCounter)) := bramReadDst0_i.dout;
+                        v.tmpBuffer(to_integer(r.transferCounter)) := "0" & bramReadDst0_i.dout;
                     when 1 =>
-                        v.tmpBuffer(to_integer(r.transferCounter)) := bramReadDst1_i.dout;
+                        v.tmpBuffer(to_integer(r.transferCounter)) := "1" & bramReadDst1_i.dout;
                     when others =>
                         v.tmpBuffer(to_integer(r.transferCounter)) := (others => '0');
                 end case;

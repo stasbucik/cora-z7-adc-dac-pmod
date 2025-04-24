@@ -99,7 +99,7 @@ architecture Behavioral of BramBufferReaderTb is
 	signal length_i       : STD_LOGIC_VECTOR(TB_LENGTH_WIDTH_C-1 downto 0);
 	signal readDone_o     : STD_LOGIC;
 	signal counter_o      : unsigned(TB_LENGTH_WIDTH_C downto 0);
-	signal buffer_o       : TmpBufferArray(TB_MAX_LENGTH_C-1 downto 0)(TB_DATA_WIDTH_C-1 downto 0);
+	signal buffer_o       : TmpBufferArray(TB_MAX_LENGTH_C-1 downto 0)(TB_DATA_WIDTH_C downto 0);
 	signal readingFrom_i  : natural range 0 to 1;
 
 	procedure WriteDataToBRAM (

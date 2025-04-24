@@ -62,14 +62,14 @@ entity BufferAxi4Iface is
 
         readDone_i : in STD_LOGIC;
         counter_i  : in unsigned(LENGTH_WIDTH_G downto 0);
-        buffer_i   : in TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0)
+        buffer_i   : in TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G downto 0)
 
     );
 end BufferAxi4Iface;
 
 architecture Behavioral of BufferAxi4Iface is
 
-    constant FILL_C : STD_LOGIC_VECTOR(axiReadDst_o.rdata'length - DATA_WIDTH_G - 1 downto 0) := (others => '0');
+    constant FILL_C : STD_LOGIC_VECTOR(axiReadDst_o.rdata'length - DATA_WIDTH_G - 2 downto 0) := (others => '0');
 
     constant AXI_RESP_OK_C            : STD_LOGIC_VECTOR(1 downto 0) := "00";
     constant AXI_RESP_SLVERR_C        : STD_LOGIC_VECTOR(1 downto 0) := "10";
