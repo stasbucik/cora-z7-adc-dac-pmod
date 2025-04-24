@@ -17,4 +17,4 @@ loadRuckusTcl $::env(TOP_DIR)/modules/DacAD5451
 loadRuckusTcl $::env(TOP_DIR)/modules/AdcMAX11105
 loadRuckusTcl $::env(TOP_DIR)/modules/DataGenerator
 loadRuckusTcl $::env(TOP_DIR)/modules/Infrastructure
-loadRuckusTcl $::env(TOP_DIR)/modules/ControlRegister
+loadRuckusTcl $::env(TOP_DIR)/modules/Registers

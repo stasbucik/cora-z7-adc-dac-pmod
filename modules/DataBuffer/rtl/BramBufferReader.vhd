@@ -66,7 +66,10 @@ entity BramBufferReader is
         counter_o  : out unsigned(LENGTH_WIDTH_G downto 0);
 
         buffer_o      : out TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
-        readingFrom_i : in  natural range 0 to 1
+        readingFrom_i : in  natural range 0 to 1;
+
+        overwrite_o      : out STD_LOGIC;
+        clearOverwrite_o : out STD_LOGIC
 
     );
 end BramBufferReader;
@@ -80,28 +83,36 @@ architecture Behavioral of BramBufferReader is
         );
 
     type RegType is record
-        state           : StateType;
-        addr            : unsigned(ADDR_WIDTH_G-1 downto 0);
-        len             : unsigned(LENGTH_WIDTH_G-1 downto 0);
-        transferCounter : unsigned(LENGTH_WIDTH_G downto 0);
-        latencyCounter  : natural range 0 to LATENCY_G;
-        enables         : STD_LOGIC_VECTOR(1 downto 0);
-        tmpBuffer       : TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
-        readDone        : STD_LOGIC;
-        readingFrom     : natural range 0 to 1;
+        state            : StateType;
+        addr             : unsigned(ADDR_WIDTH_G-1 downto 0);
+        len              : unsigned(LENGTH_WIDTH_G-1 downto 0);
+        transferCounter  : unsigned(LENGTH_WIDTH_G downto 0);
+        latencyCounter   : natural range 0 to LATENCY_G;
+        enables          : STD_LOGIC_VECTOR(1 downto 0);
+        tmpBuffer        : TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
+        readDone         : STD_LOGIC;
+        readingFrom      : natural range 0 to 1;
+        readingFromStart : natural range 0 to 1;
+        overwrite        : STD_LOGIC;
+        clearOverwrite   : STD_LOGIC;
     end record RegType;
 
     constant REG_TYPE_INIT_C : RegType := (
-            state           => IDLE_S,
-            addr            => (others => '0'),
-            len             => (others => '0'),
-            transferCounter => (others => '0'),
-            latencyCounter  => 0,
-            enables         => (others => '0'),
-            tmpBuffer       => (others => (others => '0')),
-            readDone        => '0',
-            readingFrom     => 0
+            state            => IDLE_S,
+            addr             => (others => '0'),
+            len              => (others => '0'),
+            transferCounter  => (others => '0'),
+            latencyCounter   => 0,
+            enables          => (others => '0'),
+            tmpBuffer        => (others => (others => '0')),
+            readDone         => '0',
+            readingFrom      => 0,
+            readingFromStart => 0,
+            overwrite        => '0',
+            clearOverwrite   => '0'
         );
+
+    constant START_ADDRESS : STD_LOGIC_VECTOR(ADDR_WIDTH_G-1 downto 0) := (others => '0');
 
     signal r   : RegType;
     signal rin : RegType;
@@ -119,7 +130,9 @@ begin
     begin
         v := r;
 
-        v.readDone := '0';
+        v.readDone       := '0';
+        v.overwrite      := '0';
+        v.clearOverwrite := '0';
 
         -- combinatorial logic
         case r.state is
@@ -128,6 +141,15 @@ begin
                     v.addr            := unsigned(address_i);
                     v.len             := unsigned(length_i);
                     v.transferCounter := (others => '0');
+
+                    if (address_i = START_ADDRESS) then
+                        v.clearOverwrite   := '1';
+                        v.readingFromStart := readingFrom_i;
+                    else
+                        if (r.readingFromStart /= readingFrom_i) then
+                            v.overwrite := '1';
+                        end if;
+                    end if;
 
                     v.readingFrom := readingFrom_i;
 
@@ -204,9 +226,11 @@ begin
         bramReadSrc1_o.addr <= STD_LOGIC_VECTOR(rin.addr);
         bramReadSrc1_o.din  <= (others => '0');
 
-        readDone_o <= r.readDone;
-        counter_o  <= r.transferCounter;
-        buffer_o   <= r.tmpBuffer;
+        readDone_o       <= r.readDone;
+        counter_o        <= r.transferCounter;
+        buffer_o         <= r.tmpBuffer;
+        overwrite_o      <= r.overwrite;
+        clearOverwrite_o <= r.clearOverwrite;
     end process p_Comb;
 
     p_Seq : process(clk_i)

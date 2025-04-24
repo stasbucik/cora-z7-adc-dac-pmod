@@ -220,11 +220,18 @@ proc create_root_design { parentCell } {
    CONFIG.PROTOCOL {AXI4} \
    ] $M_AXI_ctrl
 
+  set M_AXI_stat [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M_AXI_stat ]
+  set_property -dict [ list \
+   CONFIG.ADDR_WIDTH {32} \
+   CONFIG.DATA_WIDTH {32} \
+   CONFIG.PROTOCOL {AXI4} \
+   ] $M_AXI_stat
+
 
   # Create ports
   set ps_clk [ create_bd_port -dir O -type clk ps_clk ]
   set_property -dict [ list \
-   CONFIG.ASSOCIATED_BUSIF {M_AXI_buffer:M_AXI_ctrl} \
+   CONFIG.ASSOCIATED_BUSIF {M_AXI_buffer:M_AXI_ctrl:M_AXI_stat} \
  ] $ps_clk
   set peripheral_reset [ create_bd_port -dir O -from 0 -to 0 -type rst peripheral_reset ]
   set IRQ_F2P [ create_bd_port -dir I -from 0 -to 0 -type intr IRQ_F2P ]
@@ -800,7 +807,7 @@ proc create_root_design { parentCell } {
   # Create instance: axi_smc, and set properties
   set axi_smc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 axi_smc ]
   set_property -dict [list \
-    CONFIG.NUM_MI {2} \
+    CONFIG.NUM_MI {3} \
     CONFIG.NUM_SI {1} \
   ] $axi_smc
 
@@ -824,6 +831,7 @@ proc create_root_design { parentCell } {
   # Create interface connections
   connect_bd_intf_net -intf_net axi_smc_M00_AXI [get_bd_intf_pins axi_smc/M00_AXI] [get_bd_intf_ports M_AXI_buffer]
   connect_bd_intf_net -intf_net axi_smc_M01_AXI [get_bd_intf_pins axi_smc/M01_AXI] [get_bd_intf_ports M_AXI_ctrl]
+  connect_bd_intf_net -intf_net axi_smc_M02_AXI [get_bd_intf_pins axi_smc/M02_AXI] [get_bd_intf_ports M_AXI_stat]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system7_0/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
   connect_bd_intf_net -intf_net processing_system7_0_IIC_0 [get_bd_intf_ports Shield_I2C] [get_bd_intf_pins processing_system7_0/IIC_0]
@@ -870,6 +878,7 @@ proc create_root_design { parentCell } {
   # Create address segments
   assign_bd_address -offset 0x46000000 -range 0x00004000 -with_name SEG_M_AXI_GP0_Reg -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXI_buffer/Reg] -force
   assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXI_ctrl/Reg] -force
+  assign_bd_address -offset 0x43C10000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXI_stat/Reg] -force
 
 
   # Restore current instance

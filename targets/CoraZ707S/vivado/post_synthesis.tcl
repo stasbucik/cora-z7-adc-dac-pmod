@@ -21,7 +21,13 @@ if { ${enable} == 1 } {
 	ConfigProbe ${ilaName} {interrupt}
 	ConfigProbe ${ilaName} {clearBuffer}
 	ConfigProbe ${ilaName} {clearBufferFast}
+	ConfigProbe ${ilaName} {updateStat}
+	ConfigProbe ${ilaName} {overwrite}
+	ConfigProbe ${ilaName} {overwriteLatch}
+	ConfigProbe ${ilaName} {clearOverwrite}
 	ConfigProbe ${ilaName} {ctrlReg[*]}
+	ConfigProbe ${ilaName} {statReg[*]}
+	ConfigProbe ${ilaName} {newStatReg[*]}
 	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/xlconcat_1_dout[*]}
 
 	################################################
@@ -74,33 +80,6 @@ if { ${enable} == 1 } {
 	#ConfigProbe ${ilaName} {axiBufferDst[rd][RLAST]}
 	#ConfigProbe ${ilaName} {axiBufferDst[rd][RUSER]}
 	#ConfigProbe ${ilaName} {axiBufferDst[rd][RVALID]}
-
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWID]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWADDR][*]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWLEN][*]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWSIZE][*]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWBURST][*]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWLOCK]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWCACHE][*]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWPROT][*]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWQOS][*]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWREGION][*]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWUSER]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][AWVALID]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][WID]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][WDATA][*]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][WSTRB][*]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][WLAST]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][WUSER]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][WVALID]}
-	#ConfigProbe ${ilaName} {axiBufferSrc[wr][BREADY]}
-
-	#ConfigProbe ${ilaName} {axiBufferDst[wr][AWREADY]}
-	#ConfigProbe ${ilaName} {axiBufferDst[wr][WREADY]}
-	#ConfigProbe ${ilaName} {axiBufferDst[wr][BID]}
-	#ConfigProbe ${ilaName} {axiBufferDst[wr][BRESP][*]}
-	#ConfigProbe ${ilaName} {axiBufferDst[wr][BUSER]}
-	#ConfigProbe ${ilaName} {axiBufferDst[wr][BVALID]}
 	################################################
 
 	################################################
@@ -153,6 +132,31 @@ if { ${enable} == 1 } {
 	#ConfigProbe ${ilaName} {axiCtrlDst[wr][BRESP][*]}
 	#ConfigProbe ${ilaName} {axiCtrlDst[wr][BUSER]}
 	#ConfigProbe ${ilaName} {axiCtrlDst[wr][BVALID]}
+	################################################
+
+	################################################
+	# axi4 for status
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARID]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARADDR][*]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARLEN][*]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARSIZE][*]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARBURST][*]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARLOCK]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARCACHE][*]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARPROT][*]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARQOS][*]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARREGION][*]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARUSER]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][ARVALID]}
+	#ConfigProbe ${ilaName} {axiStatSrc[rd][RREADY]}
+
+	#ConfigProbe ${ilaName} {axiStatDst[rd][ARREADY]}
+	#ConfigProbe ${ilaName} {axiStatDst[rd][RID]}
+	#ConfigProbe ${ilaName} {axiStatDst[rd][RDATA][*]}
+	#ConfigProbe ${ilaName} {axiStatDst[rd][RRESP][*]}
+	#ConfigProbe ${ilaName} {axiStatDst[rd][RLAST]}
+	#ConfigProbe ${ilaName} {axiStatDst[rd][RUSER]}
+	#ConfigProbe ${ilaName} {axiStatDst[rd][RVALID]}
 	################################################
 
 	################################################

@@ -65,7 +65,10 @@ entity DataBuffer is
         axiDst_o : out Axi4Destination;
 
         clear_i     : in  STD_LOGIC;
-        interrupt_o : out STD_LOGIC
+        interrupt_o : out STD_LOGIC;
+
+        overwrite_o      : out STD_LOGIC;
+        clearOverwrite_o : out STD_LOGIC
     );
 end DataBuffer;
 
@@ -109,22 +112,22 @@ architecture Behavioral of DataBuffer is
     end function getOtherBufferIndex;
 
     -----------------------------------------------------------------------------
-    attribute mark_debug                     : string;
-    attribute mark_debug of bramWriteSrc0    : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramWriteSrc1    : signal is MARK_DEBUG_G;
-    attribute mark_debug of writingInto      : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadSrc0     : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadSrc1     : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadDst0     : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadDst1     : signal is MARK_DEBUG_G;
-    attribute mark_debug of readStart        : signal is MARK_DEBUG_G;
-    attribute mark_debug of address          : signal is MARK_DEBUG_G;
-    attribute mark_debug of length           : signal is MARK_DEBUG_G;
-    attribute mark_debug of readDone         : signal is MARK_DEBUG_G;
-    attribute mark_debug of counter          : signal is MARK_DEBUG_G;
-    attribute mark_debug of dataBuffer       : signal is MARK_DEBUG_G;
-    attribute mark_debug of readingFrom      : signal is MARK_DEBUG_G;
-    attribute mark_debug of wrIntoAdapter    : signal is MARK_DEBUG_G;
+    attribute mark_debug                  : string;
+    attribute mark_debug of bramWriteSrc0 : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramWriteSrc1 : signal is MARK_DEBUG_G;
+    attribute mark_debug of writingInto   : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadSrc0  : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadSrc1  : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadDst0  : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadDst1  : signal is MARK_DEBUG_G;
+    attribute mark_debug of readStart     : signal is MARK_DEBUG_G;
+    attribute mark_debug of address       : signal is MARK_DEBUG_G;
+    attribute mark_debug of length        : signal is MARK_DEBUG_G;
+    attribute mark_debug of readDone      : signal is MARK_DEBUG_G;
+    attribute mark_debug of counter       : signal is MARK_DEBUG_G;
+    attribute mark_debug of dataBuffer    : signal is MARK_DEBUG_G;
+    attribute mark_debug of readingFrom   : signal is MARK_DEBUG_G;
+    attribute mark_debug of wrIntoAdapter : signal is MARK_DEBUG_G;
     ----------------------------------------------------------------------------
 
     constant AXI_WRITE_DUMMY_C : Axi4WriteDestination := (
@@ -210,19 +213,21 @@ begin
             ADDR_WIDTH_G        => ADDR_WIDTH_G
         )
         port map (
-            clk_i          => clk_i,
-            rst_i          => rst_i,
-            bramReadSrc0_o => bramReadSrc0,
-            bramReadSrc1_o => bramReadSrc1,
-            bramReadDst0_i => bramReadDst0,
-            bramReadDst1_i => bramReadDst1,
-            readStart_i    => readStart,
-            address_i      => address,
-            length_i       => length,
-            readDone_o     => readDone,
-            counter_o      => counter,
-            buffer_o       => dataBuffer,
-            readingFrom_i  => readingFrom
+            clk_i            => clk_i,
+            rst_i            => rst_i,
+            bramReadSrc0_o   => bramReadSrc0,
+            bramReadSrc1_o   => bramReadSrc1,
+            bramReadDst0_i   => bramReadDst0,
+            bramReadDst1_i   => bramReadDst1,
+            readStart_i      => readStart,
+            address_i        => address,
+            length_i         => length,
+            readDone_o       => readDone,
+            counter_o        => counter,
+            buffer_o         => dataBuffer,
+            readingFrom_i    => readingFrom,
+            overwrite_o      => overwrite_o,
+            clearOverwrite_o => clearOverwrite_o
         );
 
     readingFrom <= getOtherBufferIndex(writingInto);

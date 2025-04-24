@@ -84,10 +84,14 @@ architecture Behavioral of CoraZ707S is
 
 	constant AXI_BUFFER_ADDRESS_C : unsigned(31 downto 0) := x"4600_0000";
 	constant AXI_CTRL_ADDRESS_C   : unsigned(31 downto 0) := x"43C0_0000";
+	constant AXI_STAT_ADDRESS_C   : unsigned(31 downto 0) := x"43C1_0000";
 	constant CTRL_REG_SIZE_C      : natural               := 32;
+	constant STAT_REG_SIZE_C      : natural               := 32;
 
 	constant ADC_RUN_BIT_C : natural := 0;
 	constant DAC_RUN_BIT_C : natural := 1;
+
+	constant OVERWRITE_BIT_C : natural := 0;
 
 	signal clk : STD_LOGIC;
 	signal rst : STD_LOGIC;
@@ -96,7 +100,13 @@ architecture Behavioral of CoraZ707S is
 	signal interrupt       : STD_LOGIC;
 	signal clearBuffer     : STD_LOGIC;
 	signal clearBufferFast : STD_LOGIC;
+	signal updateStat      : STD_LOGIC;
 	signal ctrlReg         : STD_LOGIC_VECTOR(CTRL_REG_SIZE_C-1 downto 0);
+	signal statReg         : STD_LOGIC_VECTOR(STAT_REG_SIZE_C-1 downto 0);
+	signal newStatReg      : STD_LOGIC_VECTOR(STAT_REG_SIZE_C-1 downto 0);
+	signal overwrite       : STD_LOGIC;
+	signal overwriteLatch  : STD_LOGIC;
+	signal clearOverwrite  : STD_LOGIC;
 
 	-- DAC signals
 	signal dacSdin  : STD_LOGIC;
@@ -130,6 +140,9 @@ architecture Behavioral of CoraZ707S is
 	signal axiCtrlSrc : Axi4Source;
 	signal axiCtrlDst : Axi4Destination;
 
+	signal axiStatSrc : Axi4Source;
+	signal axiStatDst : Axi4Destination;
+
 	signal adcOverflow : STD_LOGIC;
 
 	-----------------------------------------------------------------------------
@@ -150,9 +163,17 @@ architecture Behavioral of CoraZ707S is
 	attribute mark_debug of axiBufferDst    : signal is MARK_DEBUG_G;
 	attribute mark_debug of axiCtrlSrc      : signal is MARK_DEBUG_G;
 	attribute mark_debug of axiCtrlDst      : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiStatSrc      : signal is MARK_DEBUG_G;
+	attribute mark_debug of axiStatDst      : signal is MARK_DEBUG_G;
 	attribute mark_debug of ctrlReg         : signal is MARK_DEBUG_G;
 	attribute mark_debug of clearBuffer     : signal is MARK_DEBUG_G;
 	attribute mark_debug of clearBufferFast : signal is MARK_DEBUG_G;
+	attribute mark_debug of updateStat      : signal is MARK_DEBUG_G;
+	attribute mark_debug of statReg         : signal is MARK_DEBUG_G;
+	attribute mark_debug of newStatReg      : signal is MARK_DEBUG_G;
+	attribute mark_debug of overwrite       : signal is MARK_DEBUG_G;
+	attribute mark_debug of overwriteLatch  : signal is MARK_DEBUG_G;
+	attribute mark_debug of clearOverwrite  : signal is MARK_DEBUG_G;
 	----------------------------------------------------------------------------
 
 	component clk_wiz_mmc_100_64
@@ -194,6 +215,8 @@ begin
 			axiBufferDst      => axiBufferDst,
 			axiCtrlSrc        => axiCtrlSrc,
 			axiCtrlDst        => axiCtrlDst,
+			axiStatSrc        => axiStatSrc,
+			axiStatDst        => axiStatDst,
 			Shield_I2C_scl_io => Shield_I2C_scl_io,
 			Shield_I2C_sda_io => Shield_I2C_sda_io,
 			Shield_SPI_io0_io => Shield_SPI_io0_io,
@@ -364,14 +387,16 @@ begin
 			AXI_ADDRESS_G       => AXI_BUFFER_ADDRESS_C
 		)
 		port map (
-			clk_i          => clk,
-			rst_i          => rst,
-			axisWriteSrc_i => axisAdcSrc,
-			axisWriteDst_o => axisAdcDst,
-			axiSrc_i       => axiBufferSrc,
-			axiDst_o       => axiBufferDst,
-			clear_i        => clearBuffer,
-			interrupt_o    => interruptFast
+			clk_i            => clk,
+			rst_i            => rst,
+			axisWriteSrc_i   => axisAdcSrc,
+			axisWriteDst_o   => axisAdcDst,
+			axiSrc_i         => axiBufferSrc,
+			axiDst_o         => axiBufferDst,
+			clear_i          => clearBuffer,
+			interrupt_o      => interruptFast,
+			overwrite_o      => overwrite,
+			clearOverwrite_o => clearOverwrite
 		);
 
 	u_ExtendPulseInterrupt : entity work.ExtendPulse
@@ -401,8 +426,41 @@ begin
 			reg_o    => ctrlReg
 		);
 
+	u_StatusRegister : entity work.StatusRegister
+		generic map (
+			MARK_DEBUG_G  => "true",
+			AXI_ADDRESS_G => AXI_STAT_ADDRESS_C,
+			WIDTH_G       => STAT_REG_SIZE_C
+		)
+		port map (
+			clk_i       => clk,
+			rst_i       => rst,
+			axiSrc_i    => axiStatSrc,
+			axiDst_o    => axiStatDst,
+			reg_o       => statReg,
+			reg_i       => newStatReg,
+			writeCtrl_i => updateStat
+		);
+
+	u_LatchPulseOverwrite : entity work.LatchPulse
+		port map (
+			clk_i => clk,
+			rst_i => rst,
+			sig_i => overwrite,
+			sig_o => overwriteLatch,
+			clr_i => clearOverwrite
+		);
+
+	updateStat <= clearOverwrite or overwrite;
+
+	newStatReg <= (
+			OVERWRITE_BIT_C => overwriteLatch,
+			others          => '0'
+	);
+
 	rgb_led <= (
 			0      => adcOverflow,
+			2      => statReg(OVERWRITE_BIT_C),
 			3      => ctrlReg(ADC_RUN_BIT_C),
 			4      => ctrlReg(DAC_RUN_BIT_C),
 			others => '0'

@@ -46,7 +46,7 @@ end BramBufferReaderTb;
 
 architecture Behavioral of BramBufferReaderTb is
 
-	constant CLK_PERIOD_C        : time    := 10 ns;
+	constant CLK_PERIOD_C : time := 10 ns;
 
 	constant TB_NUM_ADDRESSES_C     : natural := 8;
 	constant TB_PACKING_C           : natural := 2;
@@ -93,14 +93,16 @@ architecture Behavioral of BramBufferReaderTb is
 	signal bramReadDst0_i : BramDestination(
 		dout(TB_DATA_WIDTH_C-1 downto 0)
 	);
-	signal bramReadDst1_i : bramReadDst0_i'subtype;
-	signal readStart_i    : STD_LOGIC;
-	signal address_i      : STD_LOGIC_VECTOR(TB_ADDR_WIDTH_C-1 downto 0);
-	signal length_i       : STD_LOGIC_VECTOR(TB_LENGTH_WIDTH_C-1 downto 0);
-	signal readDone_o     : STD_LOGIC;
-	signal counter_o      : unsigned(TB_LENGTH_WIDTH_C downto 0);
-	signal buffer_o       : TmpBufferArray(TB_MAX_LENGTH_C-1 downto 0)(TB_DATA_WIDTH_C-1 downto 0);
-	signal readingFrom_i  : natural range 0 to 1;
+	signal bramReadDst1_i   : bramReadDst0_i'subtype;
+	signal readStart_i      : STD_LOGIC;
+	signal address_i        : STD_LOGIC_VECTOR(TB_ADDR_WIDTH_C-1 downto 0);
+	signal length_i         : STD_LOGIC_VECTOR(TB_LENGTH_WIDTH_C-1 downto 0);
+	signal readDone_o       : STD_LOGIC;
+	signal counter_o        : unsigned(TB_LENGTH_WIDTH_C downto 0);
+	signal buffer_o         : TmpBufferArray(TB_MAX_LENGTH_C-1 downto 0)(TB_DATA_WIDTH_C-1 downto 0);
+	signal readingFrom_i    : natural range 0 to 1;
+	signal overwrite_o      : STD_LOGIC;
+	signal clearOverwrite_o : STD_LOGIC;
 
 	procedure WriteDataToBRAM (
 			constant data  : in  TmpBufferArray(open)(TB_DATA_WIDTH_C-1 downto 0);
@@ -141,19 +143,21 @@ begin
 			ADDR_WIDTH_G        => TB_ADDR_WIDTH_C
 		)
 		port map (
-			clk_i          => clk_i,
-			rst_i          => rst_i,
-			bramReadSrc0_o => bramReadSrc0_o,
-			bramReadSrc1_o => bramReadSrc1_o,
-			bramReadDst0_i => bramReadDst0_i,
-			bramReadDst1_i => bramReadDst1_i,
-			readStart_i    => readStart_i,
-			address_i      => address_i,
-			length_i       => length_i,
-			readDone_o     => readDone_o,
-			counter_o      => counter_o,
-			buffer_o       => buffer_o,
-			readingFrom_i  => readingFrom_i
+			clk_i            => clk_i,
+			rst_i            => rst_i,
+			bramReadSrc0_o   => bramReadSrc0_o,
+			bramReadSrc1_o   => bramReadSrc1_o,
+			bramReadDst0_i   => bramReadDst0_i,
+			bramReadDst1_i   => bramReadDst1_i,
+			readStart_i      => readStart_i,
+			address_i        => address_i,
+			length_i         => length_i,
+			readDone_o       => readDone_o,
+			counter_o        => counter_o,
+			buffer_o         => buffer_o,
+			readingFrom_i    => readingFrom_i,
+			overwrite_o      => overwrite_o,
+			clearOverwrite_o => clearOverwrite_o
 		);
 
 	u_BramWrapper0 : entity work.BramWrapper
@@ -213,10 +217,10 @@ begin
 		bramWriteSrc1.we   <= (others => '0');
 		bramWriteSrc1.addr <= (others => '0');
 		bramWriteSrc1.din  <= (others => '0');
-		
+
 		wait for CLK_PERIOD_C*3;
 
-		rst_i         <= '0';
+		rst_i <= '0';
 		------------------------------------------------------------------------
 		-- reset done
 		------------------------------------------------------------------------
@@ -287,7 +291,7 @@ begin
 		readStart_i   <= '1';
 		address_i     <= STD_LOGIC_VECTOR(to_unsigned(4, address_i'length));
 		length_i      <= STD_LOGIC_VECTOR(to_unsigned(3, length_i'length));
-		readingFrom_i <= 0;
+		readingFrom_i <= 1;
 		wait for CLK_PERIOD_C;
 		readStart_i <= '0';
 		wait for CLK_PERIOD_C*9;
