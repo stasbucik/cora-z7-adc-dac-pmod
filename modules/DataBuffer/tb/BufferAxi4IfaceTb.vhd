@@ -67,17 +67,16 @@ architecture Behavioral of BufferAxi4IfaceTb is
 	constant TB_ACTION_TIMEOUT : time := 80 ns;
 
 	-- UUT signals
-	signal clk_i         : STD_LOGIC;
-	signal rst_i         : STD_LOGIC;
-	signal axiReadSrc_i  : Axi4ReadSource;
-	signal axiReadDst_o  : Axi4ReadDestination;
-	signal readStart_o   : STD_LOGIC;
-	signal address_o     : STD_LOGIC_VECTOR(TB_ADDR_WIDTH_C-1 downto 0);
-	signal length_o      : STD_LOGIC_VECTOR(TB_LENGTH_WIDTH_C-1 downto 0);
-	signal readDone_i    : STD_LOGIC;
-	signal counter_i     : unsigned(TB_LENGTH_WIDTH_C downto 0);
-	signal buffer_i      : TmpBufferArray(TB_MAX_LENGTH_C-1 downto 0)(TB_DATA_WIDTH_C downto 0);
-	signal readingFrom_i : natural range 0 to 1;
+	signal clk_i        : STD_LOGIC;
+	signal rst_i        : STD_LOGIC;
+	signal axiReadSrc_i : Axi4ReadSource;
+	signal axiReadDst_o : Axi4ReadDestination;
+	signal readStart_o  : STD_LOGIC;
+	signal address_o    : STD_LOGIC_VECTOR(TB_ADDR_WIDTH_C-1 downto 0);
+	signal length_o     : STD_LOGIC_VECTOR(TB_LENGTH_WIDTH_C-1 downto 0);
+	signal readDone_i   : STD_LOGIC;
+	signal counter_i    : unsigned(TB_LENGTH_WIDTH_C downto 0);
+	signal buffer_i     : TmpBufferArray(TB_MAX_LENGTH_C-1 downto 0)(TB_DATA_WIDTH_C-1 downto 0);
 
 	constant AXI_READ_SRC_INIT_C : axiReadSrc_i'subtype := (
 			ARID     => (others => '0'),
@@ -207,7 +206,7 @@ begin
 			readDone_o     => readDone_i,
 			counter_o      => counter_i,
 			buffer_o       => buffer_i,
-			readingFrom_i  => readingFrom_i
+			readingFrom_i  => 0
 		);
 
 	u_BramWrapper0 : entity work.BramWrapper
@@ -254,8 +253,7 @@ begin
 	begin
 		rst_i <= '1';
 		-- initialize signals
-		axiReadSrc_i  <= AXI_READ_SRC_INIT_C;
-		readingFrom_i <= 0;
+		axiReadSrc_i <= AXI_READ_SRC_INIT_C;
 
 		wait for CLK_PERIOD_C*3;
 		rst_i <= '0';
@@ -293,174 +291,6 @@ begin
 
 
 
-
-		-- axi ready immediately, wait for data, read 1
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
-		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(1-1, axiReadSrc_i.arlen'length));
-		axiReadSrc_i.arsize  <= "010";
-		axiReadSrc_i.arburst <= "01";
-		axiReadSrc_i.arvalid <= '1';
-		axiReadSrc_i.rready  <= '1';
-
-		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
-		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
-		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
-		waitUntil(axiReadDst_o.rlast, '0', "rlast not 0.");
-
-		wait for CLK_PERIOD_C;
-		axiReadSrc_i.araddr  <= (others => '0');
-		axiReadSrc_i.arlen   <= (others => '0');
-		axiReadSrc_i.arsize  <= "000";
-		axiReadSrc_i.arburst <= "00";
-		axiReadSrc_i.arvalid <= '0';
-		axiReadSrc_i.rready  <= '0';
-		wait for CLK_PERIOD_C * 5;
-
-
-
-
-
-
-		-- axi not ready immediately, wait for data, read 1
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
-		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(1-1, axiReadSrc_i.arlen'length));
-		axiReadSrc_i.arsize  <= "010";
-		axiReadSrc_i.arburst <= "01";
-		axiReadSrc_i.arvalid <= '1';
-
-		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
-		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
-		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
-		wait for CLK_PERIOD_C*5;
-		axiReadSrc_i.rready <= '1';
-		waitUntil(axiReadDst_o.rlast, '0', "rlast not 0.");
-
-		wait for CLK_PERIOD_C;
-		axiReadSrc_i.araddr  <= (others => '0');
-		axiReadSrc_i.arlen   <= (others => '0');
-		axiReadSrc_i.arsize  <= "000";
-		axiReadSrc_i.arburst <= "00";
-		axiReadSrc_i.arvalid <= '0';
-		axiReadSrc_i.rready  <= '0';
-		wait for CLK_PERIOD_C * 5;
-
-
-
-
-
-		-- axi ready immediately, wait for data, read 2
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(4*1, axiReadSrc_i.araddr'length));
-		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(2-1, axiReadSrc_i.arlen'length));
-		axiReadSrc_i.arsize  <= "010";
-		axiReadSrc_i.arburst <= "01";
-		axiReadSrc_i.arvalid <= '1';
-		axiReadSrc_i.rready  <= '1';
-
-		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
-		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
-		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
-		waitUntil(axiReadDst_o.rlast, '0', "rlast not 0.");
-
-		wait for CLK_PERIOD_C;
-		axiReadSrc_i.araddr  <= (others => '0');
-		axiReadSrc_i.arlen   <= (others => '0');
-		axiReadSrc_i.arsize  <= "000";
-		axiReadSrc_i.arburst <= "00";
-		axiReadSrc_i.arvalid <= '0';
-		axiReadSrc_i.rready  <= '0';
-		wait for CLK_PERIOD_C * 5;
-
-
-
-
-
-		-- axi ready immediately, wait for data, read 3
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(4*3, axiReadSrc_i.araddr'length));
-		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(3-1, axiReadSrc_i.arlen'length));
-		axiReadSrc_i.arsize  <= "010";
-		axiReadSrc_i.arburst <= "01";
-		axiReadSrc_i.arvalid <= '1';
-		axiReadSrc_i.rready  <= '1';
-
-		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
-		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
-		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
-		waitUntil(axiReadDst_o.rlast, '0', "rlast not 0.");
-
-		wait for CLK_PERIOD_C;
-		axiReadSrc_i.araddr  <= (others => '0');
-		axiReadSrc_i.arlen   <= (others => '0');
-		axiReadSrc_i.arsize  <= "000";
-		axiReadSrc_i.arburst <= "00";
-		axiReadSrc_i.arvalid <= '0';
-		axiReadSrc_i.rready  <= '0';
-		wait for CLK_PERIOD_C * 5;
-
-
-
-
-
-
-		-- axi ready immediately, wait for data, read 4
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
-		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(4-1, axiReadSrc_i.arlen'length));
-		axiReadSrc_i.arsize  <= "010";
-		axiReadSrc_i.arburst <= "01";
-		axiReadSrc_i.arvalid <= '1';
-		axiReadSrc_i.rready  <= '1';
-
-		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
-		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
-		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
-		waitUntil(axiReadDst_o.rlast, '0', "rlast not 0.");
-
-		wait for CLK_PERIOD_C;
-		axiReadSrc_i.araddr  <= (others => '0');
-		axiReadSrc_i.arlen   <= (others => '0');
-		axiReadSrc_i.arsize  <= "000";
-		axiReadSrc_i.arburst <= "00";
-		axiReadSrc_i.arvalid <= '0';
-		axiReadSrc_i.rready  <= '0';
-		wait for CLK_PERIOD_C * 5;
-
-
-
-
-
-
-		-- axi ready immediately, wait for data, read 5
-		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
-		axiReadSrc_i.arlen   <= STD_LOGIC_VECTOR(to_unsigned(5-1, axiReadSrc_i.arlen'length));
-		axiReadSrc_i.arsize  <= "010";
-		axiReadSrc_i.arburst <= "01";
-		axiReadSrc_i.arvalid <= '1';
-		axiReadSrc_i.rready  <= '1';
-
-		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
-		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
-		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
-		waitUntil(axiReadDst_o.rlast, '0', "rlast not 0.");
-
-		wait for CLK_PERIOD_C;
-		axiReadSrc_i.araddr  <= (others => '0');
-		axiReadSrc_i.arlen   <= (others => '0');
-		axiReadSrc_i.arsize  <= "000";
-		axiReadSrc_i.arburst <= "00";
-		axiReadSrc_i.arvalid <= '0';
-		axiReadSrc_i.rready  <= '0';
-		wait for CLK_PERIOD_C * 5;
-
-
-
-
-
-		readingFrom_i <= 1;
 
 		-- axi ready immediately, wait for data, read 1
 		axiReadSrc_i.araddr  <= STD_LOGIC_VECTOR(TB_AXI_ADDRESS_C + to_unsigned(0, axiReadSrc_i.araddr'length));
