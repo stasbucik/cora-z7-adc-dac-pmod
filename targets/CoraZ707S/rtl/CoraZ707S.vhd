@@ -38,7 +38,7 @@ use work.BramBufferPkg.all;
 
 entity CoraZ707S is
 	generic (
-		MARK_DEBUG_G : string := "true"
+		MARK_DEBUG_G : string := "false"
 	);
 	Port (
 		DDR_addr          : inout STD_LOGIC_VECTOR ( 14 downto 0 );
@@ -373,7 +373,7 @@ begin
 	----------------------------------------------------------------------------
 	u_DataBuffer : entity work.DataBuffer
 		generic map (
-			MARK_DEBUG_G        => "true",
+			MARK_DEBUG_G        => "false",
 			NUM_ADDRESSES_G     => BRAM_BUFFER_NUM_ADDRESSES_C,
 			PACKING_G           => BRAM_BUFFER_PACKING_C,
 			SAMPLE_DATA_WIDTH_G => BRAM_BUFFER_SAMPLE_DATA_WIDTH_C,
@@ -414,7 +414,7 @@ begin
 
 	u_ControlRegister : entity work.ControlRegister
 		generic map (
-			MARK_DEBUG_G  => "true",
+			MARK_DEBUG_G  => "false",
 			AXI_ADDRESS_G => AXI_CTRL_ADDRESS_C,
 			WIDTH_G       => CTRL_REG_SIZE_C
 		)
@@ -428,7 +428,7 @@ begin
 
 	u_StatusRegister : entity work.StatusRegister
 		generic map (
-			MARK_DEBUG_G  => "true",
+			MARK_DEBUG_G  => "false",
 			AXI_ADDRESS_G => AXI_STAT_ADDRESS_C,
 			WIDTH_G       => STAT_REG_SIZE_C
 		)

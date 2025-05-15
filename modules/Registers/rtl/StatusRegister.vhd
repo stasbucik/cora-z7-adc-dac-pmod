@@ -46,7 +46,7 @@ begin
 
     u_StatRegAxi4Iface : entity work.StatRegAxi4Iface
         generic map (
-            MARK_DEBUG_G  => "true",
+            MARK_DEBUG_G  => "false",
             WIDTH_G       => WIDTH_G,
             AXI_ADDRESS_G => AXI_ADDRESS_G
         )

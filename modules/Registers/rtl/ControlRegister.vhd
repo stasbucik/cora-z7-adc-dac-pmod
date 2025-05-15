@@ -38,7 +38,7 @@ begin
 
     u_CtrlRegAxi4Iface : entity work.CtrlRegAxi4Iface
         generic map (
-            MARK_DEBUG_G  => "true",
+            MARK_DEBUG_G  => "false",
             WIDTH_G       => WIDTH_G,
             AXI_ADDRESS_G => AXI_ADDRESS_G
         )
