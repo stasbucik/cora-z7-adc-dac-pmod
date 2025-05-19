@@ -121,7 +121,7 @@ begin
     asyncSpi_g : if (SYNC_STAGE_G = true) generate
         u_SpiMaster : entity work.SpiMaster
             generic map (
-                MARK_DEBUG_G    => "false",
+                MARK_DEBUG_G    => "true",
                 SPI_CPOL_G      => MAX11105_SPI_CPOL_C,
                 SPI_CPHA_G      => MAX11105_SPI_CPHA_C,
                 DATA_WIDTH_G    => MAX11105_SPI_DATA_WIDTH_C,

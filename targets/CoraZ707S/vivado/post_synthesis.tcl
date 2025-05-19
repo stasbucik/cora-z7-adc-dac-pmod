@@ -3,7 +3,7 @@ source -quiet $::env(RUCKUS_DIR)/vivado_proc.tcl
 
 open_run synth_1
 
-set enable 0
+set enable 1
 if { ${enable} == 1 } {
 	set ilaName "u_ila_ps_clk_domain"
 	set ilaSize 2048
@@ -161,59 +161,59 @@ if { ${enable} == 1 } {
 
 	################################################
 	# axi4 from fpga
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARID[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARID[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARADDR[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLEN[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARSIZE[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARBURST[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLOCK[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARCACHE[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARPROT[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARQOS[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLEN[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARSIZE[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARBURST[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARLOCK[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARCACHE[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARPROT[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARQOS[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARVALID}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RREADY}
 
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_ARREADY}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RID[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RID[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RDATA[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_RRESP[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RLAST}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_RVALID}
 
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWID[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWID[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWADDR[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWLEN[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWSIZE[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWBURST[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWLOCK[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWCACHE[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWPROT[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWQOS[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWLEN[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWSIZE[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWBURST[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWLOCK[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWCACHE[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWPROT[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWQOS[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWVALID}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WDATA[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WSTRB[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WSTRB[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WLAST}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WVALID}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_BREADY}
 
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_AWREADY}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_WREADY}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_BID[*]}
-	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_BRESP[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_BID[*]}
+	#ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/M_AXI_GP0_BRESP[*]}
 	ConfigProbe ${ilaName} {u_InfrastructureTop/u_Infrastructure_wrapper/Infrastructure_i/processing_system7_0_M_AXI_GP0_BVALID}
 	################################################
 	
 	################################################
 	# u_BramBufferReader
-	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[state][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[addr][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[len][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[transferCounter][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[latencyCounter]}
-	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[enables][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[state][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[addr][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[len][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[transferCounter][*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[latencyCounter]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[enables][*]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[tmpBuffer][*][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[readDone]}
-	ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[readingFrom]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[readDone]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/u_BramBufferReader/r[readingFrom]}
 
 	################################################
 	# u_BramBufferWriter
@@ -237,22 +237,51 @@ if { ${enable} == 1 } {
 	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[we]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[addr][*]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/bramWriteSrc1[din][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/writingInto}
+	#ConfigProbe ${ilaName} {u_DataBuffer/writingInto}
 	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[en]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc0[addr][*]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc1[en]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadSrc1[addr][*]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst0[dout][*]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/bramReadDst1[dout][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/readStart}
+	#ConfigProbe ${ilaName} {u_DataBuffer/readStart}
 	#ConfigProbe ${ilaName} {u_DataBuffer/address[*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/length[*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/readDone}
+	#ConfigProbe ${ilaName} {u_DataBuffer/length[*]}
+	#ConfigProbe ${ilaName} {u_DataBuffer/readDone}
 	#ConfigProbe ${ilaName} {u_DataBuffer/counter[*]}
 	#ConfigProbe ${ilaName} {u_DataBuffer/dataBuffer[*][*]}
-	ConfigProbe ${ilaName} {u_DataBuffer/readingFrom}
+	#ConfigProbe ${ilaName} {u_DataBuffer/readingFrom}
 	#ConfigProbe ${ilaName} {u_DataBuffer/interruptDelayed}
 	#ConfigProbe ${ilaName} {u_DataBuffer/wrIntoAdapter[*]}
+
+	################################################
+	# u_SpiMaster
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/syncRst}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/syncClear}
+
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TDEST]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TID]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TLAST]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TUSER]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TVALID]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TWAKEUP]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TDATA][*]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TKEEP][*]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TSTRB][*]}
+
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteDstSlow[TREADY]}
+
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TDEST]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TID]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TLAST]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TUSER]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TVALID]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TWAKEUP]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TDATA][*]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TKEEP][*]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TSTRB][*]}
+
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadDstSlow[TREADY]}
 
 
 	WriteDebugProbes ${ilaName} ${PROJ_DIR}/images/debug_probes.ltx

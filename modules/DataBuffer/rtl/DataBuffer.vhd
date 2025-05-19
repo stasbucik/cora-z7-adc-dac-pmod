@@ -142,7 +142,7 @@ architecture Behavioral of DataBuffer is
 begin
     u_BramBufferWriter : entity work.BramBufferWriter
         generic map (
-            MARK_DEBUG_G        => "false",
+            MARK_DEBUG_G        => "true",
             NUM_ADDRESSES_G     => NUM_ADDRESSES_G,
             PACKING_G           => PACKING_G,
             BYTE_WIDTH_G        => BYTE_WIDTH_G,
