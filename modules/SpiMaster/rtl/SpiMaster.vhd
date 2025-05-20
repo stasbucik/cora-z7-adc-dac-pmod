@@ -108,10 +108,16 @@ architecture Behavioral of SpiMaster is
     attribute mark_debug                     : string;
     attribute mark_debug of syncRst          : signal is MARK_DEBUG_G;
     attribute mark_debug of syncClear        : signal is MARK_DEBUG_G;
+    attribute mark_debug of syncOverflow     : signal is MARK_DEBUG_G;
+    attribute mark_debug of syncRun          : signal is MARK_DEBUG_G;
     attribute mark_debug of axisWriteSrcSlow : signal is MARK_DEBUG_G;
     attribute mark_debug of axisWriteDstSlow : signal is MARK_DEBUG_G;
     attribute mark_debug of axisReadSrcSlow  : signal is MARK_DEBUG_G;
     attribute mark_debug of axisReadDstSlow  : signal is MARK_DEBUG_G;
+    attribute mark_debug of wr_rst_busyRead  : signal is MARK_DEBUG_G;
+    attribute mark_debug of rd_rst_busyRead  : signal is MARK_DEBUG_G;
+    attribute mark_debug of wr_rst_busyWrite : signal is MARK_DEBUG_G;
+    attribute mark_debug of rd_rst_busyWrite : signal is MARK_DEBUG_G;
     ----------------------------------------------------------------------------
 
 begin
@@ -201,6 +207,7 @@ begin
             axisWriteDst_o => axisWriteDstSlow,
             axisReadSrc_o  => axisReadSrcSlow,
             axisReadDst_i  => axisReadDstSlow,
+            clear_i        => syncClear,
             run_i          => syncRun,
             overflow_o     => syncOverflow
         );

@@ -38,7 +38,7 @@ use work.BramBufferPkg.all;
 
 entity CoraZ707S is
 	generic (
-		MARK_DEBUG_G : string := "true"
+		MARK_DEBUG_G : string := "false"
 	);
 	Port (
 		DDR_addr          : inout STD_LOGIC_VECTOR ( 14 downto 0 );
@@ -308,7 +308,7 @@ begin
 
 	u_ExtendPulseClearBuffer : entity work.ExtendPulse
 		generic map (
-			NUM_G => 5
+			NUM_G => 200
 		)
 		port map (
 			clk_i => clk,
@@ -352,7 +352,7 @@ begin
 	------------------------------------------------------------------------
 	u_AdcMAX11105 : entity work.AdcMAX11105
 		generic map (
-			MARK_DEBUG_G    => "true",
+			MARK_DEBUG_G    => "false",
 			SYNC_STAGE_G    => true,
 			N_CYCLES_IDLE_G => 0
 		)
@@ -373,7 +373,7 @@ begin
 	----------------------------------------------------------------------------
 	u_DataBuffer : entity work.DataBuffer
 		generic map (
-			MARK_DEBUG_G        => "true",
+			MARK_DEBUG_G        => "false",
 			NUM_ADDRESSES_G     => BRAM_BUFFER_NUM_ADDRESSES_C,
 			PACKING_G           => BRAM_BUFFER_PACKING_C,
 			SAMPLE_DATA_WIDTH_G => BRAM_BUFFER_SAMPLE_DATA_WIDTH_C,

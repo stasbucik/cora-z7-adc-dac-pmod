@@ -55,8 +55,9 @@ entity BramBufferWriter is
         bramWriteSrc0_o : out BramSource;
         bramWriteSrc1_o : out BramSource;
 
-        writingInto_o : out natural range 0 to 1;
-        clear_i       : in  STD_LOGIC
+        writingInto_o    : out natural range 0 to 1;
+        switchedBuffer_o : out STD_LOGIC;
+        clear_i          : in  STD_LOGIC
     );
 end BramBufferWriter;
 
@@ -74,6 +75,7 @@ architecture Behavioral of BramBufferWriter is
     type RegType is record
         state               : StateType;
         tready              : STD_LOGIC;
+        switchedBuffer      : STD_LOGIC;
         addressCounter      : natural range 0 to NUM_ADDRESSES_G-1;
         bufferIndex         : natural range 0 to 1;
         previousBufferIndex : natural range 0 to 1;
@@ -86,6 +88,7 @@ architecture Behavioral of BramBufferWriter is
     constant REG_TYPE_INIT_C : RegType := (
             state               => IDLE_S,
             tready              => '0',
+            switchedBuffer      => '0',
             addressCounter      => 0,
             bufferIndex         => 0,
             previousBufferIndex => 0,
@@ -123,6 +126,8 @@ begin
         v := r;
 
         -- combinatorial logic
+        v.switchedBuffer := '0';
+
         case r.state is
             when IDLE_S =>
                 v.tready := '1';
@@ -139,6 +144,7 @@ begin
 
                         if (r.addressCounter = NUM_ADDRESSES_G-1) then
                             v.bufferIndex    := getOtherBufferIndex(r.bufferIndex);
+                            v.switchedBuffer := '1';
                             v.addressCounter := 0;
                         else
                             v.addressCounter := r.addressCounter + 1;
@@ -183,7 +189,8 @@ begin
         bramWriteSrc1_o.we    <= r.we(1);
         bramWriteSrc1_o.addr  <= r.wrAddr;
         bramWriteSrc1_o.din   <= r.wrData;
-        writingInto_o         <= r.previousBufferIndex;
+        writingInto_o         <= r.bufferIndex;
+        switchedBuffer_o      <= r.switchedBuffer;
     end process p_Comb;
 
     p_Seq : process(clk_i)

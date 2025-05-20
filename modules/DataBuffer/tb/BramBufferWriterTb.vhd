@@ -62,7 +62,12 @@ architecture Behavioral of BramBufferWriterTb is
 	signal clk_i                : STD_LOGIC;
 	signal clkAdc_i             : STD_LOGIC;
 	signal rst_i                : STD_LOGIC;
-	signal axisDataGeneratorSrc : Axi4StreamSource(
+
+	signal run_i                : STD_LOGIC;
+	signal overflow_o           : STD_LOGIC;
+
+	-- UUT signals
+	signal axisBramBufferSrc : Axi4StreamSource(
 		tdata(AXI_DATA_WIDTH_C-1 downto 0),
 		tstrb(AXI_DATA_WIDTH_C/8-1 downto 0),
 		tkeep(AXI_DATA_WIDTH_C/8-1 downto 0),
@@ -70,20 +75,15 @@ architecture Behavioral of BramBufferWriterTb is
 		tdest(1-1 downto 0),
 		tuser(1-1 downto 0)
 	);
-	signal axisDataGeneratorDst : Axi4StreamDestination;
-	signal run_i                : STD_LOGIC;
-	signal overflow_o           : STD_LOGIC;
-
-	-- UUT signals
-	signal axisBramBufferSrc : axisDataGeneratorSrc'subtype;
 	signal axisBramBufferDst : Axi4StreamDestination;
 	signal bramWriteSrc0_o   : BramSource(
 		we(TB_BRAM_BUFFER_DATA_WIDTH_C/TB_BRAM_BUFFER_BYTE_WIDTH_C-1 downto 0),
 		addr(TB_BRAM_BUFFER_ADDR_WIDTH_C-1 downto 0),
 		din(TB_BRAM_BUFFER_DATA_WIDTH_C-1 downto 0));
-	signal bramWriteSrc1_o : bramWriteSrc0_o'subtype;
-	signal writingInto_o   : natural range 0 to 1;
-	signal clear_i         : STD_LOGIC;
+	signal bramWriteSrc1_o  : bramWriteSrc0_o'subtype;
+	signal writingInto_o    : natural range 0 to 1;
+	signal switchedBuffer_o : STD_LOGIC;
+	signal clear_i          : STD_LOGIC;
 	--
 
 	signal dout_i : STD_LOGIC;
@@ -137,14 +137,15 @@ begin
 			ADDR_WIDTH_G        => TB_BRAM_BUFFER_ADDR_WIDTH_C
 		)
 		port map (
-			clk_i           => clk_i,
-			rst_i           => rst_i,
-			axisWriteSrc_i  => axisBramBufferSrc,
-			axisWriteDst_o  => axisBramBufferDst,
-			bramWriteSrc0_o => bramWriteSrc0_o,
-			bramWriteSrc1_o => bramWriteSrc1_o,
-			writingInto_o   => writingInto_o,
-			clear_i         => clear_i
+			clk_i            => clk_i,
+			rst_i            => rst_i,
+			axisWriteSrc_i   => axisBramBufferSrc,
+			axisWriteDst_o   => axisBramBufferDst,
+			bramWriteSrc0_o  => bramWriteSrc0_o,
+			bramWriteSrc1_o  => bramWriteSrc1_o,
+			writingInto_o    => writingInto_o,
+			switchedBuffer_o => switchedBuffer_o,
+			clear_i          => clear_i
 		);
 
 	--------------------------------------------------------------------------------

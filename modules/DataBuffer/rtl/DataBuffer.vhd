@@ -98,8 +98,6 @@ architecture Behavioral of DataBuffer is
     signal dataBuffer    : TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
     signal readingFrom   : natural range 0 to 1;
 
-    signal wrIntoAdapter : STD_LOGIC_VECTOR(1 downto 0);
-
     function getOtherBufferIndex (number : natural) return natural is
     begin
         if number = 0 then
@@ -112,22 +110,21 @@ architecture Behavioral of DataBuffer is
     end function getOtherBufferIndex;
 
     -----------------------------------------------------------------------------
-    attribute mark_debug                  : string;
-    attribute mark_debug of bramWriteSrc0 : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramWriteSrc1 : signal is MARK_DEBUG_G;
-    attribute mark_debug of writingInto   : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadSrc0  : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadSrc1  : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadDst0  : signal is MARK_DEBUG_G;
-    attribute mark_debug of bramReadDst1  : signal is MARK_DEBUG_G;
-    attribute mark_debug of readStart     : signal is MARK_DEBUG_G;
-    attribute mark_debug of address       : signal is MARK_DEBUG_G;
-    attribute mark_debug of length        : signal is MARK_DEBUG_G;
-    attribute mark_debug of readDone      : signal is MARK_DEBUG_G;
-    attribute mark_debug of counter       : signal is MARK_DEBUG_G;
-    attribute mark_debug of dataBuffer    : signal is MARK_DEBUG_G;
-    attribute mark_debug of readingFrom   : signal is MARK_DEBUG_G;
-    attribute mark_debug of wrIntoAdapter : signal is MARK_DEBUG_G;
+    attribute mark_debug                   : string;
+    attribute mark_debug of bramWriteSrc0  : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramWriteSrc1  : signal is MARK_DEBUG_G;
+    attribute mark_debug of writingInto    : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadSrc0   : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadSrc1   : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadDst0   : signal is MARK_DEBUG_G;
+    attribute mark_debug of bramReadDst1   : signal is MARK_DEBUG_G;
+    attribute mark_debug of readStart      : signal is MARK_DEBUG_G;
+    attribute mark_debug of address        : signal is MARK_DEBUG_G;
+    attribute mark_debug of length         : signal is MARK_DEBUG_G;
+    attribute mark_debug of readDone       : signal is MARK_DEBUG_G;
+    attribute mark_debug of counter        : signal is MARK_DEBUG_G;
+    attribute mark_debug of dataBuffer     : signal is MARK_DEBUG_G;
+    attribute mark_debug of readingFrom    : signal is MARK_DEBUG_G;
     ----------------------------------------------------------------------------
 
     constant AXI_WRITE_DUMMY_C : Axi4WriteDestination := (
@@ -142,7 +139,7 @@ architecture Behavioral of DataBuffer is
 begin
     u_BramBufferWriter : entity work.BramBufferWriter
         generic map (
-            MARK_DEBUG_G        => "true",
+            MARK_DEBUG_G        => "false",
             NUM_ADDRESSES_G     => NUM_ADDRESSES_G,
             PACKING_G           => PACKING_G,
             BYTE_WIDTH_G        => BYTE_WIDTH_G,
@@ -150,14 +147,15 @@ begin
             ADDR_WIDTH_G        => ADDR_WIDTH_G
         )
         port map (
-            clk_i           => clk_i,
-            rst_i           => rst_i,
-            axisWriteSrc_i  => axisWriteSrc_i,
-            axisWriteDst_o  => axisWriteDst_o,
-            bramWriteSrc0_o => bramWriteSrc0,
-            bramWriteSrc1_o => bramWriteSrc1,
-            writingInto_o   => writingInto,
-            clear_i         => clear_i
+            clk_i            => clk_i,
+            rst_i            => rst_i,
+            axisWriteSrc_i   => axisWriteSrc_i,
+            axisWriteDst_o   => axisWriteDst_o,
+            bramWriteSrc0_o  => bramWriteSrc0,
+            bramWriteSrc1_o  => bramWriteSrc1,
+            writingInto_o    => writingInto,
+            switchedBuffer_o => interrupt_o,
+            clear_i          => clear_i
         );
 
     u_BramWrapper0 : entity work.BramWrapper
@@ -257,19 +255,5 @@ begin
         );
 
     axiDst_o.wr <= AXI_WRITE_DUMMY_C;
-
-    wrIntoAdapter <= STD_LOGIC_VECTOR(to_unsigned(writingInto, 2));
-
-    u_EdgeDetect : entity work.EdgeDetect
-        generic map (
-            POSITIVE_EDGE_G => true,
-            NEGATIVE_EDGE_G => true
-        )
-        port map (
-            clk_i => clk_i,
-            rst_i => rst_i,
-            sig_i => wrIntoAdapter(0),
-            sig_o => interrupt_o
-        );
 
 end Behavioral;

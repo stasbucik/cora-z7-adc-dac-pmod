@@ -104,6 +104,7 @@ begin
                 axisWriteDst_o => axisWriteDst_o,
                 axisReadSrc_o  => axisDummy,
                 axisReadDst_i  => AXI_4_STREAM_SINK_C,
+                clear_i        => clear_i,
                 run_i          => run_i,
                 overflow_o     => open
             );

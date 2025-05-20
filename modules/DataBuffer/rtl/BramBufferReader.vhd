@@ -137,10 +137,10 @@ begin
         -- combinatorial logic
         case r.state is
             when IDLE_S =>
+                v.transferCounter := (others => '0');
                 if (readStart_i = '1') then
-                    v.addr            := unsigned(address_i);
-                    v.len             := unsigned(length_i);
-                    v.transferCounter := (others => '0');
+                    v.addr := unsigned(address_i);
+                    v.len  := unsigned(length_i);
 
                     if (address_i = START_ADDRESS) then
                         v.clearOverwrite   := '1';

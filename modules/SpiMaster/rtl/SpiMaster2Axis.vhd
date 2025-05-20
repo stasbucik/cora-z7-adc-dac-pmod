@@ -60,8 +60,10 @@ entity SpiMaster2Axis is
         -- Read interface
         axisReadSrc_o : out Axi4StreamSource;
         axisReadDst_i : in  Axi4StreamDestination;
-        run_i         : in  STD_LOGIC;
-        overflow_o    : out STD_LOGIC
+
+        clear_i    : in  STD_LOGIC;
+        run_i      : in  STD_LOGIC;
+        overflow_o : out STD_LOGIC
     );
 end SpiMaster2Axis;
 
@@ -274,7 +276,7 @@ begin
                 end if;
 
             when HANDHAKE_S =>
-                if axisReadDst_i.tready = '1' then
+                if (axisReadDst_i.tready = '1' or clear_i = '1') then
                     v.tvalid      := '0';
                     v.overflow    := '0';
                     v.axiSrcState := WAITING_S;

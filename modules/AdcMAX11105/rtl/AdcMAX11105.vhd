@@ -77,6 +77,12 @@ architecture Behavioral of AdcMAX11105 is
 
     signal axisSrcDataRemap : axisReadSrc_o'subtype;
 
+    ----------------------------------------------------------------------------
+    attribute mark_debug          : string;
+    attribute mark_debug of run_i : signal is MARK_DEBUG_G;
+    ----------------------------------------------------------------------------
+
+
 begin
 
     axisReadSrc_o.TVALID <= axisSrcDataRemap.TVALID;
@@ -113,6 +119,7 @@ begin
                 axisWriteDst_o => open,
                 axisReadSrc_o  => axisSrcDataRemap,
                 axisReadDst_i  => axisReadDst_i,
+                clear_i        => clear_i,
                 run_i          => run_i,
                 overflow_o     => overflow_o
             );
@@ -121,7 +128,7 @@ begin
     asyncSpi_g : if (SYNC_STAGE_G = true) generate
         u_SpiMaster : entity work.SpiMaster
             generic map (
-                MARK_DEBUG_G    => "true",
+                MARK_DEBUG_G    => "false",
                 SPI_CPOL_G      => MAX11105_SPI_CPOL_C,
                 SPI_CPHA_G      => MAX11105_SPI_CPHA_C,
                 DATA_WIDTH_G    => MAX11105_SPI_DATA_WIDTH_C,
