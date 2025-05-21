@@ -125,6 +125,62 @@ package Axi4Pkg is
 		wr : Axi4WriteDestination;
 	end record Axi4Destination;
 
+	----------------------------------------------------------------------------
+
+	constant AXIL_ADDR_WIDTH_C : natural := 31;
+	constant AXIL_DATA_WIDTH_C : natural := 32;
+
+	type Axi4LiteReadSource is record
+		-- Address
+		ARADDR  : STD_LOGIC_VECTOR(AXIL_ADDR_WIDTH_C-1 downto 0);
+		ARPROT  : STD_LOGIC_VECTOR(2 downto 0);
+		ARVALID : STD_LOGIC;
+		-- Data
+		RREADY : STD_LOGIC;
+	end record Axi4LiteReadSource;
+
+	type Axi4LiteReadDestination is record
+		-- Address
+		ARREADY : STD_LOGIC;
+		-- Data
+		RDATA  : STD_LOGIC_VECTOR(AXIL_DATA_WIDTH_C-1 downto 0);
+		RRESP  : STD_LOGIC_VECTOR(1 downto 0);
+		RVALID : STD_LOGIC;
+	end record Axi4LiteReadDestination;
+
+	type Axi4LiteWriteSource is record
+		-- Address
+		AWADDR  : STD_LOGIC_VECTOR(AXIL_ADDR_WIDTH_C-1 downto 0);
+		AWPROT  : STD_LOGIC_VECTOR(2 downto 0);
+		AWVALID : STD_LOGIC;
+		-- Data
+		WDATA  : STD_LOGIC_VECTOR(AXIL_DATA_WIDTH_C-1 downto 0);
+		WSTRB  : STD_LOGIC_VECTOR(AXIL_DATA_WIDTH_C/8-1 downto 0);
+		WVALID : STD_LOGIC;
+		-- Response
+		BREADY : STD_LOGIC;
+	end record Axi4LiteWriteSource;
+
+	type Axi4LiteWriteDestination is record
+		-- Address
+		AWREADY : STD_LOGIC;
+		-- Data
+		WREADY : STD_LOGIC;
+		-- Response
+		BRESP  : STD_LOGIC_VECTOR(1 downto 0);
+		BVALID : STD_LOGIC;
+	end record Axi4LiteWriteDestination;
+
+	type Axi4LiteSource is record
+		rd : Axi4LiteReadSource;
+		wr : Axi4LiteWriteSource;
+	end record Axi4LiteSource;
+
+	type Axi4LiteDestination is record
+		rd : Axi4LiteReadDestination;
+		wr : Axi4LiteWriteDestination;
+	end record Axi4LiteDestination;
+
 end package Axi4Pkg;
 
 package body Axi4Pkg is

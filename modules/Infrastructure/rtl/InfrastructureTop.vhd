@@ -28,6 +28,8 @@ entity InfrastructureTop is
           FIXED_IO_ps_porb  : inout STD_LOGIC;
           FIXED_IO_ps_srstb : inout STD_LOGIC;
           IRQ_F2P           : in    STD_LOGIC;
+          axilClkSrc        : out   Axi4LiteSource;
+          axilClkDst        : in    Axi4LiteDestination;
           axiBufferSrc      : out   Axi4Source;
           axiBufferDst      : in    Axi4Destination;
           axiCtrlSrc        : out   Axi4Source;
@@ -75,6 +77,26 @@ begin
                FIXED_IO_ps_porb  => FIXED_IO_ps_porb,
                FIXED_IO_ps_srstb => FIXED_IO_ps_srstb,
                IRQ_F2P           => intAdapter,
+
+               M_AXIL_clk_araddr  => axilClkSrc.rd.araddr,
+               M_AXIL_clk_arprot  => axilClkSrc.rd.arprot,
+               M_AXIL_clk_arready => axilClkDst.rd.arready,
+               M_AXIL_clk_arvalid => axilClkSrc.rd.arvalid,
+               M_AXIL_clk_awaddr  => axilClkSrc.wr.awaddr,
+               M_AXIL_clk_awprot  => axilClkSrc.wr.awprot,
+               M_AXIL_clk_awready => axilClkDst.wr.awready,
+               M_AXIL_clk_awvalid => axilClkSrc.wr.awvalid,
+               M_AXIL_clk_bready  => axilClkSrc.wr.bready,
+               M_AXIL_clk_bresp   => axilClkDst.wr.bresp,
+               M_AXIL_clk_bvalid  => axilClkDst.wr.bvalid,
+               M_AXIL_clk_rdata   => axilClkDst.rd.rdata,
+               M_AXIL_clk_rready  => axilClkSrc.rd.rready,
+               M_AXIL_clk_rresp   => axilClkDst.rd.rresp,
+               M_AXIL_clk_rvalid  => axilClkDst.rd.rvalid,
+               M_AXIL_clk_wdata   => axilClkSrc.wr.wdata,
+               M_AXIL_clk_wready  => axilClkDst.wr.wready,
+               M_AXIL_clk_wstrb   => axilClkSrc.wr.wstrb,
+               M_AXIL_clk_wvalid  => axilClkSrc.wr.wvalid,
 
                M_AXI_buffer_araddr  => axiBufferSrc.rd.araddr,
                M_AXI_buffer_arburst => axiBufferSrc.rd.arburst,

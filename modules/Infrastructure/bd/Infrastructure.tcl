@@ -135,6 +135,7 @@ xilinx.com:ip:smartconnect:1.0\
 xilinx.com:ip:proc_sys_reset:5.0\
 xilinx.com:ip:xlconcat:2.1\
 xilinx.com:ip:xlconstant:1.1\
+xilinx.com:ip:axi_protocol_converter:2.1\
 "
 
    set list_ips_missing ""
@@ -227,11 +228,23 @@ proc create_root_design { parentCell } {
    CONFIG.PROTOCOL {AXI4} \
    ] $M_AXI_stat
 
+  set M_AXIL_clk [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M_AXIL_clk ]
+  set_property -dict [ list \
+   CONFIG.ADDR_WIDTH {31} \
+   CONFIG.DATA_WIDTH {32} \
+   CONFIG.HAS_BURST {0} \
+   CONFIG.HAS_CACHE {0} \
+   CONFIG.HAS_LOCK {0} \
+   CONFIG.HAS_QOS {0} \
+   CONFIG.HAS_REGION {0} \
+   CONFIG.PROTOCOL {AXI4LITE} \
+   ] $M_AXIL_clk
+
 
   # Create ports
   set ps_clk [ create_bd_port -dir O -type clk ps_clk ]
   set_property -dict [ list \
-   CONFIG.ASSOCIATED_BUSIF {M_AXI_buffer:M_AXI_ctrl:M_AXI_stat} \
+   CONFIG.ASSOCIATED_BUSIF {M_AXI_buffer:M_AXI_ctrl:M_AXI_stat:M_AXIL_clk} \
  ] $ps_clk
   set peripheral_reset [ create_bd_port -dir O -from 0 -to 0 -type rst peripheral_reset ]
   set IRQ_F2P [ create_bd_port -dir I -from 0 -to 0 -type intr IRQ_F2P ]
@@ -807,7 +820,7 @@ proc create_root_design { parentCell } {
   # Create instance: axi_smc, and set properties
   set axi_smc [ create_bd_cell -type ip -vlnv xilinx.com:ip:smartconnect:1.0 axi_smc ]
   set_property -dict [list \
-    CONFIG.NUM_MI {3} \
+    CONFIG.NUM_MI {4} \
     CONFIG.NUM_SI {1} \
   ] $axi_smc
 
@@ -828,10 +841,21 @@ proc create_root_design { parentCell } {
   set_property CONFIG.CONST_VAL {0} $xlconstant_0
 
 
+  # Create instance: axi_protocol_convert_0, and set properties
+  set axi_protocol_convert_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_protocol_converter:2.1 axi_protocol_convert_0 ]
+  set_property -dict [list \
+    CONFIG.MI_PROTOCOL {AXI4LITE} \
+    CONFIG.READ_WRITE_MODE {READ_WRITE} \
+    CONFIG.SI_PROTOCOL {AXI4} \
+  ] $axi_protocol_convert_0
+
+
   # Create interface connections
+  connect_bd_intf_net -intf_net axi_protocol_convert_0_M_AXI [get_bd_intf_pins axi_protocol_convert_0/M_AXI] [get_bd_intf_ports M_AXIL_clk]
   connect_bd_intf_net -intf_net axi_smc_M00_AXI [get_bd_intf_pins axi_smc/M00_AXI] [get_bd_intf_ports M_AXI_buffer]
   connect_bd_intf_net -intf_net axi_smc_M01_AXI [get_bd_intf_pins axi_smc/M01_AXI] [get_bd_intf_ports M_AXI_ctrl]
   connect_bd_intf_net -intf_net axi_smc_M02_AXI [get_bd_intf_pins axi_smc/M02_AXI] [get_bd_intf_ports M_AXI_stat]
+  connect_bd_intf_net -intf_net axi_smc_M03_AXI [get_bd_intf_pins axi_smc/M03_AXI] [get_bd_intf_pins axi_protocol_convert_0/S_AXI]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system7_0/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
   connect_bd_intf_net -intf_net processing_system7_0_IIC_0 [get_bd_intf_ports Shield_I2C] [get_bd_intf_pins processing_system7_0/IIC_0]
@@ -845,7 +869,8 @@ proc create_root_design { parentCell } {
   [get_bd_ports ps_clk] \
   [get_bd_pins axi_smc/aclk] \
   [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] \
-  [get_bd_pins rst_ps7_0_100M/slowest_sync_clk]
+  [get_bd_pins rst_ps7_0_100M/slowest_sync_clk] \
+  [get_bd_pins axi_protocol_convert_0/aclk]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N  [get_bd_pins processing_system7_0/FCLK_RESET0_N] \
   [get_bd_pins rst_ps7_0_100M/ext_reset_in]
   connect_bd_net -net processing_system7_0_SPI0_SS1_O  [get_bd_pins processing_system7_0/SPI0_SS1_O] \
@@ -853,7 +878,8 @@ proc create_root_design { parentCell } {
   connect_bd_net -net processing_system7_0_SPI0_SS2_O  [get_bd_pins processing_system7_0/SPI0_SS2_O] \
   [get_bd_pins xlconcat_0/In1]
   connect_bd_net -net rst_ps7_0_100M_peripheral_aresetn  [get_bd_pins rst_ps7_0_100M/peripheral_aresetn] \
-  [get_bd_pins axi_smc/aresetn]
+  [get_bd_pins axi_smc/aresetn] \
+  [get_bd_pins axi_protocol_convert_0/aresetn]
   connect_bd_net -net rst_ps7_0_100M_peripheral_reset  [get_bd_pins rst_ps7_0_100M/peripheral_reset] \
   [get_bd_ports peripheral_reset]
   connect_bd_net -net xlconcat_1_dout  [get_bd_pins xlconcat_1/dout] \
@@ -876,6 +902,7 @@ proc create_root_design { parentCell } {
   [get_bd_pins xlconcat_1/In15]
 
   # Create address segments
+  assign_bd_address -offset 0x43C20000 -range 0x00000800 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXIL_clk/Reg] -force
   assign_bd_address -offset 0x46000000 -range 0x00004000 -with_name SEG_M_AXI_GP0_Reg -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXI_buffer/Reg] -force
   assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXI_ctrl/Reg] -force
   assign_bd_address -offset 0x43C10000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXI_stat/Reg] -force
