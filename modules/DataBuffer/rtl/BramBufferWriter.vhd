@@ -73,16 +73,22 @@ architecture Behavioral of BramBufferWriter is
     type WriteEnableArray is array (natural range <>) of STD_LOGIC_VECTOR(DATA_WIDTH_C/BYTE_WIDTH_G-1 downto 0);
 
     type RegType is record
-        state               : StateType;
-        tready              : STD_LOGIC;
-        switchedBuffer      : STD_LOGIC;
-        addressCounter      : natural range 0 to NUM_ADDRESSES_G-1;
-        bufferIndex         : natural range 0 to 1;
+        state  : StateType;
+        tready : STD_LOGIC;
+        -- Signal when switched buffers
+        switchedBuffer : STD_LOGIC;
+        -- Address to write data to
+        addressCounter : natural range 0 to NUM_ADDRESSES_G-1;
+        -- Which ram to write to
+        bufferIndex : natural range 0 to 1;
+        -- Where did we write previously
         previousBufferIndex : natural range 0 to 1;
-        rowCounter          : natural range 0 to PACKING_G;
-        we                  : WriteEnableArray(0 to 1);
-        wrAddr              : STD_LOGIC_VECTOR(ADDR_WIDTH_G-1 downto 0);
-        wrData              : STD_LOGIC_VECTOR(DATA_WIDTH_C-1 downto 0);
+        -- Count how many samples we packed to one location
+        packingCounter : natural range 0 to PACKING_G;
+        -- Write enable
+        we     : WriteEnableArray(0 to 1);
+        wrAddr : STD_LOGIC_VECTOR(ADDR_WIDTH_G-1 downto 0);
+        wrData : STD_LOGIC_VECTOR(DATA_WIDTH_C-1 downto 0);
     end record RegType;
 
     constant REG_TYPE_INIT_C : RegType := (
@@ -92,7 +98,7 @@ architecture Behavioral of BramBufferWriter is
             addressCounter      => 0,
             bufferIndex         => 0,
             previousBufferIndex => 0,
-            rowCounter          => 0,
+            packingCounter      => 0,
             we                  => (others => (others => '0')),
             wrAddr              => (others => '0'),
             wrData              => (others => '0')
@@ -136,35 +142,40 @@ begin
             when RECEIVING_S =>
                 if (axisWriteSrc_i.tvalid = '1') then
                     v.wrAddr := STD_LOGIC_VECTOR(to_unsigned(r.addressCounter, ADDR_WIDTH_G));
+                    -- Shift in new sample
                     v.wrData := r.wrData(SAMPLE_DATA_WIDTH_G*(PACKING_G-1)-1 downto 0) & axisWriteSrc_i.tdata(SAMPLE_DATA_WIDTH_G-1 downto 0);
 
-                    if (r.rowCounter = PACKING_G-1) then
+                    if (r.packingCounter = PACKING_G-1) then
+                        v.packingCounter := 0;
+                        -- Write data to ram
                         v.we(r.bufferIndex)   := (others => '1');
                         v.previousBufferIndex := r.bufferIndex;
 
                         if (r.addressCounter = NUM_ADDRESSES_G-1) then
+                            -- Switch buffer
                             v.bufferIndex    := getOtherBufferIndex(r.bufferIndex);
                             v.switchedBuffer := '1';
                             v.addressCounter := 0;
                         else
                             v.addressCounter := r.addressCounter + 1;
                         end if;
-                        v.rowCounter := 0;
                     else
-                        v.rowCounter := r.rowCounter + 1;
+                        v.packingCounter := r.packingCounter + 1;
                     end if;
 
                     if (r.bufferIndex /= r.previousBufferIndex) then
+                        -- Buffer switched, need to disable writing
                         v.we(r.previousBufferIndex) := (others => '0');
                     end if;
                 else
+                    -- No data on axi, stop writing
                     v.we(r.previousBufferIndex) := (others => '0');
 
                     if (clear_i = '1') then
                         v.addressCounter      := 0;
                         v.bufferIndex         := 0;
                         v.previousBufferIndex := 0;
-                        v.rowCounter          := 0;
+                        v.packingCounter      := 0;
                         v.we                  := (others => (others => '0'));
                         v.wrAddr              := (others => '0');
                         v.wrData              := (others => '0');

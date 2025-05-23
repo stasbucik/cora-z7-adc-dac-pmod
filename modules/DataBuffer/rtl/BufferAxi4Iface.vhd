@@ -60,9 +60,8 @@ entity BufferAxi4Iface is
         address_o   : out STD_LOGIC_VECTOR(ADDR_WIDTH_G-1 downto 0);
         length_o    : out STD_LOGIC_VECTOR(LENGTH_WIDTH_G-1 downto 0);
 
-        readDone_i : in STD_LOGIC;
-        counter_i  : in unsigned(LENGTH_WIDTH_G downto 0);
-        buffer_i   : in TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0)
+        firstReady_i : in STD_LOGIC;
+        buffer_i     : in TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0)
 
     );
 end BufferAxi4Iface;
@@ -85,18 +84,20 @@ architecture Behavioral of BufferAxi4Iface is
         );
 
     type RegType is record
-        state                : StateType;
-        addr                 : STD_LOGIC_VECTOR(ADDR_WIDTH_G-1 downto 0);
-        axiAddr              : STD_LOGIC_VECTOR(axiReadSrc_i.araddr'range);
-        burst_len            : unsigned(axiReadSrc_i.ARLEN'range);
-        read_len             : unsigned(LENGTH_WIDTH_G-1 downto 0);
+        state     : StateType;
+        addr      : STD_LOGIC_VECTOR(ADDR_WIDTH_G-1 downto 0);
+        axiAddr   : STD_LOGIC_VECTOR(axiReadSrc_i.araddr'range);
+        burst_len : unsigned(axiReadSrc_i.ARLEN'range);
+        read_len  : unsigned(LENGTH_WIDTH_G-1 downto 0);
+        -- total addresses read
         totalTransferCounter : unsigned(axiReadSrc_i.ARLEN'length downto 0); -- one more bit to prevent overflow
-        subTransferCounter   : unsigned(LENGTH_WIDTH_G downto 0);            -- one more bit to prevent overflow
-        arready              : STD_LOGIC;        rdata                : STD_LOGIC_VECTOR(axiReadDst_o.rdata'range);
-        rresp                : STD_LOGIC_VECTOR(axiReadDst_o.rresp'range);
-        rlast                : STD_LOGIC;
-        rvalid               : STD_LOGIC;
-        readStart            : STD_LOGIC;
+                                                                             -- addresses read for one burst
+        subTransferCounter : unsigned(LENGTH_WIDTH_G downto 0);              -- one more bit to prevent overflow
+        arready            : STD_LOGIC; rdata : STD_LOGIC_VECTOR(axiReadDst_o.rdata'range);
+        rresp              : STD_LOGIC_VECTOR(axiReadDst_o.rresp'range);
+        rlast              : STD_LOGIC;
+        rvalid             : STD_LOGIC;
+        readStart          : STD_LOGIC;
     end record RegType;
 
     constant REG_TYPE_INIT_C : RegType := (
@@ -141,24 +142,29 @@ begin
 
             when AR_HANDSHAKE_S =>
                 if (axiReadSrc_i.arvalid = '1') then
-                    v.arready   := '0';
+                    v.arready := '0';
+                    -- capture burst length
                     v.burst_len := unsigned(axiReadSrc_i.arlen);
 
                     if (axiReadSrc_i.arburst = AXI_BURST_TYPE_INCR_C and
                             axiReadSrc_i.arsize = AXI_BURST_SIZE_4_BYTES_C) then
+                        -- suport only full width incremental transfers
 
+                        -- Substract offset and divide by four
                         v.axiAddr := STD_LOGIC_VECTOR(shift_right(uSub(unsigned(axiReadSrc_i.araddr), AXI_ADDRESS_G), 2));
                         v.addr    := v.axiAddr(ADDR_WIDTH_G-1 downto 0);
 
+                        -- Do only up to MAX_LENGTH_G transfers at once
                         if (to_integer(unsigned(axiReadSrc_i.arlen)) > MAX_LENGTH_G-1) then
                             v.read_len := to_unsigned(MAX_LENGTH_G-1, LENGTH_WIDTH_G);
                         else
                             v.read_len := unsigned(axiReadSrc_i.arlen(LENGTH_WIDTH_G-1 downto 0));
                         end if;
 
-                        v.readStart   := '1';
-                        v.state       := WAIT_FOR_DATA_S;
+                        v.readStart := '1';
+                        v.state     := WAIT_FOR_DATA_S;
                     else
+                        -- Respond with error
                         v.rdata                := (others => '0');
                         v.rresp                := AXI_RESP_SLVERR_C;
                         v.rvalid               := '1';
@@ -172,7 +178,7 @@ begin
                 end if;
 
             when WAIT_FOR_DATA_S =>
-                if (counter_i > 0) then
+                if (firstReady_i = '1') then
                     v.rdata              := FILL_C & buffer_i(0);
                     v.rresp              := AXI_RESP_OK_C; --okay
                     v.rvalid             := '1';

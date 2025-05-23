@@ -62,8 +62,7 @@ entity BramBufferReader is
         address_i   : in STD_LOGIC_VECTOR(ADDR_WIDTH_G-1 downto 0);
         length_i    : in STD_LOGIC_VECTOR(LENGTH_WIDTH_G-1 downto 0);
 
-        readDone_o : out STD_LOGIC;
-        counter_o  : out unsigned(LENGTH_WIDTH_G downto 0);
+        firstReady_o : out STD_LOGIC;
 
         buffer_o      : out TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
         readingFrom_i : in  natural range 0 to 1;
@@ -83,18 +82,27 @@ architecture Behavioral of BramBufferReader is
         );
 
     type RegType is record
-        state            : StateType;
-        addr             : unsigned(ADDR_WIDTH_G-1 downto 0);
-        len              : unsigned(LENGTH_WIDTH_G-1 downto 0);
-        transferCounter  : unsigned(LENGTH_WIDTH_G downto 0);
-        latencyCounter   : natural range 0 to LATENCY_G;
-        enables          : STD_LOGIC_VECTOR(1 downto 0);
-        tmpBuffer        : TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
-        readDone         : STD_LOGIC;
-        readingFrom      : natural range 0 to 1;
+        state : StateType;
+        -- Start address to read
+        addr : unsigned(ADDR_WIDTH_G-1 downto 0);
+        -- How many addresses to read
+        len : unsigned(LENGTH_WIDTH_G-1 downto 0);
+        -- Count how many addresses have been read
+        transferCounter : unsigned(LENGTH_WIDTH_G downto 0);
+        -- Count how many cycles to first data from ram
+        latencyCounter : natural range 0 to LATENCY_G;
+        -- Ram read enable
+        enables : STD_LOGIC_VECTOR(1 downto 0);
+        -- Temporary buffer for data that was read
+        tmpBuffer : TmpBufferArray(MAX_LENGTH_G-1 downto 0)(DATA_WIDTH_G-1 downto 0);
+        -- Which ram to read from
+        readingFrom : natural range 0 to 1;
+        -- Which ram was used when ofset of 0 was read
         readingFromStart : natural range 0 to 1;
-        overwrite        : STD_LOGIC;
-        clearOverwrite   : STD_LOGIC;
+        -- Signal if buffer could be overwritten
+        overwrite : STD_LOGIC;
+        -- Clear overwrite flag
+        clearOverwrite : STD_LOGIC;
     end record RegType;
 
     constant REG_TYPE_INIT_C : RegType := (
@@ -105,7 +113,6 @@ architecture Behavioral of BramBufferReader is
             latencyCounter   => 0,
             enables          => (others => '0'),
             tmpBuffer        => (others => (others => '0')),
-            readDone         => '0',
             readingFrom      => 0,
             readingFromStart => 0,
             overwrite        => '0',
@@ -130,29 +137,35 @@ begin
     begin
         v := r;
 
-        v.readDone       := '0';
         v.overwrite      := '0';
         v.clearOverwrite := '0';
 
         -- combinatorial logic
         case r.state is
             when IDLE_S =>
+                -- Reset counter
                 v.transferCounter := (others => '0');
+
                 if (readStart_i = '1') then
+                    -- Capture start address and length
                     v.addr := unsigned(address_i);
                     v.len  := unsigned(length_i);
 
                     if (address_i = START_ADDRESS) then
+                        -- Remember which ram was used when read started
                         v.clearOverwrite   := '1';
                         v.readingFromStart := readingFrom_i;
                     else
                         if (r.readingFromStart /= readingFrom_i) then
+                            -- Signal overwrite if reading from different ram
                             v.overwrite := '1';
                         end if;
                     end if;
 
+                    -- Capture which ram to read from
                     v.readingFrom := readingFrom_i;
 
+                    -- Enable read
                     case readingFrom_i is
                         when 0 =>
                             v.enables := "01";
@@ -170,6 +183,7 @@ begin
                 end if;
 
             when LATENCY_COUNT_S =>
+                -- Wait for the first data to be read from ram
                 if (r.latencyCounter < LATENCY_G-2) then
                     v.latencyCounter := r.latencyCounter + 1;
                 else
@@ -177,24 +191,30 @@ begin
                 end if;
 
                 if (r.latencyCounter = r.len) then
+                    -- Stop reading
                     v.enables := "00";
                 else
+                    -- Read next location
                     v.addr := r.addr + 1;
                 end if;
 
             when GET_DATA_BRAM_S =>
+                v.transferCounter := r.transferCounter + 1;
+
                 if (r.latencyCounter + r.transferCounter = r.len) then
+                    -- Stop reading
                     v.enables := "00";
                 else
+                    -- Read next location
                     v.addr := r.addr + 1;
                 end if;
 
                 if (r.transferCounter = r.len) then
                     v.latencyCounter := 0;
                     v.state          := IDLE_S;
-                    v.readDone       := '1';
                 end if;
 
+                -- Store read data to temporary buffer
                 case r.readingFrom is
                     when 0 =>
                         v.tmpBuffer(to_integer(r.transferCounter)) := bramReadDst0_i.dout;
@@ -203,7 +223,6 @@ begin
                     when others =>
                         v.tmpBuffer(to_integer(r.transferCounter)) := (others => '0');
                 end case;
-                v.transferCounter := r.transferCounter + 1;
 
             when others =>
                 v := REG_TYPE_INIT_C;
@@ -226,8 +245,7 @@ begin
         bramReadSrc1_o.addr <= STD_LOGIC_VECTOR(rin.addr);
         bramReadSrc1_o.din  <= (others => '0');
 
-        readDone_o       <= r.readDone;
-        counter_o        <= r.transferCounter;
+        firstReady_o     <= '0' when r.transferCounter = 0 else '1';
         buffer_o         <= r.tmpBuffer;
         overwrite_o      <= r.overwrite;
         clearOverwrite_o <= r.clearOverwrite;

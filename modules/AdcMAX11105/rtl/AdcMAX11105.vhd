@@ -36,9 +36,8 @@ use work.AdcMAX11105Pkg.all;
 
 entity AdcMAX11105 is
     Generic (
-        MARK_DEBUG_G    : string  := "false";
-        SYNC_STAGE_G    : boolean := true;
-        N_CYCLES_IDLE_G : natural := 1
+        MARK_DEBUG_G : string  := "false";
+        SYNC_STAGE_G : boolean := true
     );
     Port (
         clk_i    : in STD_LOGIC;
@@ -82,14 +81,16 @@ architecture Behavioral of AdcMAX11105 is
     attribute mark_debug of run_i : signal is MARK_DEBUG_G;
     ----------------------------------------------------------------------------
 
-
 begin
 
-    axisReadSrc_o.TVALID <= axisSrcDataRemap.TVALID;
-    axisReadSrc_o.TDATA  <= AXIS_PADDING_C & axisSrcDataRemap.TDATA(
+    -- Remap raw data read from SPI to actual number representing the analog value
+    -- 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+    --  x  x  x  x  x  9  8  7  6  5  4  3  2  1  0  x
+    axisReadSrc_o.TDATA <= AXIS_PADDING_C & axisSrcDataRemap.TDATA(
             MAX11105_SPI_DATA_WIDTH_C - 1 - MAX11105_DATA_OFFSET_C downto
             MAX11105_SPI_DATA_WIDTH_C - MAX11105_DATA_OFFSET_C - MAX11105_DATA_WIDTH_C
     );
+    axisReadSrc_o.TVALID  <= axisSrcDataRemap.TVALID;
     axisReadSrc_o.TSTRB   <= axisSrcDataRemap.TSTRB;
     axisReadSrc_o.TKEEP   <= axisSrcDataRemap.TKEEP;
     axisReadSrc_o.TLAST   <= axisSrcDataRemap.TLAST;
@@ -105,7 +106,7 @@ begin
                 SPI_CPOL_G      => MAX11105_SPI_CPOL_C,
                 SPI_CPHA_G      => MAX11105_SPI_CPHA_C,
                 DATA_WIDTH_G    => MAX11105_SPI_DATA_WIDTH_C,
-                N_CYCLES_IDLE_G => N_CYCLES_IDLE_G + MAX11105_SPI_CS_HIGH_WIDTH_C
+                N_CYCLES_IDLE_G => MAX11105_SPI_CS_HIGH_WIDTH_C
             )
             port map (
                 clk_i          => clk_i,
@@ -132,7 +133,7 @@ begin
                 SPI_CPOL_G      => MAX11105_SPI_CPOL_C,
                 SPI_CPHA_G      => MAX11105_SPI_CPHA_C,
                 DATA_WIDTH_G    => MAX11105_SPI_DATA_WIDTH_C,
-                N_CYCLES_IDLE_G => N_CYCLES_IDLE_G + MAX11105_SPI_CS_HIGH_WIDTH_C,
+                N_CYCLES_IDLE_G => MAX11105_SPI_CS_HIGH_WIDTH_C,
                 UNUSED_READ_G   => false,
                 UNUSED_WRITE_G  => true
             )

@@ -32,11 +32,20 @@ package AdcMAX11105Pkg is
 	constant MAX11105_SPI_CPOL_C : SpiClockPolarity := SPI_CPOL_0;
 	constant MAX11105_SPI_CPHA_C : SpiClockPhase    := SPI_CPHA_0;
 
-	constant MAX11105_SPI_DATA_WIDTH_C    : natural := 14;
+	-- CS must be asserted for 14 bits
+	constant MAX11105_SPI_DATA_WIDTH_C : natural := 14;
+
+	-- The period must be 16 cycles, CS must be high for 2 cycles
 	constant MAX11105_SPI_BIT_WIDTH_C     : natural := 16;
 	constant MAX11105_SPI_CS_HIGH_WIDTH_C : natural := MAX11105_SPI_BIT_WIDTH_C - MAX11105_SPI_DATA_WIDTH_C;
-	constant MAX11105_DATA_WIDTH_C        : natural := 12;
-	constant MAX11105_DATA_OFFSET_C       : natural := 1;
+
+	-- ADC resolution is 12 bits
+	constant MAX11105_DATA_WIDTH_C : natural := 12;
+
+	-- ADC data is transmitted with 1 bit offset
+	constant MAX11105_DATA_OFFSET_C : natural := 1;
+
+	-- Axi stream constants
 	constant MAX11105_AXI_DATA_WIDTH_C    : natural := 16;
 	constant MAX11105_AXI_PADDING_WIDTH_C : natural := MAX11105_AXI_DATA_WIDTH_C - MAX11105_DATA_WIDTH_C;
 

@@ -36,9 +36,8 @@ use work.DacAD5451Pkg.all;
 
 entity DacAD5451 is
     Generic (
-        MARK_DEBUG_G    : string  := "false";
-        SYNC_STAGE_G    : boolean := true;
-        N_CYCLES_IDLE_G : natural := 1
+        MARK_DEBUG_G : string  := "false";
+        SYNC_STAGE_G : boolean := true
     );
     Port (
         clk_i    : in STD_LOGIC;
@@ -65,6 +64,7 @@ architecture Behavioral of DacAD5451 is
             TREADY => '1'
         );
 
+    -- Control register value for DAC, it signals normal operation
     constant SPI_COMMAND_C : STD_LOGIC_VECTOR(AD5451_COMMAND_WIDTH_C-1 downto 0)   := (others => '0');
     constant SPI_PADDING_C : STD_LOGIC_VECTOR(AD5451_PADDING_WIDTH_C - 1 downto 0) := (others => '0');
 
@@ -73,8 +73,11 @@ architecture Behavioral of DacAD5451 is
 
 begin
 
-    axisSrcDataRemap.TVALID  <= axisWriteSrc_i.TVALID;
+    -- Remap number representing the analog value to data sent over SPI 
+    -- 15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+    -- C1 C0  9  8  7  6  5  4  3  2  1  0  x  x  x  x
     axisSrcDataRemap.TDATA   <= SPI_COMMAND_C & axisWriteSrc_i.TDATA(AD5451_DATA_WIDTH_C-1 downto 0) & SPI_PADDING_C;
+    axisSrcDataRemap.TVALID  <= axisWriteSrc_i.TVALID;
     axisSrcDataRemap.TSTRB   <= axisWriteSrc_i.TSTRB;
     axisSrcDataRemap.TKEEP   <= axisWriteSrc_i.TKEEP;
     axisSrcDataRemap.TLAST   <= axisWriteSrc_i.TLAST;
@@ -90,7 +93,7 @@ begin
                 SPI_CPOL_G      => AD5451_SPI_CPOL_C,
                 SPI_CPHA_G      => AD5451_SPI_CPHA_C,
                 DATA_WIDTH_G    => AD5451_SPI_DATA_WIDTH_C,
-                N_CYCLES_IDLE_G => N_CYCLES_IDLE_G
+                N_CYCLES_IDLE_G => 1
             )
             port map (
                 clk_i          => clk_i,
@@ -117,7 +120,7 @@ begin
                 SPI_CPOL_G      => AD5451_SPI_CPOL_C,
                 SPI_CPHA_G      => AD5451_SPI_CPHA_C,
                 DATA_WIDTH_G    => AD5451_SPI_DATA_WIDTH_C,
-                N_CYCLES_IDLE_G => N_CYCLES_IDLE_G,
+                N_CYCLES_IDLE_G => 1,
                 UNUSED_READ_G   => true,
                 UNUSED_WRITE_G  => false
             )

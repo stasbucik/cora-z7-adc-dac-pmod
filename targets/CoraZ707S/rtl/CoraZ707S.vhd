@@ -370,9 +370,8 @@ begin
 	----------------------------------------------------------------------------
 	u_DacAD5451 : entity work.DacAD5451
 		generic map (
-			MARK_DEBUG_G    => "false",
-			SYNC_STAGE_G    => false,
-			N_CYCLES_IDLE_G => 2
+			MARK_DEBUG_G => "false",
+			SYNC_STAGE_G => false
 		)
 		port map (
 			clk_i          => clk,
@@ -403,9 +402,8 @@ begin
 	------------------------------------------------------------------------
 	u_AdcMAX11105 : entity work.AdcMAX11105
 		generic map (
-			MARK_DEBUG_G    => "false",
-			SYNC_STAGE_G    => true,
-			N_CYCLES_IDLE_G => 0
+			MARK_DEBUG_G => "false",
+			SYNC_STAGE_G => true
 		)
 		port map (
 			clk_i         => clk,
@@ -510,10 +508,10 @@ begin
 	);
 
 	rgb_led <= (
-			0      => adcOverflow,
-			2      => statReg(OVERWRITE_BIT_C),
-			3      => ctrlReg(ADC_RUN_BIT_C),
-			4      => ctrlReg(DAC_RUN_BIT_C),
+			0      => adcOverflow,              -- Blue
+			2      => statReg(OVERWRITE_BIT_C), -- Green
+			3      => ctrlReg(ADC_RUN_BIT_C),   -- Blue
+			4      => ctrlReg(DAC_RUN_BIT_C),   -- Green
 			others => '0'
 	);
 

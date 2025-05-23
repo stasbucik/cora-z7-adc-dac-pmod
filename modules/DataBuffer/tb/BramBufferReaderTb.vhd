@@ -97,8 +97,7 @@ architecture Behavioral of BramBufferReaderTb is
 	signal readStart_i      : STD_LOGIC;
 	signal address_i        : STD_LOGIC_VECTOR(TB_ADDR_WIDTH_C-1 downto 0);
 	signal length_i         : STD_LOGIC_VECTOR(TB_LENGTH_WIDTH_C-1 downto 0);
-	signal readDone_o       : STD_LOGIC;
-	signal counter_o        : unsigned(TB_LENGTH_WIDTH_C downto 0);
+	signal firstReady_o     : STD_LOGIC;
 	signal buffer_o         : TmpBufferArray(TB_MAX_LENGTH_C-1 downto 0)(TB_DATA_WIDTH_C-1 downto 0);
 	signal readingFrom_i    : natural range 0 to 1;
 	signal overwrite_o      : STD_LOGIC;
@@ -152,8 +151,7 @@ begin
 			readStart_i      => readStart_i,
 			address_i        => address_i,
 			length_i         => length_i,
-			readDone_o       => readDone_o,
-			counter_o        => counter_o,
+			firstReady_o     => firstReady_o,
 			buffer_o         => buffer_o,
 			readingFrom_i    => readingFrom_i,
 			overwrite_o      => overwrite_o,

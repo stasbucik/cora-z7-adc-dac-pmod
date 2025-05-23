@@ -64,7 +64,7 @@ architecture Behavioral of BufferAxi4IfaceTb is
 	constant TB_LENGTH_WIDTH_C      : natural                                  := natural(ceil(log2(real(TB_MAX_LENGTH_C))));
 	constant TB_AXI_ADDRESS_C       : unsigned(TB_AXI_ADDR_WIDTH_C-1 downto 0) := x"8000_0000";
 
-	constant TB_ACTION_TIMEOUT : time := 80 ns;
+	constant TB_ACTION_TIMEOUT : time := CLK_PERIOD_C*20;
 
 	-- UUT signals
 	signal clk_i        : STD_LOGIC;
@@ -74,8 +74,7 @@ architecture Behavioral of BufferAxi4IfaceTb is
 	signal readStart_o  : STD_LOGIC;
 	signal address_o    : STD_LOGIC_VECTOR(TB_ADDR_WIDTH_C-1 downto 0);
 	signal length_o     : STD_LOGIC_VECTOR(TB_LENGTH_WIDTH_C-1 downto 0);
-	signal readDone_i   : STD_LOGIC;
-	signal counter_i    : unsigned(TB_LENGTH_WIDTH_C downto 0);
+	signal firstReady_i : STD_LOGIC;
 	signal buffer_i     : TmpBufferArray(TB_MAX_LENGTH_C-1 downto 0)(TB_DATA_WIDTH_C-1 downto 0);
 
 	constant AXI_READ_SRC_INIT_C : axiReadSrc_i'subtype := (
@@ -176,8 +175,7 @@ begin
 			readStart_o  => readStart_o,
 			address_o    => address_o,
 			length_o     => length_o,
-			readDone_i   => readDone_i,
-			counter_i    => counter_i,
+			firstReady_i => firstReady_i,
 			buffer_i     => buffer_i
 		);
 
@@ -203,8 +201,7 @@ begin
 			readStart_i    => readStart_o,
 			address_i      => address_o,
 			length_i       => length_o,
-			readDone_o     => readDone_i,
-			counter_o      => counter_i,
+			firstReady_o   => firstReady_i,
 			buffer_o       => buffer_i,
 			readingFrom_i  => 0
 		);
@@ -302,7 +299,6 @@ begin
 
 		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
 		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
 		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
 		waitUntil(axiReadDst_o.rlast, '0', "rlast not 0.");
 
@@ -329,7 +325,6 @@ begin
 
 		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
 		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
 		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
 		wait for CLK_PERIOD_C*5;
 		axiReadSrc_i.rready <= '1';
@@ -358,7 +353,6 @@ begin
 
 		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
 		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
 		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
 		waitUntil(axiReadDst_o.rlast, '0', "rlast not 0.");
 
@@ -385,7 +379,6 @@ begin
 
 		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
 		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
 		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
 		waitUntil(axiReadDst_o.rlast, '0', "rlast not 0.");
 
@@ -413,7 +406,6 @@ begin
 
 		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
 		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
 		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
 		waitUntil(axiReadDst_o.rlast, '0', "rlast not 0.");
 
@@ -441,7 +433,6 @@ begin
 
 		waitUntil(axiReadDst_o.arready, '1', "arready not 1.");
 		axiReadSrc_i.arvalid <= '0';
-		waitUntil(readDone_i, '1', "readDone_i not 1.");
 		waitUntil(axiReadDst_o.rlast, '1', "rlast not 1.");
 		waitUntil(axiReadDst_o.rlast, '0', "rlast not 0.");
 

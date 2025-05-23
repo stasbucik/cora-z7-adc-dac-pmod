@@ -153,8 +153,7 @@ begin
 	u_AdcMAX11105 : entity work.AdcMAX11105
 		generic map (
 			MARK_DEBUG_G    => "false",
-			SYNC_STAGE_G    => true,
-			N_CYCLES_IDLE_G => 0
+			SYNC_STAGE_G    => true
 		)
 		port map (
 			clk_i         => clk_i,
