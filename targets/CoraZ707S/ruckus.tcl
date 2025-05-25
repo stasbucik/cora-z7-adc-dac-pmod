@@ -6,7 +6,6 @@ loadConstraints -dir "$::DIR_PATH/rtl"
 
 setBoardRepo "$::DIR_PATH/board_files"
 setBoardPart "digilentinc.com:cora-z7-07s:part0:1.1"
-setIpRepo "$::env(TOP_DIR)/submodules"
 loadIps "$::DIR_PATH/ip"
 
 loadRuckusTcl $::env(TOP_DIR)/modules/Common
