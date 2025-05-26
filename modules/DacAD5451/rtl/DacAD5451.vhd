@@ -93,7 +93,7 @@ begin
                 SPI_CPOL_G      => AD5451_SPI_CPOL_C,
                 SPI_CPHA_G      => AD5451_SPI_CPHA_C,
                 DATA_WIDTH_G    => AD5451_SPI_DATA_WIDTH_C,
-                N_CYCLES_IDLE_G => 1
+                N_CYCLES_IDLE_G => 2
             )
             port map (
                 clk_i          => clk_i,
@@ -120,7 +120,7 @@ begin
                 SPI_CPOL_G      => AD5451_SPI_CPOL_C,
                 SPI_CPHA_G      => AD5451_SPI_CPHA_C,
                 DATA_WIDTH_G    => AD5451_SPI_DATA_WIDTH_C,
-                N_CYCLES_IDLE_G => 1,
+                N_CYCLES_IDLE_G => 2,
                 UNUSED_READ_G   => true,
                 UNUSED_WRITE_G  => false
             )

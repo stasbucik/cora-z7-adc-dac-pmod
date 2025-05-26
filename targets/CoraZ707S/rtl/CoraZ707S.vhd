@@ -38,7 +38,8 @@ use work.BramBufferPkg.all;
 
 entity CoraZ707S is
 	generic (
-		MARK_DEBUG_G : string := "false"
+		MARK_DEBUG_G : string := "false";
+		BUILD_INFO_G : string := ""
 	);
 	Port (
 		DDR_addr          : inout STD_LOGIC_VECTOR ( 14 downto 0 );
