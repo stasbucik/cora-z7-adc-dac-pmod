@@ -79,7 +79,6 @@ architecture Behavioral of CoraZ707S is
 	constant AXI_BUFFER_ADDRESS_C : unsigned(31 downto 0) := x"4600_0000";
 	constant AXI_CTRL_ADDRESS_C   : unsigned(31 downto 0) := x"43C0_0000";
 	constant AXI_STAT_ADDRESS_C   : unsigned(31 downto 0) := x"43C1_0000";
-	constant AXI_CLCK_ADDRESS_C   : unsigned(31 downto 0) := x"43C2_0000";
 	constant CTRL_REG_SIZE_C      : natural               := 32;
 	constant STAT_REG_SIZE_C      : natural               := 32;
 
@@ -138,9 +137,6 @@ architecture Behavioral of CoraZ707S is
 	signal axiStatSrc : Axi4Source;
 	signal axiStatDst : Axi4Destination;
 
-	signal axilClkSrc : Axi4LiteSource;
-	signal axilClkDst : Axi4LiteDestination;
-
 	signal adcOverflow : STD_LOGIC;
 
 	-----------------------------------------------------------------------------
@@ -174,41 +170,6 @@ architecture Behavioral of CoraZ707S is
 	attribute mark_debug of clearOverwrite  : signal is MARK_DEBUG_G;
 	----------------------------------------------------------------------------
 
-	component clk_wiz_mmc_100_64
-		port (
-			-- System interface
-			s_axi_aclk    : in std_logic;
-			s_axi_aresetn : in std_logic;
-			-- AXI Write address channel signals                                        
-			s_axi_awaddr  : in  std_logic_vector(10 downto 0);
-			s_axi_awvalid : in  std_logic;
-			s_axi_awready : out std_logic;
-			-- AXI Write data channel signals                                           
-			s_axi_wdata  : in  std_logic_vector(31 downto 0);
-			s_axi_wstrb  : in  std_logic_vector(3 downto 0);
-			s_axi_wvalid : in  std_logic;
-			s_axi_wready : out std_logic;
-			-- AXI Write response channel signals                                       
-			s_axi_bresp  : out std_logic_vector(1 downto 0);
-			s_axi_bvalid : out std_logic;
-			s_axi_bready : in  std_logic;
-			-- AXI Read address channel signals                                         
-			s_axi_araddr  : in  std_logic_vector(10 downto 0);
-			s_axi_arvalid : in  std_logic;
-			s_axi_arready : out std_logic;
-			-- AXI Read address channel signals                                         
-			s_axi_rdata  : out std_logic_vector(31 downto 0);
-			s_axi_rresp  : out std_logic_vector(1 downto 0);
-			s_axi_rvalid : out std_logic;
-			s_axi_rready : in  std_logic;
-			-- Clock out ports
-			clk_out1 : out std_logic;
-			-- Status and control signals
-			locked : out std_logic;
-			-- Clock in ports
-			clk_in1 : in std_logic
-		);
-	end component;
 begin
 
 	u_InfrastructureTop : entity work.InfrastructureTop
@@ -235,8 +196,6 @@ begin
 			FIXED_IO_ps_porb  => FIXED_IO_ps_porb,
 			FIXED_IO_ps_srstb => FIXED_IO_ps_srstb,
 			IRQ_F2P           => interrupt,
-			axilClkSrc        => axilClkSrc,
-			axilClkDst        => axilClkDst,
 			axiBufferSrc      => axiBufferSrc,
 			axiBufferDst      => axiBufferDst,
 			axiCtrlSrc        => axiCtrlSrc,
@@ -244,35 +203,8 @@ begin
 			axiStatSrc        => axiStatSrc,
 			axiStatDst        => axiStatDst,
 			peripheral_reset  => rst,
+			spi_clk           => adcSpiClk,
 			ps_clk            => clk
-		);
-
-
-	----------------------------------------------------------------------------
-	adc_clk : clk_wiz_mmc_100_64
-		port map (
-			s_axi_aclk    => clk,
-			s_axi_aresetn => not rst,
-			s_axi_awaddr  => axilClkSrc.wr.awaddr(10 downto 0),
-			s_axi_awvalid => axilClkSrc.wr.awvalid,
-			s_axi_awready => axilClkDst.wr.awready,
-			s_axi_wdata   => axilClkSrc.wr.wdata,
-			s_axi_wstrb   => axilClkSrc.wr.wstrb,
-			s_axi_wvalid  => axilClkSrc.wr.wvalid,
-			s_axi_wready  => axilClkDst.wr.wready,
-			s_axi_bresp   => axilClkDst.wr.bresp,
-			s_axi_bvalid  => axilClkDst.wr.bvalid,
-			s_axi_bready  => axilClkSrc.wr.bready,
-			s_axi_araddr  => axilClkSrc.rd.araddr(10 downto 0),
-			s_axi_arvalid => axilClkSrc.rd.arvalid,
-			s_axi_arready => axilClkDst.rd.arready,
-			s_axi_rdata   => axilClkDst.rd.rdata,
-			s_axi_rresp   => axilClkDst.rd.rresp,
-			s_axi_rvalid  => axilClkDst.rd.rvalid,
-			s_axi_rready  => axilClkSrc.rd.rready,
-			clk_out1      => adcSpiClk,
-			locked        => open,
-			clk_in1       => clk
 		);
 
 

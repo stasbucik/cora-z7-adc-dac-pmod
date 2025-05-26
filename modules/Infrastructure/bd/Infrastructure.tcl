@@ -135,6 +135,7 @@ xilinx.com:ip:smartconnect:1.0\
 xilinx.com:ip:proc_sys_reset:5.0\
 xilinx.com:ip:xlconcat:2.1\
 xilinx.com:ip:axi_protocol_converter:2.1\
+xilinx.com:ip:clk_wiz:6.0\
 "
 
    set list_ips_missing ""
@@ -223,23 +224,11 @@ proc create_root_design { parentCell } {
    CONFIG.PROTOCOL {AXI4} \
    ] $M_AXI_stat
 
-  set M_AXIL_clk [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M_AXIL_clk ]
-  set_property -dict [ list \
-   CONFIG.ADDR_WIDTH {31} \
-   CONFIG.DATA_WIDTH {32} \
-   CONFIG.HAS_BURST {0} \
-   CONFIG.HAS_CACHE {0} \
-   CONFIG.HAS_LOCK {0} \
-   CONFIG.HAS_QOS {0} \
-   CONFIG.HAS_REGION {0} \
-   CONFIG.PROTOCOL {AXI4LITE} \
-   ] $M_AXIL_clk
-
 
   # Create ports
   set ps_clk [ create_bd_port -dir O -type clk ps_clk ]
   set_property -dict [ list \
-   CONFIG.ASSOCIATED_BUSIF {M_AXI_buffer:M_AXI_ctrl:M_AXI_stat:M_AXIL_clk} \
+   CONFIG.ASSOCIATED_BUSIF {M_AXI_buffer:M_AXI_ctrl:M_AXI_stat} \
  ] $ps_clk
   set peripheral_reset [ create_bd_port -dir O -from 0 -to 0 -type rst peripheral_reset ]
   set IRQ_F2P [ create_bd_port -dir I -from 0 -to 0 -type intr IRQ_F2P ]
@@ -247,6 +236,7 @@ proc create_root_design { parentCell } {
    CONFIG.PortWidth {1} \
    CONFIG.SENSITIVITY {EDGE_RISING} \
  ] $IRQ_F2P
+  set spi_clk [ create_bd_port -dir O -type clk spi_clk ]
 
   # Create instance: processing_system7_0, and set properties
   set processing_system7_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:processing_system7:5.5 processing_system7_0 ]
@@ -825,8 +815,27 @@ proc create_root_design { parentCell } {
   ] $axi_protocol_convert_0
 
 
+  # Create instance: clk_wiz_0, and set properties
+  set clk_wiz_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:clk_wiz:6.0 clk_wiz_0 ]
+  set_property -dict [list \
+    CONFIG.CLKOUT1_DRIVES {BUFGCE} \
+    CONFIG.CLKOUT1_JITTER {143.752} \
+    CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {64} \
+    CONFIG.CLKOUT2_DRIVES {BUFGCE} \
+    CONFIG.CLKOUT3_DRIVES {BUFGCE} \
+    CONFIG.CLKOUT4_DRIVES {BUFGCE} \
+    CONFIG.CLKOUT5_DRIVES {BUFGCE} \
+    CONFIG.CLKOUT6_DRIVES {BUFGCE} \
+    CONFIG.CLKOUT7_DRIVES {BUFGCE} \
+    CONFIG.FEEDBACK_SOURCE {FDBK_AUTO} \
+    CONFIG.MMCM_CLKOUT0_DIVIDE_F {15.625} \
+    CONFIG.USE_DYN_RECONFIG {true} \
+    CONFIG.USE_SAFE_CLOCK_STARTUP {true} \
+  ] $clk_wiz_0
+
+
   # Create interface connections
-  connect_bd_intf_net -intf_net axi_protocol_convert_0_M_AXI [get_bd_intf_pins axi_protocol_convert_0/M_AXI] [get_bd_intf_ports M_AXIL_clk]
+  connect_bd_intf_net -intf_net axi_protocol_convert_0_M_AXI [get_bd_intf_pins axi_protocol_convert_0/M_AXI] [get_bd_intf_pins clk_wiz_0/s_axi_lite]
   connect_bd_intf_net -intf_net axi_smc_M00_AXI [get_bd_intf_pins axi_smc/M00_AXI] [get_bd_intf_ports M_AXI_buffer]
   connect_bd_intf_net -intf_net axi_smc_M01_AXI [get_bd_intf_pins axi_smc/M01_AXI] [get_bd_intf_ports M_AXI_ctrl]
   connect_bd_intf_net -intf_net axi_smc_M02_AXI [get_bd_intf_pins axi_smc/M02_AXI] [get_bd_intf_ports M_AXI_stat]
@@ -838,27 +847,32 @@ proc create_root_design { parentCell } {
   # Create port connections
   connect_bd_net -net IRQ_F2P_1  [get_bd_ports IRQ_F2P] \
   [get_bd_pins xlconcat_1/In0]
+  connect_bd_net -net clk_wiz_0_clk_out1  [get_bd_pins clk_wiz_0/clk_out1] \
+  [get_bd_ports spi_clk]
   connect_bd_net -net processing_system7_0_FCLK_CLK0  [get_bd_pins processing_system7_0/FCLK_CLK0] \
   [get_bd_ports ps_clk] \
   [get_bd_pins axi_smc/aclk] \
   [get_bd_pins processing_system7_0/M_AXI_GP0_ACLK] \
-  [get_bd_pins rst_ps7_0_100M/slowest_sync_clk] \
-  [get_bd_pins axi_protocol_convert_0/aclk]
+  [get_bd_pins axi_protocol_convert_0/aclk] \
+  [get_bd_pins clk_wiz_0/clk_in1] \
+  [get_bd_pins clk_wiz_0/s_axi_aclk] \
+  [get_bd_pins rst_ps7_0_100M/slowest_sync_clk]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N  [get_bd_pins processing_system7_0/FCLK_RESET0_N] \
   [get_bd_pins rst_ps7_0_100M/ext_reset_in]
-  connect_bd_net -net rst_ps7_0_100M_peripheral_aresetn  [get_bd_pins rst_ps7_0_100M/peripheral_aresetn] \
+  connect_bd_net -net rst_ps7_0_100M_interconnect_aresetn  [get_bd_pins rst_ps7_0_100M/interconnect_aresetn] \
   [get_bd_pins axi_smc/aresetn] \
-  [get_bd_pins axi_protocol_convert_0/aresetn]
+  [get_bd_pins axi_protocol_convert_0/aresetn] \
+  [get_bd_pins clk_wiz_0/s_axi_aresetn]
   connect_bd_net -net rst_ps7_0_100M_peripheral_reset  [get_bd_pins rst_ps7_0_100M/peripheral_reset] \
   [get_bd_ports peripheral_reset]
   connect_bd_net -net xlconcat_1_dout  [get_bd_pins xlconcat_1/dout] \
   [get_bd_pins processing_system7_0/IRQ_F2P]
 
   # Create address segments
-  assign_bd_address -offset 0x43C20000 -range 0x00000800 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXIL_clk/Reg] -force
   assign_bd_address -offset 0x46000000 -range 0x00004000 -with_name SEG_M_AXI_GP0_Reg -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXI_buffer/Reg] -force
   assign_bd_address -offset 0x43C00000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXI_ctrl/Reg] -force
   assign_bd_address -offset 0x43C10000 -range 0x00001000 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXI_stat/Reg] -force
+  assign_bd_address -offset 0x43C20000 -range 0x00000800 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs clk_wiz_0/s_axi_lite/Reg] -force
 
 
   # Restore current instance

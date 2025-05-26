@@ -151,8 +151,8 @@ set_property -dict {PACKAGE_PIN W19 IOSTANDARD LVCMOS33} [get_ports ja4_n]
 
 set_property BITSTREAM.GENERAL.COMPRESS TRUE [current_design]
 
-set_false_path -from [get_clocks clk_fpga_0] -to [get_clocks clk_out1_clk_wiz_mmc_100_64]
-set_false_path -from [get_clocks clk_out1_clk_wiz_mmc_100_64] -to [get_clocks clk_fpga_0]
+set_false_path -from [get_clocks clk_fpga_0] -to [get_clocks clk_out1_Infrastructure_clk_wiz_0_0]
+set_false_path -from [get_clocks clk_out1_Infrastructure_clk_wiz_0_0] -to [get_clocks clk_fpga_0]
 
 
 
