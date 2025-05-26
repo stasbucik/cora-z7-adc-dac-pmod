@@ -123,14 +123,14 @@ set_property -dict {PACKAGE_PIN W19 IOSTANDARD LVCMOS33} [get_ports ja4_n]
 #set_property -dict { PACKAGE_PIN L20   IOSTANDARD LVCMOS33 } [get_ports { ck_io41 }]; #IO_L9N_T1_DQS_AD3N_35 Sch=ck_io[41]
 
 ## ChipKit SPI
-set_property -dict {PACKAGE_PIN W15 IOSTANDARD LVCMOS33} [get_ports Shield_SPI_io0_io]
-set_property -dict {PACKAGE_PIN T12 IOSTANDARD LVCMOS33} [get_ports Shield_SPI_io1_io]
-set_property -dict {PACKAGE_PIN H15 IOSTANDARD LVCMOS33} [get_ports Shield_SPI_sck_io]
-set_property -dict {PACKAGE_PIN F16 IOSTANDARD LVCMOS33} [get_ports Shield_SPI_ss_io]
+#set_property -dict {PACKAGE_PIN W15 IOSTANDARD LVCMOS33} [get_ports Shield_SPI_io0_io]
+#set_property -dict {PACKAGE_PIN T12 IOSTANDARD LVCMOS33} [get_ports Shield_SPI_io1_io]
+#set_property -dict {PACKAGE_PIN H15 IOSTANDARD LVCMOS33} [get_ports Shield_SPI_sck_io]
+#set_property -dict {PACKAGE_PIN F16 IOSTANDARD LVCMOS33} [get_ports Shield_SPI_ss_io]
 
 ## ChipKit I2C
-set_property -dict {PACKAGE_PIN P16 IOSTANDARD LVCMOS33} [get_ports Shield_I2C_scl_io]
-set_property -dict {PACKAGE_PIN P15 IOSTANDARD LVCMOS33} [get_ports Shield_I2C_sda_io]
+#set_property -dict {PACKAGE_PIN P16 IOSTANDARD LVCMOS33} [get_ports Shield_I2C_scl_io]
+#set_property -dict {PACKAGE_PIN P15 IOSTANDARD LVCMOS33} [get_ports Shield_I2C_sda_io]
 
 ##Misc. ChipKit signals
 #set_property -dict { PACKAGE_PIN M20   IOSTANDARD LVCMOS33 } [get_ports { ck_ioa }]; #IO_L7N_T1_AD2N_35 Sch=ck_ioa

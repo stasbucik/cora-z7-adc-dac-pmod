@@ -203,10 +203,6 @@ proc create_root_design { parentCell } {
 
   set FIXED_IO [ create_bd_intf_port -mode Master -vlnv xilinx.com:display_processing_system7:fixedio_rtl:1.0 FIXED_IO ]
 
-  set Shield_I2C [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:iic_rtl:1.0 Shield_I2C ]
-
-  set Shield_SPI [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:spi_rtl:1.0 Shield_SPI ]
-
   set M_AXI_buffer [ create_bd_intf_port -mode Master -vlnv xilinx.com:interface:aximm_rtl:1.0 M_AXI_buffer ]
   set_property -dict [ list \
    CONFIG.ADDR_WIDTH {32} \
@@ -272,7 +268,7 @@ proc create_root_design { parentCell } {
     CONFIG.PCW_ACT_QSPI_PERIPHERAL_FREQMHZ {10.000000} \
     CONFIG.PCW_ACT_SDIO_PERIPHERAL_FREQMHZ {50.000000} \
     CONFIG.PCW_ACT_SMC_PERIPHERAL_FREQMHZ {10.000000} \
-    CONFIG.PCW_ACT_SPI_PERIPHERAL_FREQMHZ {166.666672} \
+    CONFIG.PCW_ACT_SPI_PERIPHERAL_FREQMHZ {10.000000} \
     CONFIG.PCW_ACT_TPIU_PERIPHERAL_FREQMHZ {200.000000} \
     CONFIG.PCW_ACT_TTC0_CLK0_PERIPHERAL_FREQMHZ {108.333336} \
     CONFIG.PCW_ACT_TTC0_CLK1_PERIPHERAL_FREQMHZ {108.333336} \
@@ -346,14 +342,14 @@ proc create_root_design { parentCell } {
     CONFIG.PCW_EN_EMIO_ENET0 {0} \
     CONFIG.PCW_EN_EMIO_ENET1 {0} \
     CONFIG.PCW_EN_EMIO_GPIO {0} \
-    CONFIG.PCW_EN_EMIO_I2C0 {1} \
+    CONFIG.PCW_EN_EMIO_I2C0 {0} \
     CONFIG.PCW_EN_EMIO_I2C1 {0} \
     CONFIG.PCW_EN_EMIO_MODEM_UART0 {0} \
     CONFIG.PCW_EN_EMIO_MODEM_UART1 {0} \
     CONFIG.PCW_EN_EMIO_PJTAG {0} \
     CONFIG.PCW_EN_EMIO_SDIO0 {0} \
     CONFIG.PCW_EN_EMIO_SDIO1 {0} \
-    CONFIG.PCW_EN_EMIO_SPI0 {1} \
+    CONFIG.PCW_EN_EMIO_SPI0 {0} \
     CONFIG.PCW_EN_EMIO_SPI1 {0} \
     CONFIG.PCW_EN_EMIO_SRAM_INT {0} \
     CONFIG.PCW_EN_EMIO_TRACE {0} \
@@ -367,7 +363,7 @@ proc create_root_design { parentCell } {
     CONFIG.PCW_EN_ENET0 {1} \
     CONFIG.PCW_EN_ENET1 {0} \
     CONFIG.PCW_EN_GPIO {1} \
-    CONFIG.PCW_EN_I2C0 {1} \
+    CONFIG.PCW_EN_I2C0 {0} \
     CONFIG.PCW_EN_I2C1 {0} \
     CONFIG.PCW_EN_MODEM_UART0 {0} \
     CONFIG.PCW_EN_MODEM_UART1 {0} \
@@ -382,7 +378,7 @@ proc create_root_design { parentCell } {
     CONFIG.PCW_EN_SDIO0 {1} \
     CONFIG.PCW_EN_SDIO1 {0} \
     CONFIG.PCW_EN_SMC {0} \
-    CONFIG.PCW_EN_SPI0 {1} \
+    CONFIG.PCW_EN_SPI0 {0} \
     CONFIG.PCW_EN_SPI1 {0} \
     CONFIG.PCW_EN_TRACE {0} \
     CONFIG.PCW_EN_TTC0 {0} \
@@ -414,16 +410,10 @@ proc create_root_design { parentCell } {
     CONFIG.PCW_GPIO_MIO_GPIO_ENABLE {1} \
     CONFIG.PCW_GPIO_MIO_GPIO_IO {MIO} \
     CONFIG.PCW_GPIO_PERIPHERAL_ENABLE {0} \
-    CONFIG.PCW_I2C0_BASEADDR {0xE0004000} \
-    CONFIG.PCW_I2C0_HIGHADDR {0xE0004FFF} \
-    CONFIG.PCW_I2C0_I2C0_IO {EMIO} \
-    CONFIG.PCW_I2C0_PERIPHERAL_ENABLE {1} \
-    CONFIG.PCW_I2C0_RESET_ENABLE {0} \
+    CONFIG.PCW_I2C0_PERIPHERAL_ENABLE {0} \
     CONFIG.PCW_I2C1_PERIPHERAL_ENABLE {0} \
-    CONFIG.PCW_I2C_PERIPHERAL_FREQMHZ {108.333336} \
     CONFIG.PCW_I2C_RESET_ENABLE {1} \
     CONFIG.PCW_I2C_RESET_POLARITY {Active Low} \
-    CONFIG.PCW_I2C_RESET_SELECT {Share reset pin} \
     CONFIG.PCW_IMPORT_BOARD_PRESET {None} \
     CONFIG.PCW_INCLUDE_ACP_TRANS_CHECK {0} \
     CONFIG.PCW_IRQ_F2P_INTR {1} \
@@ -632,9 +622,7 @@ proc create_root_design { parentCell } {
     CONFIG.PCW_OVERRIDE_BASIC_CLOCK {0} \
     CONFIG.PCW_P2F_ENET0_INTR {0} \
     CONFIG.PCW_P2F_GPIO_INTR {0} \
-    CONFIG.PCW_P2F_I2C0_INTR {0} \
     CONFIG.PCW_P2F_SDIO0_INTR {0} \
-    CONFIG.PCW_P2F_SPI0_INTR {0} \
     CONFIG.PCW_P2F_UART0_INTR {0} \
     CONFIG.PCW_P2F_USB0_INTR {0} \
     CONFIG.PCW_PACKAGE_DDR_BOARD_DELAY0 {0.223} \
@@ -678,14 +666,10 @@ proc create_root_design { parentCell } {
     CONFIG.PCW_SMC_CYCLE_T6 {NA} \
     CONFIG.PCW_SMC_PERIPHERAL_CLKSRC {IO PLL} \
     CONFIG.PCW_SMC_PERIPHERAL_VALID {0} \
-    CONFIG.PCW_SPI0_BASEADDR {0xE0006000} \
-    CONFIG.PCW_SPI0_HIGHADDR {0xE0006FFF} \
-    CONFIG.PCW_SPI0_PERIPHERAL_ENABLE {1} \
-    CONFIG.PCW_SPI0_SPI0_IO {EMIO} \
+    CONFIG.PCW_SPI0_PERIPHERAL_ENABLE {0} \
     CONFIG.PCW_SPI1_PERIPHERAL_ENABLE {0} \
     CONFIG.PCW_SPI_PERIPHERAL_CLKSRC {IO PLL} \
-    CONFIG.PCW_SPI_PERIPHERAL_FREQMHZ {166.666666} \
-    CONFIG.PCW_SPI_PERIPHERAL_VALID {1} \
+    CONFIG.PCW_SPI_PERIPHERAL_VALID {0} \
     CONFIG.PCW_TPIU_PERIPHERAL_CLKSRC {External} \
     CONFIG.PCW_TRACE_INTERNAL_WIDTH {2} \
     CONFIG.PCW_TRACE_PERIPHERAL_ENABLE {0} \
@@ -828,9 +812,6 @@ proc create_root_design { parentCell } {
   # Create instance: rst_ps7_0_100M, and set properties
   set rst_ps7_0_100M [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 rst_ps7_0_100M ]
 
-  # Create instance: xlconcat_0, and set properties
-  set xlconcat_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 xlconcat_0 ]
-
   # Create instance: xlconcat_1, and set properties
   set xlconcat_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 xlconcat_1 ]
   set_property CONFIG.NUM_PORTS {16} $xlconcat_1
@@ -858,9 +839,7 @@ proc create_root_design { parentCell } {
   connect_bd_intf_net -intf_net axi_smc_M03_AXI [get_bd_intf_pins axi_smc/M03_AXI] [get_bd_intf_pins axi_protocol_convert_0/S_AXI]
   connect_bd_intf_net -intf_net processing_system7_0_DDR [get_bd_intf_ports DDR] [get_bd_intf_pins processing_system7_0/DDR]
   connect_bd_intf_net -intf_net processing_system7_0_FIXED_IO [get_bd_intf_ports FIXED_IO] [get_bd_intf_pins processing_system7_0/FIXED_IO]
-  connect_bd_intf_net -intf_net processing_system7_0_IIC_0 [get_bd_intf_ports Shield_I2C] [get_bd_intf_pins processing_system7_0/IIC_0]
   connect_bd_intf_net -intf_net processing_system7_0_M_AXI_GP0 [get_bd_intf_pins processing_system7_0/M_AXI_GP0] [get_bd_intf_pins axi_smc/S00_AXI]
-  connect_bd_intf_net -intf_net processing_system7_0_SPI_0 [get_bd_intf_ports Shield_SPI] [get_bd_intf_pins processing_system7_0/SPI_0]
 
   # Create port connections
   connect_bd_net -net IRQ_F2P_1  [get_bd_ports IRQ_F2P] \
@@ -873,10 +852,6 @@ proc create_root_design { parentCell } {
   [get_bd_pins axi_protocol_convert_0/aclk]
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N  [get_bd_pins processing_system7_0/FCLK_RESET0_N] \
   [get_bd_pins rst_ps7_0_100M/ext_reset_in]
-  connect_bd_net -net processing_system7_0_SPI0_SS1_O  [get_bd_pins processing_system7_0/SPI0_SS1_O] \
-  [get_bd_pins xlconcat_0/In0]
-  connect_bd_net -net processing_system7_0_SPI0_SS2_O  [get_bd_pins processing_system7_0/SPI0_SS2_O] \
-  [get_bd_pins xlconcat_0/In1]
   connect_bd_net -net rst_ps7_0_100M_peripheral_aresetn  [get_bd_pins rst_ps7_0_100M/peripheral_aresetn] \
   [get_bd_pins axi_smc/aresetn] \
   [get_bd_pins axi_protocol_convert_0/aresetn]

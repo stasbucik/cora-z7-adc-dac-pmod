@@ -62,12 +62,6 @@ entity CoraZ707S is
 		FIXED_IO_ps_clk   : inout STD_LOGIC;
 		FIXED_IO_ps_porb  : inout STD_LOGIC;
 		FIXED_IO_ps_srstb : inout STD_LOGIC;
-		Shield_I2C_scl_io : inout STD_LOGIC;
-		Shield_I2C_sda_io : inout STD_LOGIC;
-		Shield_SPI_io0_io : inout STD_LOGIC;
-		Shield_SPI_io1_io : inout STD_LOGIC;
-		Shield_SPI_sck_io : inout STD_LOGIC;
-		Shield_SPI_ss_io  : inout STD_LOGIC;
 		rgb_led           : out   STD_LOGIC_VECTOR ( 5 downto 0 );
 		ja1_p             : out   STD_LOGIC;
 		ja1_n             : out   STD_LOGIC;
@@ -249,12 +243,6 @@ begin
 			axiCtrlDst        => axiCtrlDst,
 			axiStatSrc        => axiStatSrc,
 			axiStatDst        => axiStatDst,
-			Shield_I2C_scl_io => Shield_I2C_scl_io,
-			Shield_I2C_sda_io => Shield_I2C_sda_io,
-			Shield_SPI_io0_io => Shield_SPI_io0_io,
-			Shield_SPI_io1_io => Shield_SPI_io1_io,
-			Shield_SPI_sck_io => Shield_SPI_sck_io,
-			Shield_SPI_ss_io  => Shield_SPI_ss_io,
 			peripheral_reset  => rst,
 			ps_clk            => clk
 		);

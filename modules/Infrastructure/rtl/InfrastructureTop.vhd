@@ -55,12 +55,6 @@ entity InfrastructureTop is
           axiCtrlDst        : in    Axi4Destination;
           axiStatSrc        : out   Axi4Source;
           axiStatDst        : in    Axi4Destination;
-          Shield_I2C_scl_io : inout STD_LOGIC;
-          Shield_I2C_sda_io : inout STD_LOGIC;
-          Shield_SPI_io0_io : inout STD_LOGIC;
-          Shield_SPI_io1_io : inout STD_LOGIC;
-          Shield_SPI_sck_io : inout STD_LOGIC;
-          Shield_SPI_ss_io  : inout STD_LOGIC;
           peripheral_reset  : out   STD_LOGIC;
           ps_clk            : out   STD_LOGIC
      );
@@ -219,12 +213,6 @@ begin
                M_AXI_stat_wstrb   => axiStatSrc.wr.wstrb,
                M_AXI_stat_wvalid  => axiStatSrc.wr.wvalid,
 
-               Shield_I2C_scl_io => Shield_I2C_scl_io,
-               Shield_I2C_sda_io => Shield_I2C_sda_io,
-               Shield_SPI_io0_io => Shield_SPI_io0_io,
-               Shield_SPI_io1_io => Shield_SPI_io1_io,
-               Shield_SPI_sck_io => Shield_SPI_sck_io,
-               Shield_SPI_ss_io  => Shield_SPI_ss_io,
                peripheral_reset  => rstAdapter,
                ps_clk            => ps_clk
           );
