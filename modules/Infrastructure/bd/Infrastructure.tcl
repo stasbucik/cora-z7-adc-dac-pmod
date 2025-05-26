@@ -134,7 +134,6 @@ xilinx.com:ip:processing_system7:5.5\
 xilinx.com:ip:smartconnect:1.0\
 xilinx.com:ip:proc_sys_reset:5.0\
 xilinx.com:ip:xlconcat:2.1\
-xilinx.com:ip:xlconstant:1.1\
 xilinx.com:ip:axi_protocol_converter:2.1\
 "
 
@@ -814,12 +813,7 @@ proc create_root_design { parentCell } {
 
   # Create instance: xlconcat_1, and set properties
   set xlconcat_1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconcat:2.1 xlconcat_1 ]
-  set_property CONFIG.NUM_PORTS {16} $xlconcat_1
-
-
-  # Create instance: xlconstant_0, and set properties
-  set xlconstant_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_0 ]
-  set_property CONFIG.CONST_VAL {0} $xlconstant_0
+  set_property CONFIG.NUM_PORTS {1} $xlconcat_1
 
 
   # Create instance: axi_protocol_convert_0, and set properties
@@ -859,22 +853,6 @@ proc create_root_design { parentCell } {
   [get_bd_ports peripheral_reset]
   connect_bd_net -net xlconcat_1_dout  [get_bd_pins xlconcat_1/dout] \
   [get_bd_pins processing_system7_0/IRQ_F2P]
-  connect_bd_net -net xlconstant_0_dout  [get_bd_pins xlconstant_0/dout] \
-  [get_bd_pins xlconcat_1/In1] \
-  [get_bd_pins xlconcat_1/In2] \
-  [get_bd_pins xlconcat_1/In3] \
-  [get_bd_pins xlconcat_1/In4] \
-  [get_bd_pins xlconcat_1/In5] \
-  [get_bd_pins xlconcat_1/In6] \
-  [get_bd_pins xlconcat_1/In7] \
-  [get_bd_pins xlconcat_1/In8] \
-  [get_bd_pins xlconcat_1/In9] \
-  [get_bd_pins xlconcat_1/In10] \
-  [get_bd_pins xlconcat_1/In11] \
-  [get_bd_pins xlconcat_1/In12] \
-  [get_bd_pins xlconcat_1/In13] \
-  [get_bd_pins xlconcat_1/In14] \
-  [get_bd_pins xlconcat_1/In15]
 
   # Create address segments
   assign_bd_address -offset 0x43C20000 -range 0x00000800 -target_address_space [get_bd_addr_spaces processing_system7_0/Data] [get_bd_addr_segs M_AXIL_clk/Reg] -force
