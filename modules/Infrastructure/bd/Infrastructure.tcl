@@ -860,7 +860,8 @@ proc create_root_design { parentCell } {
   connect_bd_net -net processing_system7_0_FCLK_RESET0_N  [get_bd_pins processing_system7_0/FCLK_RESET0_N] \
   [get_bd_pins rst_ps7_0_100M/ext_reset_in]
   connect_bd_net -net rst_ps7_0_100M_interconnect_aresetn  [get_bd_pins rst_ps7_0_100M/interconnect_aresetn] \
-  [get_bd_pins axi_smc/aresetn] \
+  [get_bd_pins axi_smc/aresetn]
+  connect_bd_net -net rst_ps7_0_100M_peripheral_aresetn  [get_bd_pins rst_ps7_0_100M/peripheral_aresetn] \
   [get_bd_pins axi_protocol_convert_0/aresetn] \
   [get_bd_pins clk_wiz_0/s_axi_aresetn]
   connect_bd_net -net rst_ps7_0_100M_peripheral_reset  [get_bd_pins rst_ps7_0_100M/peripheral_reset] \
