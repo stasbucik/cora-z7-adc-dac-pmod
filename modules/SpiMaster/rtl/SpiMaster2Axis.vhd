@@ -99,7 +99,7 @@ architecture Behavioral of SpiMaster2Axis is
         wrCounter         : integer range 0 to DATA_WIDTH_G-1;
         rdCounter         : integer range 0 to DATA_WIDTH_G-1;
         wrAllowed         : STD_LOGIC;
-        csHold            : integer range 0 to N_CYCLES_IDLE_G-1;
+        csHold            : integer range 0 to maximum(1, N_CYCLES_IDLE_G-1);
         transferDone      : STD_LOGIC;
         transferDoneDelay : STD_LOGIC;
         axiSrcState       : AxiReadSrcStateType;
@@ -252,15 +252,19 @@ begin
                 end if;
 
             when DEASSERT_S =>
-                if (r.csHold = N_CYCLES_IDLE_G - 1) then
-                    if (run_i = '0') then
-                        v.state := IDLE_S;
+                if (r.clock = CLOCK_IDLE_C) then
+                    if (r.csHold = N_CYCLES_IDLE_G - 1) then
+                        if (run_i = '0') then
+                            v.csHold := 0;
+                            v.state  := IDLE_S;
+                        else
+                            v.tready := '1';
+                            v.csHold := 0;
+                            v.state  := WAITING_FOR_DATA_S;
+                        end if;
                     else
-                        v.tready := '1';
-                        v.state  := WAITING_FOR_DATA_S;
+                        v.csHold := r.csHold + 1;
                     end if;
-                else
-                    v.csHold := r.csHold + 1;
                 end if;
 
             when others =>

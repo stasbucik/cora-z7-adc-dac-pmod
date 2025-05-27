@@ -37,7 +37,7 @@ package AdcMAX11105Pkg is
 
 	-- The period must be 16 cycles, CS must be high for 2 cycles
 	constant MAX11105_SPI_BIT_WIDTH_C     : natural := 16;
-	constant MAX11105_SPI_CS_HIGH_WIDTH_C : natural := MAX11105_SPI_BIT_WIDTH_C - MAX11105_SPI_DATA_WIDTH_C;
+	constant MAX11105_SPI_CS_HIGH_WIDTH_C : natural := MAX11105_SPI_BIT_WIDTH_C - MAX11105_SPI_DATA_WIDTH_C - 1;
 
 	-- ADC resolution is 12 bits
 	constant MAX11105_DATA_WIDTH_C : natural := 12;
