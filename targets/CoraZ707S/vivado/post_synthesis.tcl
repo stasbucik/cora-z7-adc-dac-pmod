@@ -262,7 +262,7 @@ if { ${enable} == 1 } {
 
 set enable 0
 if { ${enable} == 1 } {
-	set ilaName "u_ila_ps_adc_clk_domain"
+	set ilaName "u_ila_adc_clk_domain"
 	set ilaSize 2048
 	set ilaClk "adcSpiClk"
 
@@ -272,35 +272,36 @@ if { ${enable} == 1 } {
 
 	ConfigProbe ${ilaName} {adcDout}
 	ConfigProbe ${ilaName} {adcCs}
+	ConfigProbe ${ilaName} {adcSclk}
 
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[rdBuffer][*]}
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[rdCounter][*]}
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[transferDone]}
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[overflow]}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[rdBuffer][*]}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[rdCounter][*]}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[transferDone]}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[overflow]}
 
 	################################################
 	# u_SpiMaster
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/syncRst}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/syncRst}
 	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/syncClear}
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/syncOverflow}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/syncOverflow}
 	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/syncRun}
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/g_syncRead.u_syncRead/s_aresetn}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/g_syncRead.u_syncRead/s_aresetn}
 
 	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TDEST]}
 	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TID]}
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TLAST]}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TLAST]}
 	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TUSER]}
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TVALID]}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TVALID]}
 	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TWAKEUP]}
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TDATA][*]}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TDATA][*]}
 	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TKEEP][*]}
 	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteSrcSlow[TSTRB][*]}
 
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteDstSlow[TREADY]}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisWriteDstSlow[TREADY]}
 
 	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TDEST]}
 	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TID]}
-	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TLAST]}
+	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TLAST]}
 	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TUSER]}
 	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TVALID]}
 	#ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/axisReadSrcSlow[TWAKEUP]}
@@ -312,6 +313,26 @@ if { ${enable} == 1 } {
 
 	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/wr_rst_busyRead}
 	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/rd_rst_busyRead}
+
+	################################################
+	# SpiMaster2Axis
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[state][*]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[cs]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[highz]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[clock]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[tready]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[tvalid]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[tdata][*]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[wrBuffer][*]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[rdBuffer][*]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[wrCounter][*]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[rdCounter][*]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[wrAllowed]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[csHold]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[transferDone]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[transferDoneDelay]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[axiSrcState]}
+	ConfigProbe ${ilaName} {u_AdcMAX11105/asyncSpi_g.u_SpiMaster/u_SpiMaster2Axis/r[overflow]}
 
 
 	WriteDebugProbes ${ilaName} ${PROJ_DIR}/images/debug_probes.ltx
