@@ -30,7 +30,7 @@ use work.SpiMasterPkg.all;
 package AdcMAX11105Pkg is
 
 	constant MAX11105_SPI_CPOL_C : SpiClockPolarity := SPI_CPOL_0;
-	constant MAX11105_SPI_CPHA_C : SpiClockPhase    := SPI_CPHA_0;
+	constant MAX11105_SPI_CPHA_C : SpiClockPhase    := SPI_CPHA_1;
 
 	-- CS must be asserted for 14 bits
 	constant MAX11105_SPI_DATA_WIDTH_C : natural := 14;

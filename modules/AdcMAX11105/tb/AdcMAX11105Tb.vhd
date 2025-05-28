@@ -75,16 +75,37 @@ architecture Behavioral of AdcMAX11105Tb is
 			signal miso   : out STD_LOGIC
 		) is
 	begin
-		wait until cs_o = '1';
+		if cs_o /= '1' then
+			wait until cs_o = '1';
+		end if;
 		wait until cs_o = '0';
+		wait for 15 ns;
 		miso <= '0';
-		wait for CLK_PERIOD1_C*2;
+		wait until sclk_o = '1';
+		wait until sclk_o = '0';
+		wait for 5 ns;
+		miso <= 'U';
+		wait for 10 ns;
 		for i in 11 downto 0 loop
 			miso <= data(i);
-			wait for CLK_PERIOD1_C*2;
+			wait until sclk_o = '1';
+			wait until sclk_o = '0';
+			wait for 5 ns;
+			miso <= 'U';
+			wait for 10 ns;
 		end loop;
-		miso <= '0';
-		wait for CLK_PERIOD1_C*2;
+
+		for i in 1 downto 0 loop
+			miso <= '0';
+			wait until sclk_o = '1';
+			wait until sclk_o = '0';
+			wait for 5 ns;
+			miso <= 'U';
+			wait for 10 ns;
+		end loop;
+
+		miso <= 'Z';
+
 	end procedure WriteDataToMISO;
 begin
 
@@ -150,7 +171,7 @@ begin
 	stimulus2 : process
 	begin
 		-- initialize signals
-		dout_i  <= '0';
+		dout_i  <= 'Z';
 		clear_i <= '0';
 
 		wait for CLK_PERIOD2_C*3;
