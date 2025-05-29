@@ -120,7 +120,6 @@ begin
                 axisWriteDst_o => open,
                 axisReadSrc_o  => axisSrcDataRemap,
                 axisReadDst_i  => axisReadDst_i,
-                clear_i        => clear_i,
                 run_i          => run_i,
                 overflow_o     => overflow_o
             );

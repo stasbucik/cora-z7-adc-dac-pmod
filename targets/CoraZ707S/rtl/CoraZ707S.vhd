@@ -85,6 +85,7 @@ architecture Behavioral of CoraZ707S is
 
 	constant ADC_RUN_BIT_C : natural := 0;
 	constant DAC_RUN_BIT_C : natural := 1;
+	constant CLEAR_BIT_C   : natural := 2;
 
 	constant OVERWRITE_BIT_C : natural := 0;
 
@@ -269,13 +270,13 @@ begin
 	----------------------------------------------------------------------------
 	u_EdgeDetect : entity work.EdgeDetect
 		generic map (
-			POSITIVE_EDGE_G => false,
-			NEGATIVE_EDGE_G => true
+			POSITIVE_EDGE_G => true,
+			NEGATIVE_EDGE_G => false
 		)
 		port map (
 			clk_i => clk,
 			rst_i => rst,
-			sig_i => ctrlReg(ADC_RUN_BIT_C),
+			sig_i => ctrlReg(CLEAR_BIT_C),
 			sig_o => clearBufferFast
 		);
 

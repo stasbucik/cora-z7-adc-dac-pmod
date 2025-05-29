@@ -207,7 +207,6 @@ begin
             axisWriteDst_o => axisWriteDstSlow,
             axisReadSrc_o  => axisReadSrcSlow,
             axisReadDst_i  => axisReadDstSlow,
-            clear_i        => syncClear,
             run_i          => syncRun,
             overflow_o     => syncOverflow
         );

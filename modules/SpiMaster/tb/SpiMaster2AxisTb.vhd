@@ -63,7 +63,6 @@ architecture Behavioral of SpiMaster2AxisTb is
 	signal axisWriteDst_o1 : Axi4StreamDestination;
 	signal axisReadSrc_o1  : axisWriteSrc_i1'subtype;
 	signal axisReadDst_i1  : Axi4StreamDestination;
-	signal clear_i1        : STD_LOGIC;
 	signal run_i1          : STD_LOGIC;
 	signal overflow_o1     : STD_LOGIC;
 
@@ -77,7 +76,6 @@ architecture Behavioral of SpiMaster2AxisTb is
 	signal axisWriteDst_o2 : Axi4StreamDestination;
 	signal axisReadSrc_o2  : axisWriteSrc_i1'subtype;
 	signal axisReadDst_i2  : Axi4StreamDestination;
-	signal clear_i2        : STD_LOGIC;
 	signal run_i2          : STD_LOGIC;
 	signal overflow_o2     : STD_LOGIC;
 
@@ -126,7 +124,6 @@ begin
 			axisWriteDst_o => axisWriteDst_o1,
 			axisReadSrc_o  => axisReadSrc_o1,
 			axisReadDst_i  => axisReadDst_i1,
-			clear_i        => clear_i1,
 			run_i          => run_i1,
 			overflow_o     => overflow_o1
 		);
@@ -150,7 +147,6 @@ begin
 			axisWriteDst_o => axisWriteDst_o2,
 			axisReadSrc_o  => axisReadSrc_o2,
 			axisReadDst_i  => axisReadDst_i2,
-			clear_i        => clear_i2,
 			run_i          => run_i2,
 			overflow_o     => overflow_o2
 		);
@@ -166,7 +162,6 @@ begin
 		axisWriteSrc_i1 <= AXI_4_STREAM_SRC_INIT_C;
 		axisReadDst_i1  <= AXI_4_STREAM_DST_INIT_C;
 		run_i1          <= '0';
-		clear_i1        <= '0';
 
 		wait for CLK_PERIOD_C*3.5;
 
@@ -221,8 +216,6 @@ begin
 		axisWriteSrc_i2 <= AXI_4_STREAM_SRC_INIT_C;
 		axisReadDst_i2  <= AXI_4_STREAM_DST_INIT_C;
 		run_i2          <= '0';
-		clear_i2        <= '0';
-
 		wait for CLK_PERIOD_C*3.5;
 
 
