@@ -82,7 +82,6 @@ architecture Behavioral of CtrlRegAxi4Iface is
 
     type RegType is record
         state           : StateType;
-        axiAddr         : STD_LOGIC_VECTOR(axiReadSrc_i.araddr'range);
         burst_len       : unsigned(axiReadSrc_i.ARLEN'range);
         transferCounter : unsigned(axiReadSrc_i.ARLEN'length downto 0); -- one more bit to prevent overflow
         writeData       : STD_LOGIC_VECTOR(WIDTH_G-1 downto 0);
@@ -100,7 +99,6 @@ architecture Behavioral of CtrlRegAxi4Iface is
 
     constant REG_TYPE_INIT_C : RegType := (
             state           => INIT_S,
-            axiAddr         => (others => '0'),
             burst_len       => (others => '0'),
             transferCounter => (others => '0'),
             writeData       => (others => '0'),
@@ -147,8 +145,6 @@ begin
                     v.burst_len := unsigned(axiReadSrc_i.arlen);
 
                     if (axiReadSrc_i.arlen = x"00" and axiReadSrc_i.arsize = AXI_BURST_SIZE_4_BYTES_C) then
-
-                        v.axiAddr := STD_LOGIC_VECTOR(shift_right(uSub(unsigned(axiReadSrc_i.araddr), AXI_ADDRESS_G), 2));
 
                         v.rdata  := data_i;
                         v.rresp  := AXI_RESP_OK_C; --okay
@@ -211,7 +207,6 @@ begin
             when AW_HANDSHAKE_GOOD_S =>
                 v.awready := '0';
                 v.wready  := '1';
-                v.axiAddr := STD_LOGIC_VECTOR(shift_right(uSub(unsigned(axiWriteSrc_i.awaddr), AXI_ADDRESS_G), 2));
                 v.state   := W_HANDSHAKE_GOOD_S;
 
             when W_HANDSHAKE_GOOD_S =>
