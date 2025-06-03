@@ -201,7 +201,7 @@ begin
             when GET_DATA_BRAM_S =>
                 v.transferCounter := r.transferCounter + 1;
 
-                if (r.latencyCounter + r.transferCounter = r.len) then
+                if (r.latencyCounter + r.transferCounter = r.len - 1) then
                     -- Stop reading
                     v.enables := "00";
                 else

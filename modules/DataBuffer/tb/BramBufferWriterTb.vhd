@@ -131,6 +131,7 @@ begin
 	-- UUT
 	BramBufferWriter : entity work.BramBufferWriter
 		generic map (
+			NUM_ADDRESSES_G     => TB_BRAM_BUFFER_NUM_ADDRESSES_C,
 			BYTE_WIDTH_G        => TB_BRAM_BUFFER_BYTE_WIDTH_C,
 			SAMPLE_DATA_WIDTH_G => TB_BRAM_BUFFER_SAMPLE_DATA_WIDTH_C,
 			PACKING_G           => TB_BRAM_BUFFER_PACKING_C,
