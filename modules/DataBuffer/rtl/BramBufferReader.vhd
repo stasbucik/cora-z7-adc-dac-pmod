@@ -183,10 +183,10 @@ begin
                 end if;
 
             when LATENCY_COUNT_S =>
+                v.latencyCounter := r.latencyCounter + 1;
+
                 -- Wait for the first data to be read from ram
-                if (r.latencyCounter < LATENCY_G-2) then
-                    v.latencyCounter := r.latencyCounter + 1;
-                else
+                if (r.latencyCounter >= LATENCY_G-2) then
                     v.state := GET_DATA_BRAM_S;
                 end if;
 
@@ -201,7 +201,7 @@ begin
             when GET_DATA_BRAM_S =>
                 v.transferCounter := r.transferCounter + 1;
 
-                if (r.latencyCounter + r.transferCounter = r.len - 1) then
+                if (r.latencyCounter + r.transferCounter = r.len) then
                     -- Stop reading
                     v.enables := "00";
                 else
