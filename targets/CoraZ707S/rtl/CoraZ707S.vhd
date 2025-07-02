@@ -1,21 +1,15 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: Stas Bucik
--- 
--- Create Date: 03/31/2025 11:49:41 AM
--- Design Name: 
--- Module Name: CoraZ707S - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
+--  Copyright 2025, University of Ljubljana
+--
+--  This file is part of cora-z7-adc-dac-pmod.
+--  cora-z7-adc-dac-pmod is free software: you can redistribute it and/or modify
+--  it under the terms of the GNU General Public License as published by the Free Software Foundation,
+--  either version 3 of the License, or any later version.
+--  cora-z7-adc-dac-pmod is distributed in the hope that it will be useful,
+--  but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+--  FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+--  You should have received a copy of the GNU General Public License along with cora-z7-adc-dac-pmod.
+--  If not, see <https://www.gnu.org/licenses/>. 
 ----------------------------------------------------------------------------------
 
 
